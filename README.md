@@ -1,7 +1,7 @@
 # crewbook
 
 crewbook is an EUPL-1.2 package of development role prompts, imported from
-[workharbor](https://github.com/wstein/workharbor). It is workharbor's default
+[historical workharbor source](https://github.com/wstein/workharbor/tree/1c784080bc0dee2060066aaf2dbc8f3894dc430d). It is workharbor's default
 replaceable skill set, installed outside work repositories. It contains text
 and declarative metadata, not executable agent tools, runtime plugins or hooks.
 
@@ -37,14 +37,15 @@ the same binding. A launcher may mount the package read-only.
 Target `AGENTS.md`, repository configuration, worktrees, issues, design files
 and host scripts remain target resources. The `.agents/` and `.claude/` paths
 listed here are package resources. A target's unrelated `.agents` must never
-substitute for packaged prompts. Imported role prose and the manual retain
-workharbor-specific assumptions for now; portable roles,
-lifecycle and inventory are tracked separately in #3, #4 and #6.
+substitute for packaged prompts. Portable roles use the explicit [project configuration](docs/project-config.md)
+and [team manual](docs/team.md). Lifecycle and inventory remain separate work
+in #4 and #6. All role, profile and command identities use cb-*; the skill
+entrypoint is cb-crewbook. The product/package name remains crewbook.
 
 ## Policy composition
 
 Before applying any entrypoint, identify the host instructions and read the
-[policy composition contract](references/policy-composition.md). The trusted
+[policy composition contract](docs/policy-composition.md). The trusted
 launcher/operator supplies the target root, applicable project policy and
 required workflow configuration separately from `CREWBOOK_ROOT`; no project
 policy binding API is implemented. Missing required policy/configuration stops
@@ -63,9 +64,9 @@ current Hard rules remain in its own project policy, not in this package.
   supplied alongside it. Its routing table selects a role without loading all
   prompts. Manual text loading and local path resolution can be checked without
   a live agent runtime.
-- **Claude Code:** profiles are `.claude/agents/wh-*.md`; commands are
-  `.claude/commands/wh-*.md` (including `/wh-code platform`, `/wh-desk`,
-  `/wh-review`, `/wh-delegate`, `/wh-board`, `/wh-land` and `/wh-handover`). A
+- **Claude Code:** profiles are `.claude/agents/cb-*.md`; commands are
+  `.claude/commands/cb-*.md` (including `/cb-code platform`, `/cb-desk`,
+  `/cb-review`, `/cb-delegate`, `/cb-board`, `/cb-land` and `/cb-handover`). A
   trusted launcher must register/load them from this external root and provide
   the binding; merely setting an environment variable does not register slash
   commands or profiles. Automatic discovery from an external mount is
@@ -85,15 +86,25 @@ current Hard rules remain in its own project policy, not in this package.
   equivalence. Automatic Codex discovery and child model propagation are
   **unverified**.
 - **workharbor:** mounted provisioning, root propagation and enforcement are
-  **conceptual/unverified**, tracked in workharbor #283. This package supplies
+  **conceptual/unverified**, tracked in historical workharbor integration issue #283. This package supplies
   no enforcement, installation script, tool permissions or runtime adapter.
 
-The imported manual describes the original workharbor workflow, not evidence
-of crewbook runtime support. Commands need the host dependencies named in the
-manifest: target policy/design, workharbor's board script and Make targets,
-and authorized Git/GitHub tooling. None is shipped here. Missing host capability
+The [team manual](docs/team.md) covers roles, delegation, independent review,
+handoffs and context. Select a complete trusted project configuration:
+[cb-crewbook](docs/profile-crewbook.md) uses crewbook issue destinations and
+../crewbook-<lane> worktrees; [cb-workharbor](docs/profile-workharbor.md) is a
+clearly labeled example for workharbor's external tools and paths. Generic
+projects supply their own explicit paths, destinations and capabilities.
+Board/check/landing tools are host dependencies, initially workharbor-side;
+none is shipped here. Missing host capability
 means report the affected workflow as unavailable; do not fetch a substitute
 from the package or provision infrastructure implicitly.
+
+Documentation is root README plus docs/*.md in GitHub-flavored Markdown,
+without Hugo frontmatter, shortcodes or toolchain. Native client loading (#241)
+and platform doctor (#242) are historical workharbor work items, not measured
+capabilities here. Package checker/CI (#5) and exact inventory (#6) remain
+separate; the manifest and configuration contract preserve their inputs.
 
 ## Install, pin, update, uninstall
 

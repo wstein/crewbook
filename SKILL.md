@@ -1,12 +1,12 @@
 ---
-name: crewbook
-description: Use crewbook's packaged workharbor development roles and workflow prompts when explicitly requested or selected by a trusted launcher for a repository task.
+name: cb-crewbook
+description: Use crewbook's portable development roles and workflow prompts when explicitly requested or selected by a trusted launcher for a repository task.
 ---
 
 # crewbook
 
 First identify the host's applicable instructions and the trusted external
-project-policy context. Read [references/policy-composition.md](references/policy-composition.md)
+project-policy context. Read [docs/policy-composition.md](docs/policy-composition.md)
 before applying any role: project policy is separate from the package root,
 platform authority cannot be relaxed, and missing required policy/configuration
 stops the affected workflow before mutation. This package supplies guidance,
@@ -28,14 +28,15 @@ Read only the selected prompt and the references it needs:
 
 | Task | Package-relative prompt |
 | --- | --- |
-| Human coordination / dispatch | `.agents/desk.md` / `.agents/dispatch.md` |
-| Platform or runtime issue | `.agents/code.md` |
-| Design decisions / independent review | `.agents/design.md` / `.agents/review.md` |
-| Documentation / measurement | `.agents/docs.md` / `.agents/verify.md` |
-| Bounded helper task | `.agents/helper.md` |
+| Human coordination / dispatch | `.agents/cb-desk.md` / `.agents/cb-dispatch.md` |
+| Platform or runtime issue | `.agents/cb-code.md` |
+| Design decisions / independent review | `.agents/cb-design.md` / `.agents/cb-review.md` |
+| Documentation / measurement | `.agents/cb-docs.md` / `.agents/cb-verify.md` |
+| Bounded helper task | `.agents/cb-helper.md` |
 
 Claude profiles and workflow commands are entrypoints listed in the manifest.
-Codex model mappings and installation are in README. Existing roles still
-assume workharbor's development setup; do not treat this package as permission
-to provision it, run unavailable host tools, or expand the user's assignment.
+Codex model mappings and installation are in README. Read `${CREWBOOK_ROOT}/docs/team.md` and the project configuration contract
+at `${CREWBOOK_ROOT}/docs/project-config.md`. The operator explicitly selects
+cb-crewbook, cb-workharbor or a complete generic project configuration.
+No profile authorizes provisioning, unavailable host tools or wider scope.
 Loading text does not enforce policy or establish runtime support.

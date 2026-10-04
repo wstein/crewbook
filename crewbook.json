@@ -5,47 +5,50 @@
   "entrypoints": {
     "skill": "SKILL.md",
     "roles": [
-      ".agents/code.md",
-      ".agents/design.md",
-      ".agents/desk.md",
-      ".agents/dispatch.md",
-      ".agents/docs.md",
-      ".agents/helper.md",
-      ".agents/review.md",
-      ".agents/verify.md"
+      ".agents/cb-code.md",
+      ".agents/cb-design.md",
+      ".agents/cb-desk.md",
+      ".agents/cb-dispatch.md",
+      ".agents/cb-docs.md",
+      ".agents/cb-helper.md",
+      ".agents/cb-review.md",
+      ".agents/cb-verify.md"
     ],
     "claude_agents": [
-      ".claude/agents/wh-design.md",
-      ".claude/agents/wh-docs-reviewer.md",
-      ".claude/agents/wh-docs.md",
-      ".claude/agents/wh-helper-edit.md",
-      ".claude/agents/wh-helper.md",
-      ".claude/agents/wh-platform.md",
-      ".claude/agents/wh-reviewer.md",
-      ".claude/agents/wh-runtime.md",
-      ".claude/agents/wh-verify.md",
-      ".claude/agents/wh-worker.md"
+      ".claude/agents/cb-design.md",
+      ".claude/agents/cb-docs-reviewer.md",
+      ".claude/agents/cb-docs.md",
+      ".claude/agents/cb-helper-edit.md",
+      ".claude/agents/cb-helper.md",
+      ".claude/agents/cb-platform.md",
+      ".claude/agents/cb-reviewer.md",
+      ".claude/agents/cb-runtime.md",
+      ".claude/agents/cb-verify.md",
+      ".claude/agents/cb-worker.md"
     ],
     "claude_commands": [
-      ".claude/commands/wh-board.md",
-      ".claude/commands/wh-code.md",
-      ".claude/commands/wh-delegate.md",
-      ".claude/commands/wh-design.md",
-      ".claude/commands/wh-desk.md",
-      ".claude/commands/wh-dispatch.md",
-      ".claude/commands/wh-docs.md",
-      ".claude/commands/wh-handover.md",
-      ".claude/commands/wh-land.md",
-      ".claude/commands/wh-review.md",
-      ".claude/commands/wh-verify.md"
+      ".claude/commands/cb-board.md",
+      ".claude/commands/cb-code.md",
+      ".claude/commands/cb-delegate.md",
+      ".claude/commands/cb-design.md",
+      ".claude/commands/cb-desk.md",
+      ".claude/commands/cb-dispatch.md",
+      ".claude/commands/cb-docs.md",
+      ".claude/commands/cb-handover.md",
+      ".claude/commands/cb-land.md",
+      ".claude/commands/cb-review.md",
+      ".claude/commands/cb-verify.md"
     ]
   },
   "resources": [
     "crewbook.json",
     "README.md",
-    "references/policy-composition.md",
     "LICENSE",
-    "docs/content/docs/manual/sessions-and-agents.md"
+    "docs/policy-composition.md",
+    "docs/team.md",
+    "docs/project-config.md",
+    "docs/profile-crewbook.md",
+    "docs/profile-workharbor.md"
   ],
   "host_dependencies": [
     {
@@ -56,22 +59,7 @@
     {
       "name": "trusted project-policy context: target root, applicable host instructions and required workflow configuration",
       "scope": "all entrypoints; independent of CREWBOOK_ROOT",
-      "status": "required external input; not shipped; see references/policy-composition.md"
-    },
-    {
-      "name": "target workharbor design and threat model",
-      "scope": "design, review and issue workflows",
-      "status": "external; not shipped"
-    },
-    {
-      "name": "scripts/board-snapshot.sh (bash, jq, authorized gh)",
-      "scope": "board workflows",
-      "status": "external workharbor tool; not shipped"
-    },
-    {
-      "name": "workharbor Makefile targets and their dependencies",
-      "scope": "checks, hooks and landing workflows",
-      "status": "external; not shipped"
+      "status": "required external input; not shipped; see docs/policy-composition.md"
     },
     {
       "name": "Git and authorized GitHub REST access through gh",
@@ -82,6 +70,16 @@
       "name": "Claude Code profile/command loader or Codex skill reader",
       "scope": "selected client entrypoints",
       "status": "external; automatic registration unverified"
+    },
+    {
+      "name": "explicit selected project configuration: destinations, human, lane paths, checks/landing, design ownership, reference host and capabilities",
+      "scope": "all workflows",
+      "status": "required external trusted input; see docs/project-config.md"
+    },
+    {
+      "name": "host-project issue/board/check/landing tools and isolated execution environment",
+      "scope": "selected operations only; board may explicitly be none and landing unavailable",
+      "status": "not shipped; current workharbor adapters stay workharbor-side; missing required tools fail explicitly"
     }
   ]
 }
