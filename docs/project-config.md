@@ -41,7 +41,7 @@ stubs, runtime loader, platform doctor or native client registration.
 | --- | --- | --- |
 | cb-crewbook | Read issue 3 | repos/wstein/crewbook/issues/3 |
 | cb-workharbor | Read issue 3 | repos/wstein/workharbor/issues/3 |
-| cb-crewbook, board setup pending | cb-board --fix | Staging-blocked: project URL and host adapter unsupplied; no guessed IDs or workharbor project 6 fallback |
+| cb-crewbook, host adapter unsupplied | cb-board --fix | Verified existing destination: https://github.com/users/wstein/projects/10; staging-blocked until the operator supplies the host adapter, invocation and permissions; no guessed IDs or workharbor project 6 fallback |
 | cb-crewbook, landing unavailable | cb-land | Report missing supplied landing tool; no make land |
 | Generic target /srv/repos/demo with explicit lane map | cb-code issue | Use supplied path; no crewbook/workharbor path inference |
 | Missing reference host/live tools | cb-verify live test | Retain unverified claim; no developer-machine provisioning |
@@ -50,8 +50,13 @@ stubs, runtime loader, platform doctor or native client registration.
 These are static review expectations, not evidence of client/runtime execution.
 Werner approved a separate crewbook GitHub project using the same statuses,
 priorities, assignee, Session and views as workharbor, with separate
-project-specific queues. Its project URL and host adapter setup are pending;
-current crewbook board examples identify this staging blocker. Board setup #7 will supply them; tools stay workharbor-side.
+project-specific queues. The destination https://github.com/users/wstein/projects/10
+is verified to exist. The parent reports five live views and fields applied
+through the reviewed a732 host script; UI priority sorting, milestone grouping
+and workflow rules remain unverified under #7. The operator must still declare
+the host adapter, invocation and permission prerequisites; a missing adapter
+blocks board operations. An existing destination does not establish automatic
+board API access or complete automation. Tools stay workharbor-side.
 Sharing a schema does not share destinations
 or queue ownership. Crewbook Session values are cb/<lane>; the workharbor
 example retains its explicitly configured external lane mapping. Commands
