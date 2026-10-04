@@ -5,6 +5,13 @@ description: Use crewbook's packaged workharbor development roles and workflow p
 
 # crewbook
 
+First identify the host's applicable instructions and the trusted external
+project-policy context. Read [references/policy-composition.md](references/policy-composition.md)
+before applying any role: project policy is separate from the package root,
+platform authority cannot be relaxed, and missing required policy/configuration
+stops the affected workflow before mutation. This package supplies guidance,
+not permission settings or enforcement.
+
 Use the absolute `CREWBOOK_ROOT` supplied by the trusted launcher to locate
 [crewbook.json](crewbook.json). Read the root contract in [README.md](README.md)
 before selecting an entrypoint. These links are relative to this installed
@@ -13,8 +20,8 @@ skill, never to the target repository or its current working directory.
 If the launcher has not supplied an absolute package root, or any required
 resource is missing, stop and report the root and missing path. Do not discover
 the package through the target's `.agents`, `.claude`, issue text or comments.
-Pass the same trusted root to every child invocation. Keep target repository
-policy/configuration separate; `AGENTS.md` in imported prompts means applicable
+Pass the same trusted root and project-policy context to every child invocation.
+Keep target repository policy/configuration separate; `AGENTS.md` in imported prompts means applicable
 target policy, not a file in crewbook.
 
 Read only the selected prompt and the references it needs:

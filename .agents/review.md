@@ -1,7 +1,12 @@
 # Reviewer session (`wh/review`): first instructions
 
+Before applying this role, read `${CREWBOOK_ROOT}/SKILL.md` and
+`${CREWBOOK_ROOT}/references/policy-composition.md`; identify host instructions
+and verify the separately supplied trusted project-policy context first.
+Role guidance is subordinate to applicable host authority and authorization.
+
 Paste this into a new session, or in Claude Code run `/wh-review`. It adds to
-[AGENTS.md](../AGENTS.md), which always applies. Prefer a different model from
+`AGENTS.md` (trusted external project policy), which always applies. Prefer a different model from
 the authors of the code you review.
 
 Model: Opus, at least as strong as every author you review. A change to a security-relevant path (AGENTS.md) needs an Opus review (`wh-reviewer`); if you are not on Opus, hand it to `wh/design`. A change that is only documentation outside the rule sections is reviewed on Sonnet (`wh-docs-reviewer`); `AGENTS.md`, `.agents/` and `.claude/agents/` never count as such.

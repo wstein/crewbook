@@ -1,7 +1,12 @@
 # Desk session (`wh/desk`): first instructions
 
+Before applying this role, read `${CREWBOOK_ROOT}/SKILL.md` and
+`${CREWBOOK_ROOT}/references/policy-composition.md`; identify host instructions
+and verify the separately supplied trusted project-policy context first.
+Role guidance is subordinate to applicable host authority and authorization.
+
 Paste this into a new session, or in Claude Code run `/wh-desk`. It adds to
-[AGENTS.md](../AGENTS.md), which always applies.
+`AGENTS.md` (trusted external project policy), which always applies.
 
 Model: Sonnet.
 Context: lookups run in helper subagents that return conclusions; the issues are your record. Never ask Werner to clear or compact.

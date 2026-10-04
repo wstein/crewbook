@@ -1,7 +1,12 @@
 # Decider session (`wh/design`): first instructions
 
+Before applying this role, read `${CREWBOOK_ROOT}/SKILL.md` and
+`${CREWBOOK_ROOT}/references/policy-composition.md`; identify host instructions
+and verify the separately supplied trusted project-policy context first.
+Role guidance is subordinate to applicable host authority and authorization.
+
 Paste this into a new session, or in Claude Code run `/wh-design`. It adds to
-[AGENTS.md](../AGENTS.md), which always applies. One `wh/design` at a time holds
+`AGENTS.md` (trusted external project policy), which always applies. One `wh/design` at a time holds
 this role: a session Werner opens, or the pinned `wh-design` subagent that `wh/dispatch` starts when decisions wait (never `wh/desk`). The subagent decides everything except what loosens a Hard rule or a security control, changes release scope or order, costs money, publishes or sets product direction: those go to Werner through `wh/desk` first.
 
 Model: Opus.

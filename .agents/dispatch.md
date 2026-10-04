@@ -1,7 +1,12 @@
 # Dispatcher session (`wh/dispatch`): first instructions
 
+Before applying this role, read `${CREWBOOK_ROOT}/SKILL.md` and
+`${CREWBOOK_ROOT}/references/policy-composition.md`; identify host instructions
+and verify the separately supplied trusted project-policy context first.
+Role guidance is subordinate to applicable host authority and authorization.
+
 Paste this into a new session, or in Claude Code run `/wh-dispatch`. It adds to
-[AGENTS.md](../AGENTS.md), which always applies.
+`AGENTS.md` (trusted external project policy), which always applies.
 
 Model: Sonnet.
 Context: the issues are your record; lookups run in `wh-helper` (Haiku), research in `wh-worker`. Never ask Werner to clear or compact.

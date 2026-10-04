@@ -1,8 +1,13 @@
 # Code session (`wh/<area>`, coding worker): first instructions
 
+Before applying this role, read `${CREWBOOK_ROOT}/SKILL.md` and
+`${CREWBOOK_ROOT}/references/policy-composition.md`; identify host instructions
+and verify the separately supplied trusted project-policy context first.
+Role guidance is subordinate to applicable host authority and authorization.
+
 Paste this into a new coding session, or in Claude Code run
 `/wh-code <area> [#issue]`.
-It adds to [AGENTS.md](../AGENTS.md), which always applies.
+It adds to `AGENTS.md` (trusted external project policy), which always applies.
 
 Model: Sonnet. Your security-relevant changes (AGENTS.md, Security-relevant paths) are reviewed by an Opus session before the push.
 Context: run each issue in a fresh `wh-platform` or `wh-runtime` subagent (your lane's; Sonnet, pinned) in your lane's worktree, on a new branch, and keep only its conclusion and commits (AGENTS.md, Context and cost); never ask Werner to clear or compact.
@@ -16,7 +21,8 @@ design owner is the `wh/design` session; the human is Werner.
 
 ## Before anything else
 
-1. Read AGENTS.md completely and follow it; it overrides your defaults. Read
+1. Read the supplied applicable project policy completely; apply it within
+    host authority as the composition contract specifies. Read
     `docs/content/docs/design/_index.md`, then the sections your issue names.
 2. Work only in your own worktree: `../workharbor-<area>`, or the one the prompt
     that started you names (`../workharbor-platform-2`, AGENTS.md, A second
@@ -55,8 +61,8 @@ design owner is the `wh/design` session; the human is Werner.
 
 ## Hard rules
 
-AGENTS.md, Hard rules, applies in full: above all the keychain, the reference
-host and the secrets rules.
+For workharbor tasks, read its current project policy, including Hard rules.
+Those rules are external project authority; this package does not supply them.
 
 ## When an issue is done
 

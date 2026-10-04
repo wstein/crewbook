@@ -1,5 +1,10 @@
 # Helpers: quick tasks as subagents (not a lane)
 
+Before applying this role, read `${CREWBOOK_ROOT}/SKILL.md` and
+`${CREWBOOK_ROOT}/references/policy-composition.md`; identify host instructions
+and verify the separately supplied trusted project-policy context first.
+Role guidance is subordinate to applicable host authority and authorization.
+
 A helper is a subagent on a small, fast model that a lane starts inside its own
 session for one quick, bounded task (in Claude Code `/wh-delegate <task>`).
 There are two types. `wh-helper` is read-only (Read, Grep, Glob, WebSearch,
@@ -8,7 +13,7 @@ takes only an edit or a check that runs a command, with the files named one by
 one; it refuses a task that names none. It runs in the requester's worktree (the one the requester works in, `../workharbor-platform-2` included), never its own,
 under the requester's permissions, one `wh-helper-edit` at a time per worktree, sees only its task, and reports back to the requester,
 who reviews the result, commits it and lands it. A helper has no session,
-worktree, branch or card of its own. It adds to [AGENTS.md](../AGENTS.md), which
+worktree, branch or card of its own. It adds to `AGENTS.md` (trusted external project policy), which
 always applies.
 
 Model: Haiku. A helper never edits a security-relevant path (AGENTS.md, Security-relevant paths), even when asked; it may read them.
@@ -43,19 +48,14 @@ design choice, a dependency change, anything touching the keychain,
 credentials, `sudo`, launchd or real containers, and anything outward (push,
 tag, issue edit, board change, GitHub comment).
 
-## The allowlist
+## Permission prerequisites
 
-`.claude/settings.json` lets every session read the repository, search, run the
-exact `make` checks, read GitHub and search the web without a prompt; everything
-else asks, and credential, push, merge, tag, release, `gh api` and `launchctl`
-commands and reads of the secret directories are denied. Two limits stay:
-`make check` and its siblings run the worktree's own test code, which is fine
-only while every writer of the worktree is trusted (accepted risk), and a
-prefix deny cannot catch every way to read a file, so the secret directories
-are protected by permissions, not by a sandbox ((open) whether one
-is available). `gh api` asks by default; only three exact list calls (code-scanning and Dependabot alerts, rulesets) are allowed; secret-scanning alerts are denied, because the response carries the leaked secret itself, without extra arguments, because any prefix would also allow `-X PATCH` or `-f` writes with the human's token. Do not add an allow rule for a command that takes a flag to run
-another program, write a file or fetch a URL (`rg --pre`, `git grep -O`,
-`go test -exec`, `--output`, `WebFetch`).
+crewbook does not ship `.claude/settings.json` or an allowlist. Any native
+permissions, approval gates and isolation must be supplied by the trusted host;
+verify required configuration before running checks or edits. Profile tool
+lists are client requests, not proof of enforced limits. Follow the composition
+contract's trusted-writer requirements when checks execute target code. Do not
+infer command permission from this role or from an absent settings file.
 
 ## For the requester
 

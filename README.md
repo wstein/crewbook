@@ -38,8 +38,24 @@ Target `AGENTS.md`, repository configuration, worktrees, issues, design files
 and host scripts remain target resources. The `.agents/` and `.claude/` paths
 listed here are package resources. A target's unrelated `.agents` must never
 substitute for packaged prompts. Imported role prose and the manual retain
-workharbor-specific assumptions for now; portable roles, composition,
-lifecycle and inventory are tracked separately in #2, #3, #4 and #6.
+workharbor-specific assumptions for now; portable roles,
+lifecycle and inventory are tracked separately in #3, #4 and #6.
+
+## Policy composition
+
+Before applying any entrypoint, identify the host instructions and read the
+[policy composition contract](references/policy-composition.md). The trusted
+launcher/operator supplies the target root, applicable project policy and
+required workflow configuration separately from `CREWBOOK_ROOT`; no project
+policy binding API is implemented. Missing required policy/configuration stops
+the affected workflow before mutation. A missing target `AGENTS.md` without a
+trusted equivalent leaves composition undefined; platform enforcement remains.
+
+Package guidance cannot relax system/platform controls or human approval
+boundaries. crewbook supplies no permission settings, hooks or tool enforcement;
+native tool limits are not enforced by Makefiles. The contract documents trusted
+writers and focused missing-policy/conflicting-skill review cases. Workharbor's
+current Hard rules remain in its own project policy, not in this package.
 
 ## Entrypoints and support
 

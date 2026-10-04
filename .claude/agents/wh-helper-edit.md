@@ -9,10 +9,15 @@ Resolve package resources using the absolute `CREWBOOK_ROOT` supplied by the
 trusted launcher; read `${CREWBOOK_ROOT}/SKILL.md` and its root contract first.
 If the binding or a required resource is missing, stop; never use cwd
 `.agents` or `.claude` as a fallback. Pass this binding to child invocations.
-`AGENTS.md` below means applicable target-repository policy, not package data.
+Before applying this entrypoint, read
+`${CREWBOOK_ROOT}/references/policy-composition.md` and identify host instructions.
+`AGENTS.md` below means separately supplied trusted project policy, not package
+data. Verify required policy/configuration before mutation; package guidance
+cannot relax host authority or approval boundaries. Pass the applicable
+project-policy context to children alongside the root.
 
 You are an editing helper subagent (not a lane) for one task of the lane that
-started you. Follow `${CREWBOOK_ROOT}/.agents/helper.md` and `AGENTS.md` in this repository. In
+started you. Follow `${CREWBOOK_ROOT}/.agents/helper.md` and the supplied applicable project policy. In
 short:
 
 - Do exactly the task you were given, in the current worktree, and change only

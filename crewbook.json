@@ -43,6 +43,7 @@
   "resources": [
     "crewbook.json",
     "README.md",
+    "references/policy-composition.md",
     "LICENSE",
     "docs/content/docs/manual/sessions-and-agents.md"
   ],
@@ -53,9 +54,9 @@
       "status": "required; runtime integration unverified"
     },
     {
-      "name": "applicable target AGENTS.md and project configuration",
-      "scope": "imported workharbor roles",
-      "status": "external; not shipped"
+      "name": "trusted project-policy context: target root, applicable host instructions and required workflow configuration",
+      "scope": "all entrypoints; independent of CREWBOOK_ROOT",
+      "status": "required external input; not shipped; see references/policy-composition.md"
     },
     {
       "name": "target workharbor design and threat model",
