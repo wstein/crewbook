@@ -3,9 +3,15 @@ description: Hand a quick task to a helper subagent in this session
 argument-hint: "<task>"
 ---
 
+Resolve package resources using the absolute `CREWBOOK_ROOT` supplied by the
+trusted launcher; read `${CREWBOOK_ROOT}/SKILL.md` and its root contract first.
+If the binding or a required resource is missing, stop; never use cwd
+`.agents` or `.claude` as a fallback. Pass this binding to child invocations.
+`AGENTS.md` below means applicable target-repository policy, not package data.
+
 Delegate this to a helper subagent: $ARGUMENTS
 
-Only a task of the kinds in `.agents/helper.md` (find and report, web research,
+Only a task of the kinds in `${CREWBOOK_ROOT}/.agents/helper.md` (find and report, web research,
 issue drafts, mechanical edits, small tests, checks); never a security-relevant path
 (AGENTS.md lists them), a design choice or anything outward. Board hygiene
 (`/wh-board`) is not delegated: the lane runs it itself.

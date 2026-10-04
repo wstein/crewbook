@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "name": "crewbook",
+  "license": "EUPL-1.2",
+  "entrypoints": {
+    "skill": "SKILL.md",
+    "roles": [
+      ".agents/code.md",
+      ".agents/design.md",
+      ".agents/desk.md",
+      ".agents/dispatch.md",
+      ".agents/docs.md",
+      ".agents/helper.md",
+      ".agents/review.md",
+      ".agents/verify.md"
+    ],
+    "claude_agents": [
+      ".claude/agents/wh-design.md",
+      ".claude/agents/wh-docs-reviewer.md",
+      ".claude/agents/wh-docs.md",
+      ".claude/agents/wh-helper-edit.md",
+      ".claude/agents/wh-helper.md",
+      ".claude/agents/wh-platform.md",
+      ".claude/agents/wh-reviewer.md",
+      ".claude/agents/wh-runtime.md",
+      ".claude/agents/wh-verify.md",
+      ".claude/agents/wh-worker.md"
+    ],
+    "claude_commands": [
+      ".claude/commands/wh-board.md",
+      ".claude/commands/wh-code.md",
+      ".claude/commands/wh-delegate.md",
+      ".claude/commands/wh-design.md",
+      ".claude/commands/wh-desk.md",
+      ".claude/commands/wh-dispatch.md",
+      ".claude/commands/wh-docs.md",
+      ".claude/commands/wh-handover.md",
+      ".claude/commands/wh-land.md",
+      ".claude/commands/wh-review.md",
+      ".claude/commands/wh-verify.md"
+    ]
+  },
+  "resources": [
+    "crewbook.json",
+    "README.md",
+    "LICENSE",
+    "docs/content/docs/manual/sessions-and-agents.md"
+  ],
+  "host_dependencies": [
+    {
+      "name": "trusted launcher with absolute CREWBOOK_ROOT",
+      "scope": "all entrypoints",
+      "status": "required; runtime integration unverified"
+    },
+    {
+      "name": "applicable target AGENTS.md and project configuration",
+      "scope": "imported workharbor roles",
+      "status": "external; not shipped"
+    },
+    {
+      "name": "target workharbor design and threat model",
+      "scope": "design, review and issue workflows",
+      "status": "external; not shipped"
+    },
+    {
+      "name": "scripts/board-snapshot.sh (bash, jq, authorized gh)",
+      "scope": "board workflows",
+      "status": "external workharbor tool; not shipped"
+    },
+    {
+      "name": "workharbor Makefile targets and their dependencies",
+      "scope": "checks, hooks and landing workflows",
+      "status": "external; not shipped"
+    },
+    {
+      "name": "Git and authorized GitHub REST access through gh",
+      "scope": "repository and issue workflows",
+      "status": "external; authorization remains separate"
+    },
+    {
+      "name": "Claude Code profile/command loader or Codex skill reader",
+      "scope": "selected client entrypoints",
+      "status": "external; automatic registration unverified"
+    }
+  ]
+}

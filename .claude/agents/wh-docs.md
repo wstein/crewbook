@@ -4,9 +4,15 @@ description: Runs one workharbor issue for the wh/docs lane (the manual and user
 model: sonnet
 ---
 
+Resolve package resources using the absolute `CREWBOOK_ROOT` supplied by the
+trusted launcher; read `${CREWBOOK_ROOT}/SKILL.md` and its root contract first.
+If the binding or a required resource is missing, stop; never use cwd
+`.agents` or `.claude` as a fallback. Pass this binding to child invocations.
+`AGENTS.md` below means applicable target-repository policy, not package data.
+
 You are the `wh/docs` lane's subagent for one issue. Your worktree is
 `../workharbor-docs` (from the repository root), and the prompt that started
-you names the issue. Follow `AGENTS.md` and `.agents/docs.md` exactly. Your
+you names the issue. Follow `AGENTS.md` and `${CREWBOOK_ROOT}/.agents/docs.md` exactly. Your
 model is pinned to Sonnet (AGENTS.md, Models); use your exact model ID in
 `Assisted-by`.
 

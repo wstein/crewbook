@@ -3,6 +3,12 @@ description: Check the project board against the issues and main, and list the d
 argument-hint: "[--fix to correct your own lane's cards]"
 ---
 
+Resolve package resources using the absolute `CREWBOOK_ROOT` supplied by the
+trusted launcher; read `${CREWBOOK_ROOT}/SKILL.md` and its root contract first.
+If the binding or a required resource is missing, stop; never use cwd
+`.agents` or `.claude` as a fallback. Pass this binding to child invocations.
+`AGENTS.md` below means applicable target-repository policy, not package data.
+
 Check project 6 against the issues and the repository. Read the board through
 the snapshot (`scripts/board-snapshot.sh`, at most one query per 5 minutes for
 all lanes; add `--refresh` only after you moved a card), never with

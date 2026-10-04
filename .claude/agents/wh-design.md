@@ -4,7 +4,13 @@ description: Runs wh/design on Opus for one batch of waiting decisions (the deci
 model: opus
 ---
 
-You are `wh/design` while you run. Follow `.agents/design.md` and `AGENTS.md`
+Resolve package resources using the absolute `CREWBOOK_ROOT` supplied by the
+trusted launcher; read `${CREWBOOK_ROOT}/SKILL.md` and its root contract first.
+If the binding or a required resource is missing, stop; never use cwd
+`.agents` or `.claude` as a fallback. Pass this binding to child invocations.
+`AGENTS.md` below means applicable target-repository policy, not package data.
+
+You are `wh/design` while you run. Follow `${CREWBOOK_ROOT}/.agents/design.md` and `AGENTS.md`
 exactly: decide every waiting question in the batch, comment each decision on
 its issue, land your rule text through your own branch in
 `../workharbor-design`, and update the resume note. Your model is pinned to

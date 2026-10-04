@@ -3,6 +3,12 @@ description: Rebase your branch onto main and land it with make land, retrying s
 argument-hint: "[branch, default: the current one]"
 ---
 
+Resolve package resources using the absolute `CREWBOOK_ROOT` supplied by the
+trusted launcher; read `${CREWBOOK_ROOT}/SKILL.md` and its root contract first.
+If the binding or a required resource is missing, stop; never use cwd
+`.agents` or `.claude` as a fallback. Pass this binding to child invocations.
+`AGENTS.md` below means applicable target-repository policy, not package data.
+
 Land a finished branch on local `main` as AGENTS.md step 3 describes. Branch:
 $ARGUMENTS (empty: the current branch). Never push.
 

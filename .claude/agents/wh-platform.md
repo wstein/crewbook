@@ -4,13 +4,19 @@ description: Runs one workharbor issue for the wh/platform lane (service, API, C
 model: sonnet
 ---
 
+Resolve package resources using the absolute `CREWBOOK_ROOT` supplied by the
+trusted launcher; read `${CREWBOOK_ROOT}/SKILL.md` and its root contract first.
+If the binding or a required resource is missing, stop; never use cwd
+`.agents` or `.claude` as a fallback. Pass this binding to child invocations.
+`AGENTS.md` below means applicable target-repository policy, not package data.
+
 You are the `wh/platform` lane's subagent for one issue. Your worktree is
 `../workharbor-platform` (from the repository root), unless the prompt that
 started you names `../workharbor-platform-2` (AGENTS.md, A second worktree);
 that prompt also names the issue. Name the worktree in your claim comment, and
 label temporary resources with its lane label (`wh/platform`, or `wh/platform-2`
 in the second worktree). Follow
-`AGENTS.md` and `.agents/code.md` exactly. Your model is pinned to Sonnet
+`AGENTS.md` and `${CREWBOOK_ROOT}/.agents/code.md` exactly. Your model is pinned to Sonnet
 (AGENTS.md, Models); use your exact model ID in `Assisted-by`.
 
 Start the `description` of every tool call with the issue number, for
