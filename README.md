@@ -20,10 +20,13 @@ The union of entrypoints and resources defines the required package contents;
 `.git` and local maintenance artifacts are not runtime resources.
 
 `host_dependencies` names external prerequisites, each with `name`, `scope`
-and `status`. They are descriptions, not install commands or authorization to
-run anything. The maintained Go checker validates the layout and complete content
-inventory without executing instructions. Full profile/reference checks and CI
-remain tracked in #5. [PROVENANCE.md](PROVENANCE.md) records the original import
+and `status`, and optional explicit `paths` for external file references.
+They are descriptions, not install commands or authorization to run anything.
+Relative links and paths beneath `${CREWBOOK_ROOT}` resolve inside the package;
+an external file link must use `host:<path>` with an exact declared host path.
+The maintained Go checker validates content, profiles, references and the
+complete inventory without executing instructions.
+[PROVENANCE.md](PROVENANCE.md) records the original import
 and post-import transformations; the [distribution contract](docs/distribution.md)
 separates current content integrity from pending runtime compatibility.
 
@@ -112,13 +115,13 @@ from the package or provision infrastructure implicitly.
 Documentation is root README plus docs/*.md in GitHub-flavored Markdown,
 without Hugo frontmatter, shortcodes or toolchain. Native client loading (#241)
 and platform doctor (#242) are historical workharbor work items, not measured
-capabilities here. Full content checks/CI remain with #5; #6's content inventory
-does not establish native runtime support.
+capabilities here. Source checks and CI do not establish native runtime support.
 
 ## Go maintenance
 
-Maintainers use Go 1.27 or newer on Linux or macOS, with only the standard
-library. Maintenance code is excluded from the distributed text artifact.
+Maintainers use Go 1.27 or newer on Linux or macOS. The standard library handles
+package maintenance; Goldmark parses GFM for content validation. Maintenance
+code and module dependencies are excluded from the distributed text artifact.
 From the source checkout, use a canonical absolute source path:
 
 ```sh
@@ -127,14 +130,32 @@ go run ./cmd/crewbook-package inventory --root /absolute/path/crewbook
 go run ./cmd/crewbook-package update --root /absolute/path/crewbook
 go run ./cmd/crewbook-package export --root /absolute/path/crewbook --dest /absolute/path/new-text-package
 go test ./...
+go test -race ./...
 go vet ./...
 go build -trimpath -buildvcs=false -o /tmp/crewbook-package ./cmd/crewbook-package
 ```
 
 Use a fixed Go patch version and `CGO_ENABLED=0` for reproducible optional
-binary builds. No binary is needed by agents. `check` verifies source inventory
-and required layout resources; full frontmatter, reference and helper-permission
-checks are forthcoming under #5, not claimed by this command.
+binary builds. No binary is needed by agents. `check` verifies source inventory,
+required resources, supported scalar frontmatter, role/model mappings, prompt
+links, bundled references, helper tool restrictions and GFM links/anchors.
+Hugo shortcodes and undeclared host links fail. Maintenance-only `tools/README.md`
+documents the supported syntax and focused nonzero-exit fixtures.
+
+CI runs this same entrypoint, Go tests including race checks, vet and formatting
+on ordinary pull requests, plus pinned redacted Gitleaks history/tree/message
+scans. CodeQL builds and analyzes the actual Go maintenance packages. External
+HTTP(S) link checks run only weekly or on manual request, with bounded retries
+and timeouts; upstream outages do not gate ordinary package validation.
+Dependabot proposes weekly Action and Go-module updates for human review.
+Every Action has an official-upstream full commit pin and version comment;
+checkout does not persist credentials. Routine jobs receive contents read;
+only CodeQL receives security-events write. There is no agent execution,
+board access, automatic merge, release or deployment. Native GitHub secret
+scanning and push protection are separate enabled repository settings.
+Maintenance-only `tools/CI.md` and `tools/SECURITY.md` record reproduction and
+pin evidence. Hosted execution remains **unverified** until actual publication
+and a GitHub run; passing local checks does not claim hosted success.
 
 `tools/package-policy.json` explicitly enumerates all distributed files,
 including dot-directories and provenance. It excludes maintenance paths

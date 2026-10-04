@@ -67,7 +67,7 @@ go run ./cmd/crewbook-package inventory --root /absolute/source/crewbook
 `update` accepts deliberately reviewed new bytes; it is not a tamper check.
 Commit the changed content, declarations and generated `tools/package.sha256`
 together. Repeating update on unchanged content produces identical bytes.
-The original extraction evidence is not regenerated. #5's content checker/CI
+The original extraction evidence is not regenerated. The content checker/CI
 must perform this same coordinated update when it changes packaged resources;
 adding maintenance-only CI or Go source changes no distributed bytes.
 
