@@ -94,3 +94,116 @@ func TestCLIErrors(t *testing.T) {
 		}
 	}
 }
+
+func TestUpdateRejectsOutputCollisions(t *testing.T) {
+	for _, name := range []string{"SKILL.md", "skill.md", "crewbook.json", "LICENSE", "workharbor.json", "tools/package-policy.json", "tools/export-policy.json", "tools/maintenance.go", "tools/linked.sha256", "tools/hardlinked.sha256", "alias/SKILL.md", "tools/parent-alias/out.sha256"} {
+		t.Run(name, func(t *testing.T) {
+			root := sourceFixture(t)
+			if _, _, err := invoke(t, "update", "--root", root); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(root, "workharbor.json"), []byte("{}\n"), 0644); err != nil {
+				t.Fatal(err)
+			}
+			for _, file := range []string{"tools/export-policy.json", "tools/maintenance.go"} {
+				if err := os.WriteFile(filepath.Join(root, file), []byte("protected metadata\n"), 0644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := os.Symlink(filepath.Join(root, "SKILL.md"), filepath.Join(root, "tools/linked.sha256")); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Link(filepath.Join(root, "tools/export-policy.json"), filepath.Join(root, "tools/hardlinked.sha256")); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Symlink(root, filepath.Join(root, "tools/parent-alias")); err != nil {
+				t.Fatal(err)
+			}
+			inventory, err := os.ReadFile(filepath.Join(root, "tools/package.sha256"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			protected := []string{"SKILL.md", "crewbook.json", "LICENSE", "workharbor.json", "tools/package-policy.json", "tools/export-policy.json", "tools/maintenance.go", "tools/package.sha256"}
+			before := map[string][]byte{}
+			for _, file := range protected {
+				content, err := os.ReadFile(filepath.Join(root, file))
+				if err != nil {
+					t.Fatal(err)
+				}
+				before[file] = content
+			}
+			target := filepath.Join(root, name)
+			if name == "alias/SKILL.md" {
+				parent, err := filepath.EvalSymlinks(t.TempDir())
+				if err != nil {
+					t.Fatal(err)
+				}
+				alias := filepath.Join(parent, "alias")
+				if err = os.Symlink(root, alias); err != nil {
+					t.Fatal(err)
+				}
+				target = filepath.Join(alias, "SKILL.md")
+			}
+			output, _, err := invoke(t, "update", "--root", root, "--inventory", target)
+			if err == nil || output != "" {
+				t.Fatal("output collision succeeded", output, err)
+			}
+			for _, file := range protected {
+				after, err := os.ReadFile(filepath.Join(root, file))
+				if err != nil || !bytes.Equal(before[file], after) {
+					t.Fatal("protected file changed", file, err)
+				}
+			}
+			if !bytes.Equal(inventory, before["tools/package.sha256"]) {
+				t.Fatal("inventory fixture drift")
+			}
+		})
+	}
+}
+
+func TestUpdateRejectsNoncanonicalRootWithoutMutation(t *testing.T) {
+	root := sourceFixture(t)
+	parent, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	alias := filepath.Join(parent, "alias")
+	if err = os.Symlink(root, alias); err != nil {
+		t.Fatal(err)
+	}
+	for _, source := range []string{".", root + "/.", alias} {
+		target := filepath.Join(parent, "new.inventory")
+		if _, _, err = invoke(t, "update", "--root", source, "--inventory", target); err == nil {
+			t.Fatal("noncanonical source accepted", source)
+		}
+		if _, err = os.Lstat(target); !os.IsNotExist(err) {
+			t.Fatal("inventory created on invalid root", err)
+		}
+	}
+}
+
+func TestUpdateCustomInventory(t *testing.T) {
+	root := sourceFixture(t)
+	external, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected, _, err := invoke(t, "inventory", "--root", root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, target := range []string{filepath.Join(root, "tools/package.sha256"), filepath.Join(root, "tools/custom.sha256"), filepath.Join(external, "custom.inventory")} {
+		for attempt := 0; attempt < 2; attempt++ {
+			if _, _, err = invoke(t, "update", "--root", root, "--inventory", target); err != nil {
+				t.Fatal("legitimate output refused", target, err)
+			}
+			content, err := os.ReadFile(target)
+			if err != nil || string(content) != expected {
+				t.Fatal("custom inventory differs", err)
+			}
+			if _, _, err = invoke(t, "check", "--root", root, "--inventory", target); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+}

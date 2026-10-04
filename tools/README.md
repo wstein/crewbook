@@ -38,8 +38,14 @@ whose distributed set is identical but whose maintenance exclusions are empty.
 Supply the latter and `tools/package.sha256` from outside the staged export
 for exact missing/extra/tampered checks. Keep both policies, resource declarations,
 changed content and generated inventory in the same commit. Use only `update`'s
-fixed default inventory destination; custom update destinations await the #8
-overwrite-protection fix and independent review. The inventory itself remains
+default inventory destination or a custom path under source `tools/` or outside
+the source root. Output parents must already exist and be canonical without
+symlink aliases. A new destination is allowed; an existing destination must be
+a regular, unlinked canonical inventory file. Distributed files, the runtime
+manifest and the selected policy are protected even through case/identity
+aliases. Other existing metadata and tool files cannot be overwritten.
+The output path never changes the declared distribution exclusions.
+The inventory itself remains
 maintenance metadata outside the exported package to avoid self-hashing.
 The original extraction evidence is unchanged; the abandoned Python maintenance
 draft was archived outside the source checkout and never validated or executed.

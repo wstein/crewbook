@@ -79,7 +79,7 @@ func run(arguments []string, output, diagnostics io.Writer) error {
 		if err = packagefmt.CheckLayout(snapshot); err != nil {
 			return err
 		}
-		return writeInventory(*inventoryPath, encoded)
+		return packagefmt.WriteInventory(*root, *inventoryPath, *policyPath, policy, encoded)
 	case "check", "export":
 		expected, err := packagefmt.ReadRegular(*inventoryPath, packagefmt.MaxInventoryBytes)
 		if err != nil {
@@ -139,35 +139,4 @@ func run(arguments []string, output, diagnostics io.Writer) error {
 		return nil
 	}
 	return errors.New("unreachable command")
-}
-
-func writeInventory(filename string, content []byte) error {
-	if info, err := os.Lstat(filename); err == nil {
-		if !info.Mode().IsRegular() {
-			return errors.New("inventory destination must be a regular file")
-		}
-		if _, err = packagefmt.ReadRegular(filename, packagefmt.MaxInventoryBytes); err != nil {
-			return err
-		}
-	} else if !os.IsNotExist(err) {
-		return err
-	}
-	temporary, err := os.CreateTemp(filepath.Dir(filename), ".inventory-")
-	if err != nil {
-		return err
-	}
-	name := temporary.Name()
-	defer os.Remove(name)
-	if _, err = temporary.Write(content); err != nil {
-		temporary.Close()
-		return err
-	}
-	if err = temporary.Chmod(0644); err != nil {
-		temporary.Close()
-		return err
-	}
-	if err = temporary.Close(); err != nil {
-		return err
-	}
-	return os.Rename(name, filename)
 }
