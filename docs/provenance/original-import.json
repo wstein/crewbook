@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "source": "https://github.com/wstein/workharbor",
+  "source_commit": "c6bbb7bcd903ea3027285baa9237f4ad179a9bb7",
+  "import_repository": "https://github.com/wstein/crewbook",
+  "import_commit": "1c784080bc0dee2060066aaf2dbc8f3894dc430d",
+  "source_tip_filtered_commit": "0000000000000000000000000000000000000000",
+  "import_tip_original_commit": "52223a0f935f7364f54a82d69af894a579f2424f",
+  "files": [
+    {
+      "path": ".agents/code.md",
+      "git_blob_sha1": "4d954a4be6e9b2c673b7ea75cec7d8dbb199d567",
+      "sha256": "b608f7790b9be2a262cc9901ceb7f54f094d97c6ed111d3432a5d99fbf60e94a"
+    },
+    {
+      "path": ".agents/design.md",
+      "git_blob_sha1": "48467b1eaf1d0786f8fb1ea5e2d8944cd13d02de",
+      "sha256": "42301c27d530813242d5a36b38a1a869821891746fe676d4c0e1fd0090d0830f"
+    },
+    {
+      "path": ".agents/desk.md",
+      "git_blob_sha1": "338bb43ba1decb4f50142504dec3b1a6cb52500e",
+      "sha256": "716c76f98df3da2045769eb343c0b3c04f3a1cf398c8abc0683bdbd67c5c5105"
+    },
+    {
+      "path": ".agents/dispatch.md",
+      "git_blob_sha1": "2c6d0b62e030246788ba0eeb72733dcd3ba5997c",
+      "sha256": "83a26d331a0532ba838be9be450ef9a8e2d6940a246d38a72b9044441ef07a82"
+    },
+    {
+      "path": ".agents/docs.md",
+      "git_blob_sha1": "433fd0116442ffee84a9fd3d769151d470eedbcc",
+      "sha256": "54731a2ac4222f3877116e3609c8a1b3a42d0337bf60580d40a4e2a0749c510b"
+    },
+    {
+      "path": ".agents/helper.md",
+      "git_blob_sha1": "7862cea55cfcbd16f1a6405db05699ac1aa8ee35",
+      "sha256": "e3c805b3af5ce4300a2ee3540373ea8fdf9139752cf955e8ba935092689efd6b"
+    },
+    {
+      "path": ".agents/review.md",
+      "git_blob_sha1": "c6abeab44fe1b2a4930fe9377e05e608c939520a",
+      "sha256": "5025b48efd22e07a67b51e85c60acd3589780a09ede67a78fa821ef5d868acc8"
+    },
+    {
+      "path": ".agents/verify.md",
+      "git_blob_sha1": "b4dfd61701eb61a0743a793dcad882284239b5d8",
+      "sha256": "40320d4a0c0aa443329846a84997ab54dd5d4d6bfb9b44658e21e300dcc42e16"
+    },
+    {
+      "path": ".claude/agents/wh-design.md",
+      "git_blob_sha1": "fd5cd2a72fddaa573938b55f869123c151b78171",
+      "sha256": "fd74708c7dd57fb9d7b9407e3d8fcec2c7c8b486a6bc30fe82e8d4495efdbb53"
+    },
+    {
+      "path": ".claude/agents/wh-docs-reviewer.md",
+      "git_blob_sha1": "4f3f0f0fc20e227be634dc1443139a391ffd7c7b",
+      "sha256": "b5a15cff7b1cbb0aa53e14b4e4fe3713161541f31fd313f5d87da7ab0e35c27a"
+    },
+    {
+      "path": ".claude/agents/wh-docs.md",
+      "git_blob_sha1": "86475237b31e2c3991bacf2c199dd5ea8612f83e",
+      "sha256": "3d9687c3ae39a6af4d0fb6f85fc19ca669e7dd6c7c98d6f4f7e0a493ed8429d3"
+    },
+    {
+      "path": ".claude/agents/wh-helper-edit.md",
+      "git_blob_sha1": "e200100389b417883c8a9b0fe1ae2c6d57251a1a",
+      "sha256": "9d46bd1623c45f4aba445c1e4d4cbee6ed3f6573f48f4231a0df714b78fdcda9"
+    },
+    {
+      "path": ".claude/agents/wh-helper.md",
+      "git_blob_sha1": "11420feafe8c471d39da955e16a03f0afe2dac97",
+      "sha256": "caffb0c2495de5030095d25e884699842f771fcfb1f78cf40e97f9d8ef8ae7b4"
+    },
+    {
+      "path": ".claude/agents/wh-platform.md",
+      "git_blob_sha1": "17bb75b78ff51fa11f2f0aca395b0e20036e4dd3",
+      "sha256": "7d52766e14f27ea643aef29e11bb2582f1548d684eb781c0411d5f0cc5b02851"
+    },
+    {
+      "path": ".claude/agents/wh-reviewer.md",
+      "git_blob_sha1": "1617ca8a82f0c6edb628fee909254900a6b806df",
+      "sha256": "df2d6e224d68419f95767b2fec8b6fb343429a5e0ddc0e9a9134261378b391f6"
+    },
+    {
+      "path": ".claude/agents/wh-runtime.md",
+      "git_blob_sha1": "524d4427f9f29bc37ad187f3d93a82338cc4dcc8",
+      "sha256": "9e3704ab14a2f475328a6ade8790bb7c4c24c4495a2d05d29377edb575a73ba2"
+    },
+    {
+      "path": ".claude/agents/wh-verify.md",
+      "git_blob_sha1": "e1cbb81fd606f3caabb2483af2d24248b082927d",
+      "sha256": "26086fb1fa66b84c3f81918e2c3534ad586d219d9ac98786562a8ca76b5bdd45"
+    },
+    {
+      "path": ".claude/agents/wh-worker.md",
+      "git_blob_sha1": "1f2421402174e9493d01abc55b04d9916117f579",
+      "sha256": "6fa9cf3126875955e93ae6c3bba998537a019d9614ab8f6db6796bee05ab01f9"
+    },
+    {
+      "path": ".claude/commands/wh-board.md",
+      "git_blob_sha1": "300ddf425c286b89df5f4610f0a11555a39fedd4",
+      "sha256": "894bd018a6b596b62b024b0eee8f7bd613cd4fabd7946c16105aff1fec37f5e6"
+    },
+    {
+      "path": ".claude/commands/wh-code.md",
+      "git_blob_sha1": "1e4f0bc1c12f551204959a25bcfa224bc1334c73",
+      "sha256": "e97a90ee56487495626c7dcdd4d20b8d3a3403bbf6b421d4bbc68087c0bacd3e"
+    },
+    {
+      "path": ".claude/commands/wh-delegate.md",
+      "git_blob_sha1": "7b04a3ce3bfaf6b66b6cd23478cb4dee5d44c564",
+      "sha256": "5d5bcd35609a41b3fe5f23bedfa40b8f2c9c4dc3812cf13f397096524d3b6a76"
+    },
+    {
+      "path": ".claude/commands/wh-design.md",
+      "git_blob_sha1": "26ecb757423a40afe44832cab1ac13dda6dfdb3a",
+      "sha256": "2a547b958ded569643e522c426bb10e51f50cc39b532053207d09130e5238e06"
+    },
+    {
+      "path": ".claude/commands/wh-desk.md",
+      "git_blob_sha1": "2c92487cb9e9fe3276803d30369c5810ee973d5a",
+      "sha256": "a9ff6c16567be65b82e5d7efbf139742e43001959c5d8dd2b19bbc33a07305ee"
+    },
+    {
+      "path": ".claude/commands/wh-dispatch.md",
+      "git_blob_sha1": "47ca8ba7e7c9fb759eda22af224715d1c0511603",
+      "sha256": "1836747c8a04b109516cdc71f0da2f52821fda15140308c38aacff1e4d20f17d"
+    },
+    {
+      "path": ".claude/commands/wh-docs.md",
+      "git_blob_sha1": "349e1552085d9704de7668f05d9c4e1e3f95650c",
+      "sha256": "190a676f8a785c1adb352f18722456d5c6bb4073712fc5dbfc83f6ba0bdcb3c8"
+    },
+    {
+      "path": ".claude/commands/wh-handover.md",
+      "git_blob_sha1": "9f7170bbfebb0d89dbf583ad03cd6ca1450e6764",
+      "sha256": "9e1e057a622e0aa05a9fb8ff1c18df91355e1596bbc2c100c9490a50cd8cf711"
+    },
+    {
+      "path": ".claude/commands/wh-land.md",
+      "git_blob_sha1": "348b62efa95a02d5dfa6eb417961b5be876d16cc",
+      "sha256": "037c80bd1112a4138df4df3b9d3dd4c684bcbcc784780f4f6f1a3a047050710b"
+    },
+    {
+      "path": ".claude/commands/wh-review.md",
+      "git_blob_sha1": "dc65a40aeac291fb07a9053e83b4090ed97dc047",
+      "sha256": "c63cfbec9a30f0ed12ddf9014e1c99f74d268320ba83da9e086834d947ce73a3"
+    },
+    {
+      "path": ".claude/commands/wh-verify.md",
+      "git_blob_sha1": "093c40050dffd9ccd963ff1a0663158ddab1ed3f",
+      "sha256": "af3e86e2c5adde9b3b7c121e91357a247b9f2e20791dbdc54e0b5281860b6666"
+    },
+    {
+      "path": "LICENSE",
+      "git_blob_sha1": "6d8cea430e21d06532225018850da91a3f44abf5",
+      "sha256": "57fb42fbcd0b037ce528ed8f72f1ec095d67bc6825ecf1448ff39be1fe68a4b4"
+    },
+    {
+      "path": "docs/content/docs/manual/sessions-and-agents.md",
+      "git_blob_sha1": "d227972363a34bf76bcbece331f9a4777e8ed715",
+      "sha256": "7e21842661b88f99357e08feab31fbd0b42d6a6079c7af26e44a3a4bda3c10e5"
+    }
+  ],
+  "historical_only_paths": [
+    ".agents/worker.md"
+  ],
+  "removal_candidates": [
+    ".agents/code.md",
+    ".agents/design.md",
+    ".agents/desk.md",
+    ".agents/dispatch.md",
+    ".agents/docs.md",
+    ".agents/helper.md",
+    ".agents/review.md",
+    ".agents/verify.md",
+    ".claude/agents/wh-design.md",
+    ".claude/agents/wh-docs-reviewer.md",
+    ".claude/agents/wh-docs.md",
+    ".claude/agents/wh-helper-edit.md",
+    ".claude/agents/wh-helper.md",
+    ".claude/agents/wh-platform.md",
+    ".claude/agents/wh-reviewer.md",
+    ".claude/agents/wh-runtime.md",
+    ".claude/agents/wh-verify.md",
+    ".claude/agents/wh-worker.md",
+    ".claude/commands/wh-board.md",
+    ".claude/commands/wh-code.md",
+    ".claude/commands/wh-delegate.md",
+    ".claude/commands/wh-design.md",
+    ".claude/commands/wh-desk.md",
+    ".claude/commands/wh-dispatch.md",
+    ".claude/commands/wh-docs.md",
+    ".claude/commands/wh-handover.md",
+    ".claude/commands/wh-land.md",
+    ".claude/commands/wh-review.md",
+    ".claude/commands/wh-verify.md"
+  ],
+  "retained_in_both": [
+    "LICENSE"
+  ],
+  "section_edit_only": [
+    "docs/content/docs/manual/sessions-and-agents.md"
+  ],
+  "verification": {
+    "source_commit": "c6bbb7bcd903ea3027285baa9237f4ad179a9bb7",
+    "extracted_commit": "1c784080bc0dee2060066aaf2dbc8f3894dc430d",
+    "tip_files": 31,
+    "retained_commits": 69,
+    "historical_paths": 32,
+    "blob_match": true,
+    "all_history_trees_allowlisted": true
+  },
+  "scans": [
+    {
+      "scan": "history",
+      "exit_code": 0,
+      "no_leaks_found": true,
+      "module": "github.com/zricethezav/gitleaks/v8@v8.30.1"
+    },
+    {
+      "scan": "tree",
+      "exit_code": 0,
+      "no_leaks_found": true,
+      "module": "github.com/zricethezav/gitleaks/v8@v8.30.1"
+    },
+    {
+      "scan": "messages",
+      "exit_code": 0,
+      "no_leaks_found": true,
+      "module": "github.com/zricethezav/gitleaks/v8@v8.30.1"
+    }
+  ]
+}
