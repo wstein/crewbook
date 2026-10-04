@@ -20,9 +20,9 @@ The union of entrypoints and resources defines the required package contents;
 
 `host_dependencies` names external prerequisites, each with `name`, `scope`
 and `status`. They are descriptions, not install commands or authorization to
-run anything. Later inventory work (#6) can consume this format and add its
-inventory as a resource without duplicating the root resolver. The package
-checker (#5) is separate; this manifest does not execute validation or tools.
+run anything. The maintained Go checker validates the layout and complete content
+inventory without executing instructions. Full profile/reference checks and CI
+remain tracked in #5; provenance documentation completion remains in #6.
 
 The trusted launcher supplies `CREWBOOK_ROOT`, an absolute canonical path to an
 installed or externally mounted copy of this package. This is a launcher
@@ -39,8 +39,8 @@ and host scripts remain target resources. The `.agents/` and `.claude/` paths
 listed here are package resources. A target's unrelated `.agents` must never
 substitute for packaged prompts. Portable roles use the explicit [project configuration](docs/project-config.md)
 and [team manual](docs/team.md). The [execution contract](docs/team.md#coordinator-and-leaf-execution-contract)
-separates designated coordinators from directly executing leaves. Inventory
-remains separate work in #6. All role, profile and command identities use cb-*; the skill
+separates designated coordinators from directly executing leaves. All role,
+profile and command identities use cb-*; the skill
 entrypoint is cb-crewbook. The product/package name remains crewbook.
 
 ## Policy composition
@@ -101,7 +101,7 @@ handoffs and context. Select a complete trusted project configuration:
 ../crewbook-<lane> worktrees; [cb-workharbor](docs/profile-workharbor.md) is a
 clearly labeled example for workharbor's external tools and paths. Generic
 projects supply their own explicit paths, destinations and capabilities.
-Board/check/landing tools are host dependencies, initially workharbor-side;
+Board and landing tools are host dependencies, initially workharbor-side;
 none is shipped here. Missing host capability
 means report the affected workflow as unavailable; do not fetch a substitute
 from the package or provision infrastructure implicitly.
@@ -109,8 +109,64 @@ from the package or provision infrastructure implicitly.
 Documentation is root README plus docs/*.md in GitHub-flavored Markdown,
 without Hugo frontmatter, shortcodes or toolchain. Native client loading (#241)
 and platform doctor (#242) are historical workharbor work items, not measured
-capabilities here. Package checker/CI (#5) and exact inventory (#6) remain
-separate; the manifest and configuration contract preserve their inputs.
+capabilities here. Full content checks/CI (#5) and provenance completion (#6)
+remain separate; the Go maintenance foundation preserves their inputs.
+
+## Go maintenance
+
+Maintainers use Go 1.27 or newer on Linux or macOS, with only the standard
+library. Maintenance code is excluded from the distributed text artifact.
+From the source checkout, use a canonical absolute source path:
+
+```sh
+go run ./cmd/crewbook-package check --root /absolute/path/crewbook
+go run ./cmd/crewbook-package inventory --root /absolute/path/crewbook
+go run ./cmd/crewbook-package update --root /absolute/path/crewbook
+go run ./cmd/crewbook-package export --root /absolute/path/crewbook --dest /absolute/path/new-text-package
+go test ./...
+go vet ./...
+go build -trimpath -buildvcs=false -o /tmp/crewbook-package ./cmd/crewbook-package
+```
+
+Use a fixed Go patch version and `CGO_ENABLED=0` for reproducible optional
+binary builds. No binary is needed by agents. `check` verifies source inventory
+and required layout resources; full frontmatter, reference and helper-permission
+checks are forthcoming under #5, not claimed by this command.
+
+`tools/package-policy.json` explicitly enumerates all distributed files,
+including dot-directories and provenance. It excludes maintenance paths
+(`.git/`, `.github/`, `tools/`, `cmd/`, `internal/`, Go module files).
+Unknown distributed files or directories, missing files, unsafe permissions,
+links, path aliases, invalid UTF-8/NUL content and size-limit violations fail.
+Review layout/policy changes before `update`; commit `tools/package.sha256`
+with the changed sources. `update` intentionally accepts reviewed content
+changes; it is not a tamper check. `check` and `export` compare saved digests.
+Export uses validated in-memory file bytes, preserving content deterministically,
+and requires a new destination; it includes no maintenance tooling.
+
+Inventory encoding is sorted ASCII
+`<lowercase SHA-256><two spaces><relative POSIX path><LF>`, including the
+final LF. `workharbor.json`, when present, is separately hashed and excluded
+from these lines. There is no self-hashed inventory file in the artifact.
+
+`runtime-check --root … --pin /external/pin.json --provider /external/provider.json`
+requires the v1 `workharbor.json` and a trusted external six-field pin:
+`identity`, `source`, `commit`, `manifest_sha256`, `inventory_sha256`,
+`contract_version`. The provider JSON has `bindings` (exact `name`, `version`,
+`model`, `effort` objects) and `project_inputs` (confirmed identifiers).
+These are independently supplied support assertions, not evidence generated by
+the package. Production Claude's name is `claude-code`; its version is the
+exact opaque native CLI version, never an adapter protocol integer.
+This offline command checks assertions; it does not measure a live client.
+`lock --root … --source … --commit <40-hex> --provider /external/provider.json`
+prints a candidate six-field pin only after the same checks; independent review
+must approve it before use.
+
+No approved native version/model/effort production tuple exists yet. Accordingly
+this source contains no `workharbor.json` or fabricated production adapters.
+Source checks and text export can pass honestly; `runtime-check` and `lock`
+fail clearly on the missing manifest. Native loading and runtime compatibility
+remain unverified, awaiting measured provider support.
 
 ## Install, pin, update, uninstall
 
