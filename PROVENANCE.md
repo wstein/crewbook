@@ -38,8 +38,9 @@ the source repository or its history.
 [commit-map.txt](docs/provenance/commit-map.txt) preserves all 69 nonzero
 old-to-new commit mappings plus the source tip's all-zero mapping. The original
 filter map also contained 1,119 other discarded source commits mapping to the
-all-zero ID; those unrelated rows are intentionally omitted. Filtering removed unrelated tree contents/history and
-therefore rewrote commit IDs and parent relationships. It retained authorship,
+all-zero ID; those unrelated rows are intentionally omitted. Filtering removed
+unrelated tree contents/history and therefore rewrote commit IDs and parent
+relationships. It retained authorship,
 commit attribution and selected blob contents. The source tip itself was
 pruned because it added no selected content. The retained source commit
 `52223a0f935f7364f54a82d69af894a579f2424f` maps to the raw import tip, whose
@@ -82,13 +83,21 @@ These ordinary crewbook commits are distinct from the unmodified raw import:
 
 | Commit | Transformation |
 | --- | --- |
-| `e938625231124a7263dd29c87ba7abbe5a1284d7` (#1) | Added README, SKILL and crewbook.json; routed package resources through trusted CREWBOOK_ROOT; relocated the manual. |
-| `199d67f5ed38aaf55eb93d83b2c7cab5967b3f12` (#2) | Added project-policy composition, precedence and missing-input prerequisites. |
-| `6a098460d72b91e61357c59bf72d5f5c198cac57` (#3) | Renamed active roles/profiles/commands to cb-*; made team/configuration guidance portable; separated crewbook/workharbor example profiles; replaced Hugo with GFM. |
-| `c6cee7503033fb68f0b935f597ecdf7981acb1b3` (#4) | Separated coordinator starts from direct leaf execution and recorded single lifecycle ownership. |
+| `7e4f1e1f405cc97c7f7483d2067e23036397abb1` (#1) | Added README, SKILL and crewbook.json; routed package resources through trusted CREWBOOK_ROOT; relocated the manual. |
+| `feac649c3571bd659f83b719743fc0de6878260f` (#2) | Added project-policy composition, precedence and missing-input prerequisites. |
+| `4a34cb0a0216327fb8c28e988e25e3dfd5e08ec2` (#3) | Renamed active roles/profiles/commands to cb-*; made team/configuration guidance portable; separated crewbook/workharbor example profiles; replaced Hugo with GFM. |
+| `6991fae2e3e35e00f5b6fd9283004c476a487c8d` (#4) | Separated coordinator starts from direct leaf execution and recorded single lifecycle ownership. |
+| `a632d67cbefc888a2d9d6e2464bc4dbcb313b3da` (#6) | Recorded original extraction paths, blobs/digests, retained commit mappings and removal boundary. |
+| `403b924dc99f36695c7f99f9127850c7046cd0be` and `f6aadff623cf3e9c567b417951592ed970d1d849` (#8) | Added standard-library Go inventory/export primitives and maintenance CLI; declared the current distribution set and its generated inventory. Maintenance code remains outside the text artifact. |
 
-#6 adds these provenance records and, in a separate change, deterministic
-distribution metadata/maintenance export and the coordinated consumer schema.
+The first five post-import commits were rebased to use Werner's verified Git
+author/committer identity. Their file contents and messages were preserved;
+the table names the current local-history IDs. This maintenance rebase is
+separate from the original filter-repo rewrite: the raw import revision,
+selected blobs and extraction commit map were not changed.
+
+#6 completes the provenance narrative and, in a separate change, distribution
+verification and the coordinated consumer schema documentation.
 Later edits are recorded in crewbook Git history and their issue references;
 the original selection/map remain historical evidence. The distribution
 inventory records current bytes independently, including changed and added
