@@ -45,13 +45,5 @@
     "docs/provenance/original-import.json",
     "docs/team.md"
   ],
-  "maintenance": [
-    ".git/",
-    ".github/",
-    "tools/",
-    "cmd/",
-    "internal/",
-    "go.mod",
-    "go.sum"
-  ]
+  "maintenance": []
 }

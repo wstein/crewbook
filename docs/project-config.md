@@ -61,18 +61,18 @@ remain cb-* in either project.
 demonstrate separate destinations. Inventory (#6) and checker/CI (#5) may
 consume this contract later without introducing executable manifest fields.
 
-## Forthcoming inventory consumer (#6)
+## Inventory consumer (#6)
 
-The proposed separate workharbor.json contract v1 leaves crewbook.json's layout
-unchanged. Its proposed fields are contract_version, identity, entrypoint,
-required_project_inputs, adapters[{name,version,model,effort}] and
-files[{path,sha256}]. #6 owns implementation and exact distributed inventory,
-including dot-directories; the manifest's own hash is separate.
+The [distribution contract](distribution.md) records the agreed separate
+workharbor.json v1 schema, exact inventory encoding and external six-field pin.
+The Go maintenance CLI validates current text exports including dot-directories;
+it does not supply project configuration or native support. A future manifest's
+required_project_inputs names unique bounded identifiers that the trusted
+project-input provider must independently confirm. The table above defines
+configuration meanings, not a claim that any provider confirms those inputs.
 
-The proposed inventory uses bytewise ASCII path order and hashes concatenated
-records of '<lowercase sha256>  <relativePOSIXpath>\n' (the final \n denotes
-one newline byte). Reject backslashes, control characters and non-ASCII paths.
-An external lock records the full commit and manifest/inventory digests; the
-proposed mount path is /skills/<inventorysha>. These are coordination inputs
-for #6, not a shipped manifest, digest, lock or loader. This package's paths
-remain relative to the trusted CREWBOOK_ROOT, compatible with that mount choice.
+Production version/model/effort bindings remain blocked on workharbor #283's
+runtime stage. No workharbor.json, approved runtime pin or loadable default is
+shipped. The current inventory/export is content-only; package paths remain
+relative to trusted CREWBOOK_ROOT, compatible with the agreed future mount path
+/skills/<inventory_sha256>.

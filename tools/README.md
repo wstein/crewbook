@@ -30,10 +30,16 @@ resource and helper-permission checks and the approved six-part CI baseline
 and verify `gofmt -l cmd internal` is empty; it must not run agent instructions.
 No CI baseline or native-settings change is implemented in #8.
 
-#6 resumes provenance narrative and acceptance criteria, using
-`tools/package-policy.json` and `tools/package.sha256`; it does not create a
-second validator. Keep policy, resource declarations, changed content and
-generated inventory in the same commit. The inventory itself remains
+#6 documents provenance and the agreed consumer contract in
+[PROVENANCE.md](../PROVENANCE.md) and [docs/distribution.md](../docs/distribution.md),
+using this Go implementation rather than a second validator. Source checks use
+`tools/package-policy.json`; staged exports use `tools/export-policy.json`,
+whose distributed set is identical but whose maintenance exclusions are empty.
+Supply the latter and `tools/package.sha256` from outside the staged export
+for exact missing/extra/tampered checks. Keep both policies, resource declarations,
+changed content and generated inventory in the same commit. Use only `update`'s
+fixed default inventory destination; custom update destinations await the #8
+overwrite-protection fix and independent review. The inventory itself remains
 maintenance metadata outside the exported package to avoid self-hashing.
 The original extraction evidence is unchanged; the abandoned Python maintenance
 draft was archived outside the source checkout and never validated or executed.
@@ -41,4 +47,5 @@ draft was archived outside the source checkout and never validated or executed.
 Provider JSON and operator pins are external trusted inputs, not distributed
 self-attestations. The current source has no production `workharbor.json`.
 The synthetic binding in tests is fixture data only. Native-client measurement,
-live loading and independent package review remain required.
+live loading and independent package review remain required. Passing source
+or export checks must not be reported as a loadable production default.
