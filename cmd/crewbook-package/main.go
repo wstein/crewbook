@@ -97,6 +97,9 @@ func run(arguments []string, output, diagnostics io.Writer) error {
 			}
 			return packagefmt.Export(snapshot, *destination)
 		}
+		if err = packagefmt.CheckContent(snapshot); err != nil {
+			return err
+		}
 		fmt.Fprintln(diagnostics, "source content and inventory valid; runtime compatibility not established")
 		return nil
 	case "runtime-check", "lock":

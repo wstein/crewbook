@@ -29,7 +29,7 @@ separates current content integrity from pending runtime compatibility.
 
 The trusted launcher supplies `CREWBOOK_ROOT`, an absolute canonical path to an
 installed or externally mounted copy of this package. This is a launcher
-binding in invocation context; `${CREWBOOK_ROOT}/…` in prompts is path notation,
+binding in invocation context; paths beneath `${CREWBOOK_ROOT}` in prompts use path notation,
 not automatic Markdown or shell interpolation. Resolve each manifest path by
 joining it to that root, verify containment and all required files before
 invocation, then supply resolved absolute paths when the client cannot expand

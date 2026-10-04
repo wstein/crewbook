@@ -26,7 +26,7 @@ func sourceFixture(t *testing.T) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for name, data := range map[string][]byte{"crewbook.json": []byte(layout), "LICENSE": []byte("licence\n"), "SKILL.md": []byte("fixture instructions are never executed\n"), "tools/package-policy.json": content} {
+	for name, data := range map[string][]byte{"crewbook.json": []byte(layout), "LICENSE": []byte("licence\n"), "SKILL.md": []byte("---\nname: cb-crewbook\ndescription: offline fixture\n---\nfixture instructions are never executed\n"), "tools/package-policy.json": content} {
 		if err = os.WriteFile(filepath.Join(root, name), data, 0644); err != nil {
 			t.Fatal(err)
 		}

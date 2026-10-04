@@ -37,14 +37,14 @@ func TestStagedExportInventory(t *testing.T) {
 	if err = json.Unmarshal(layoutBytes, &layout); err != nil {
 		t.Fatal(err)
 	}
-	layout.Entrypoints.Roles = []string{".agents/role.md"}
-	layout.Entrypoints.ClaudeAgents = []string{".claude/agents/profile.md"}
+	layout.Entrypoints.Roles = []string{".agents/cb-helper.md"}
+	layout.Entrypoints.ClaudeCommands = []string{".claude/commands/cb-delegate.md"}
 	layoutBytes, err = json.Marshal(layout)
 	if err != nil {
 		t.Fatal(err)
 	}
 	policy := packagefmt.Policy{Version: 1, Distributed: []string{
-		".agents/role.md", ".claude/agents/profile.md", "LICENSE", "SKILL.md", "crewbook.json",
+		".agents/cb-helper.md", ".claude/commands/cb-delegate.md", "LICENSE", "SKILL.md", "crewbook.json",
 	}, Maintenance: []string{"tools/"}}
 	policyBytes, err := json.Marshal(policy)
 	if err != nil {
@@ -57,12 +57,12 @@ func TestStagedExportInventory(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, data := range map[string][]byte{
-		"crewbook.json":              layoutBytes,
-		".agents/role.md":            []byte("fixture role text\n"),
-		".claude/agents/profile.md":  []byte("fixture profile text\n"),
-		"tools/package-policy.json":  policyBytes,
-		"tools/export-policy.json":   exportPolicyBytes,
-		"tools/maintenance-only.txt": []byte("must not be distributed\n"),
+		"crewbook.json":                   layoutBytes,
+		".agents/cb-helper.md":            []byte("# cb-helper\nfixture role text\n"),
+		".claude/commands/cb-delegate.md": []byte("---\ndescription: offline command fixture\n---\nRead ${CREWBOOK_ROOT}/.agents/cb-helper.md\n"),
+		"tools/package-policy.json":       policyBytes,
+		"tools/export-policy.json":        exportPolicyBytes,
+		"tools/maintenance-only.txt":      []byte("must not be distributed\n"),
 	} {
 		filename := filepath.Join(root, filepath.FromSlash(name))
 		if err = os.MkdirAll(filepath.Dir(filename), 0755); err != nil {
@@ -142,7 +142,7 @@ func TestStagedExportInventory(t *testing.T) {
 		mutate func(string) error
 	}{
 		{"missing-dot-resource", func(directory string) error {
-			return os.Remove(filepath.Join(directory, ".agents/role.md"))
+			return os.Remove(filepath.Join(directory, ".agents/cb-helper.md"))
 		}},
 		{"unexpected-dot-resource", func(directory string) error {
 			return os.WriteFile(filepath.Join(directory, ".extra"), []byte("extra\n"), 0644)

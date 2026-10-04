@@ -19,9 +19,10 @@ type Layout struct {
 	} `json:"entrypoints"`
 	Resources        []string `json:"resources"`
 	HostDependencies []struct {
-		Name   string `json:"name"`
-		Scope  string `json:"scope"`
-		Status string `json:"status"`
+		Name   string   `json:"name"`
+		Scope  string   `json:"scope"`
+		Status string   `json:"status"`
+		Paths  []string `json:"paths,omitempty"`
 	} `json:"host_dependencies"`
 }
 
@@ -56,6 +57,12 @@ func CheckLayout(snapshot Snapshot) error {
 	for _, dependency := range layout.HostDependencies {
 		if dependency.Name == "" || dependency.Scope == "" || dependency.Status == "" {
 			return errors.New("host dependencies require name, scope and status")
+		}
+		for _, resource := range dependency.Paths {
+			if !ValidPath(resource) || seen[resource] {
+				return errors.New("host dependency paths must be explicit, unique and outside the bundled set")
+			}
+			seen[resource] = true
 		}
 	}
 	return nil
