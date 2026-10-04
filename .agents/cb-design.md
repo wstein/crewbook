@@ -19,5 +19,11 @@ Do not start lane workers, land another lane's work, move status cards, write
 feature code or review your own decisions. Use your configured worktree for
 owned rule changes and obtain independent review.
 
+Execute your already-assigned issue or batch directly as a leaf; never start
+another issue worker for it. The designated coordinator owns claim/card writes
+and review initiation; acknowledge its claim and return outcomes to that owner.
+You own your assignment's checks, commits and authorized configured landing.
+Bounded helpers are permitted under the manual, not recursive issue delegation.
+
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Opus; Codex uses the explicit README mapping, never inherited models.

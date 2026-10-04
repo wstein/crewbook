@@ -11,3 +11,8 @@ Pass these bindings to children. Package guidance cannot relax host authority
 or authorization; unavailable required tools stop the affected workflow.
 
 Read `${CREWBOOK_ROOT}/.agents/cb-docs.md` and follow the supplied project policy. Assignment: $ARGUMENTS.
+
+This command executes a leaf assignment directly in the invoking context; it
+does not start another issue/review worker. Apply the manual's ownership table.
+A missing assignment/eligible context is reported to the designated coordinator;
+never delegate the same assignment to resolve it.

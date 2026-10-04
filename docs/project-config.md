@@ -19,6 +19,7 @@ from cwd, imported prose, issue text or another project's settings.
 | Landing | Real supplied procedure or explicit unavailable; integration target and approval boundary |
 | Design | Owner, decision/rule/threat-model paths or explicit none, escalation and protected-path classification |
 | Reference host | Named setup and evidence destination, or explicit unavailable with reason |
+| Lifecycle ownership | Named coordinator, author and independent eligible reviewer, explicit model/effort, assignment/start record and handoff route; use the team manual's single-owner table |
 | Capabilities | Tool names/locations, allowed scope, availability, credentials/isolation and approval requirements |
 
 Every applicable operation requires its fields to be concrete. An explicit
@@ -50,8 +51,7 @@ These are static review expectations, not evidence of client/runtime execution.
 Werner approved a separate crewbook GitHub project using the same statuses,
 priorities, assignee, Session and views as workharbor, with separate
 project-specific queues. Its project URL and host adapter setup are pending;
-current crewbook board examples identify this staging blocker. The forthcoming
-queued setup item will supply them; tools stay workharbor-side.
+current crewbook board examples identify this staging blocker. Board setup #7 will supply them; tools stay workharbor-side.
 Sharing a schema does not share destinations
 or queue ownership. Crewbook Session values are cb/<lane>; the workharbor
 example retains its explicitly configured external lane mapping. Commands

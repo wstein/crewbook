@@ -11,4 +11,8 @@ Resolve target paths against the supplied target root, never cwd discovery.
 Pass these bindings to children. Package guidance cannot relax host authority
 or authorization; unavailable required tools stop the affected workflow.
 
-Read `${CREWBOOK_ROOT}/.agents/cb-code.md` and follow the supplied project policy. Assignment: $ARGUMENTS. The named area selects a configured lane; if no issue is supplied, request an assignment from cb-design and wait.
+Read `${CREWBOOK_ROOT}/.agents/cb-code.md` and follow the supplied project policy. Assignment: $ARGUMENTS. The named area selects a configured lane; if no issue is supplied, request an assignment from the designated coordinator and wait.
+
+This command executes a leaf assignment directly; it starts no issue worker.
+Apply the manual's ownership table and report missing assignment/context to
+the designated coordinator instead of re-delegating.

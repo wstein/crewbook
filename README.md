@@ -38,8 +38,9 @@ Target `AGENTS.md`, repository configuration, worktrees, issues, design files
 and host scripts remain target resources. The `.agents/` and `.claude/` paths
 listed here are package resources. A target's unrelated `.agents` must never
 substitute for packaged prompts. Portable roles use the explicit [project configuration](docs/project-config.md)
-and [team manual](docs/team.md). Lifecycle and inventory remain separate work
-in #4 and #6. All role, profile and command identities use cb-*; the skill
+and [team manual](docs/team.md). The [execution contract](docs/team.md#coordinator-and-leaf-execution-contract)
+separates designated coordinators from directly executing leaves. Inventory
+remains separate work in #6. All role, profile and command identities use cb-*; the skill
 entrypoint is cb-crewbook. The product/package name remains crewbook.
 
 ## Policy composition
@@ -88,6 +89,11 @@ current Hard rules remain in its own project policy, not in this package.
 - **workharbor:** mounted provisioning, root propagation and enforcement are
   **conceptual/unverified**, tracked in historical workharbor integration issue #283. This package supplies
   no enforcement, installation script, tool permissions or runtime adapter.
+
+Public issue/review profiles and direct role commands execute as leaves, never
+re-delegating their assignment. Only cb-dispatch or an explicitly designated
+session coordinator starts those workers; cb-desk routes unless designated in
+its place. The manual defines single ownership and a counted lifecycle example.
 
 The [team manual](docs/team.md) covers roles, delegation, independent review,
 handoffs and context. Select a complete trusted project configuration:

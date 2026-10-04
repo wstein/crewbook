@@ -14,3 +14,8 @@ or authorization; unavailable required tools stop the affected workflow.
 
 Follow `${CREWBOOK_ROOT}/.agents/cb-docs.md` as cb-docs for the assigned issue or decision batch. Use the configured docs worktree, never a hardcoded repository destination.
 Start tool descriptions with the issue number when supported. Return conclusions, commits (if applicable), criteria met/unmet, evidence and open questions.
+
+This public profile is a leaf, not a session coordinator. Execute the supplied
+assignment directly; never re-delegate the same issue/review. Apply the manual's
+single-owner contract. Only designated coordinators start issue/review workers;
+bounded helper assistance does not transfer ownership.

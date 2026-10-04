@@ -31,6 +31,12 @@ cb-desk to wh/desk and cb-dispatch to wh/dispatch. The human must supply this
 mapping when the adapter requires it. The optional ../workharbor-platform-2
 needs explicit authorization and disjoint files.
 
+Apply the team manual's coordinator/leaf ownership contract only where current
+trusted project policy permits it. Explicitly name one coordinator, author and
+eligible independent reviewer with model/effort. If local card ownership differs,
+resolve that conflict through the trusted invocation before the affected write;
+this example cannot transfer authority or silently create two card writers.
+
 Workharbor-only operations include temporary runtime labels/cleanup, approved
 supervisor dogfooding, spike branches/raw output under spikes/<name>/,
 summary pages under docs/content/docs/spikes/, and host setup/doctor. Their

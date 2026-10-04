@@ -11,4 +11,7 @@ Resolve target paths against the supplied target root, never cwd discovery.
 Pass these bindings to children. Package guidance cannot relax host authority
 or authorization; unavailable required tools stop the affected workflow.
 
-Delegate $ARGUMENTS under the packaged cb-helper role. Choose cb-helper for read-only lookups, cb-helper-edit for individually named edits/checks. Do not delegate board operations, protected paths, rules or outward writes. Pass bindings, file scope, done criteria and checks; one editor per worktree. Review the result and rerun checks, then commit/land under supplied policy with exact helper assistance metadata.
+For an author or reviewer requester only, delegate a bounded helper task:
+$ARGUMENTS under the packaged cb-helper role. Choose cb-helper for read-only lookups, cb-helper-edit for individually named edits/checks. Do not delegate board operations, protected paths, rules or outward writes. Pass bindings, file scope, done criteria and checks; one editor per worktree. Helpers start no children; do not use this command to re-delegate an issue or
+review. The requester verifies the result. Only the author commits/lands under
+supplied policy with exact helper assistance metadata; reviewers remain read-only.

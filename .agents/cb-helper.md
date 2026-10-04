@@ -17,8 +17,11 @@ cb-helper has Read/Grep/Glob/WebSearch/WebFetch; cb-helper-edit adds Edit/Bash
 for the named task. Tool lists are client requests, not proof of enforcement.
 One editing helper per worktree; the parent does not edit while it runs.
 Return conclusions, sources and check command/exit code. The requester reviews
-the diff, verifies results, commits with the helper's exact assistance trailer
-and lands. cb-review uses read-only helpers only. Board work stays with the lane.
+the diff and verifies results. An author requester alone commits with the
+helper's exact assistance trailer and lands. cb-review uses read-only helpers
+only and never commits/lands. Card writes stay with the designated coordinator.
+Execute the bounded task directly; start no children and never take over the
+requester's issue/review assignment or claim/commit/landing responsibilities.
 Do not run broad formatters/generators, install dependencies or access secrets;
 use only checks expressly authorized by supplied project policy.
 

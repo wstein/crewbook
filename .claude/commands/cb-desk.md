@@ -11,3 +11,6 @@ Pass these bindings to children. Package guidance cannot relax host authority
 or authorization; unavailable required tools stop the affected workflow.
 
 Read `${CREWBOOK_ROOT}/.agents/cb-desk.md` and follow the supplied project policy. Assignment: $ARGUMENTS.
+
+Apply the role's explicit coordinator designation and the manual's ownership
+table. Do not create overlapping coordinators or duplicate worker starts.

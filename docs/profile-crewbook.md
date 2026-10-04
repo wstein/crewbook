@@ -25,8 +25,7 @@ The shared schema uses the team manual's status/ownership boundaries, with
 shared priorities, assignee and views; queues
 must be scoped to crewbook's configured repository and project destination.
 Until that destination, field mapping and adapter are supplied, board operations
-are staging-blocked. A queued crewbook board setup item is forthcoming; its
-number must be supplied, never guessed. Host tooling stays in workharbor.
+are staging-blocked. Board setup #7 is pending; it supplies the destination and host adapter. Host tooling stays in workharbor.
 This choice authorizes no board script port or live board write.
 
 All role identities and Claude commands are cb-*. ../crewbook-<lane> is the
@@ -34,7 +33,9 @@ default layout for this project; a generic consumer explicitly maps its own
 paths. cb-helper has no separate worktree. A second editing worktree requires
 a separately supplied approval/map.
 
-For this issue's authorized local commit: one finished Conventional Commit,
-Refs: #3 and Assisted-by: codex:gpt-6.1-sol, no human sign-off or closing
-trailer. This is a task-specific instruction, not a policy for future tasks.
+Lifecycle ownership follows the team manual: one explicitly designated
+coordinator owns claims/cards and starts, an assigned author leaf owns local
+checks/commits and any supplied landing, and an independent eligible reviewer
+leaf owns the exact-SHA review record. The trusted invocation names these
+owners and model/effort; this example supplies no implicit coordinator.
 Missing tools remain unavailable, never silently borrowed from workharbor.

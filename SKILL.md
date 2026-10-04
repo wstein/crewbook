@@ -40,3 +40,10 @@ at `${CREWBOOK_ROOT}/docs/project-config.md`. The operator explicitly selects
 cb-crewbook, cb-workharbor or a complete generic project configuration.
 No profile authorizes provisioning, unavailable host tools or wider scope.
 Loading text does not enforce policy or establish runtime support.
+
+Select invocation mode explicitly: cb-dispatch or a trusted designated session
+coordinator starts workers; cb-desk routes unless designated in its place.
+All issue/review profiles and their direct commands are leaf execution
+entrypoints. Already-started leaves execute directly, never re-delegating the
+same assignment. Use the team manual's single-owner table and lifecycle check;
+this distinction grants no policy or tool authority.

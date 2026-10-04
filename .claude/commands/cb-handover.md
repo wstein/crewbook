@@ -11,3 +11,6 @@ Pass these bindings to children. Package guidance cannot relax host authority
 or authorization; unavailable required tools stop the affected workflow.
 
 Write a read-only handoff for the configured human: local commits relative to the configured remote/integration branch, issue trailers, exact reviewed SHAs, criteria met/unmet, blockers and unverified claims. Read only configured destinations and respect shared-checkout restrictions. Do not fetch or write implicitly. Missing review evidence means not ready; never push.
+
+Include the named coordinator, author and independent reviewer, confirmed start
+and ownership records, and whether landing/card operations were unavailable.

@@ -18,5 +18,11 @@ passed, failed and skipped checks separately. A verified claim names evidence;
 contradictions affecting decisions go to cb-design. Never use human credential
 stores or provision infrastructure implicitly.
 
+Execute your already-assigned issue or batch directly as a leaf; never start
+another issue worker for it. The designated coordinator owns claim/card writes
+and review initiation; acknowledge its claim and return outcomes to that owner.
+You own your assignment's checks, commits and authorized configured landing.
+Bounded helpers are permitted under the manual, not recursive issue delegation.
+
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Sonnet; Codex uses the explicit README mapping, never inherited models.
