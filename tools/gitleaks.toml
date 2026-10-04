@@ -1,0 +1,4 @@
+title = "crewbook maintenance: upstream default rules, no allowlists"
+
+[extend]
+useDefault = true
