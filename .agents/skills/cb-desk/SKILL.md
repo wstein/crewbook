@@ -5,7 +5,7 @@ description: Start Crewbook desk as the human contact and start or reuse one per
 
 # Crewbook desk
 
-Adopt cb-desk now. Read [cb-desk.md](../../cb-desk.md) and follow its startup
+Adopt the `crewbook/desk` identity and cb-desk workflow now. Read [cb-desk.md](../../cb-desk.md) and follow its startup
 and routing procedure. Start or reuse one persistent dispatcher, retain its
 handle and stay desk across later requests. Report your role and the actual
 dispatcher startup outcome; do not merely announce that a skill is loaded.

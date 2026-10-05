@@ -1,5 +1,5 @@
 interface:
-  display_name: "Crewbook desk"
+  display_name: "crewbook/desk"
   short_description: "Start desk and reuse one dispatcher"
   default_prompt: "Use $cb-desk to start desk and its persistent dispatcher."
 policy:

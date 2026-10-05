@@ -1,5 +1,5 @@
 ---
-name: cb-crewbook
+name: crewbook
 description: Start Crewbook desk and its persistent dispatcher when explicitly invoked; otherwise apply repository coding, review, documentation and verification guidance.
 ---
 
@@ -11,15 +11,15 @@ local work needs no launcher, named profile, board, or team setup.
 
 ## Explicit invocation starts desk
 
-When the user invokes `$cb-crewbook`, adopt cb-desk immediately unless they
+When the user invokes `$crewbook`, adopt cb-desk immediately unless they
 explicitly select another Crewbook role or ask only to inspect the skill.
 Read [.agents/cb-desk.md](.agents/cb-desk.md) and its necessary references,
 then start or reuse its one persistent dispatcher using available subagent
 tools. Pin the dispatch child to Sonnet in Claude, or `gpt-6.1-sol` with
 low reasoning effort in Codex; set these explicitly when starting it. Retain
 the same child handle across requests and resume it when idle. A bare invocation is a desk startup request, not a request to load
-instructions and wait for another activation command. State that you are
-cb-desk and report the dispatcher startup outcome, including actual tool
+instructions and wait for another activation command. Identify the desk session as
+`crewbook/desk` (the cb-desk workflow) and report the dispatcher startup outcome, including actual tool
 limits. Do not stop at “loaded”, “ready for your task” or a generic repository
 collaborator identity. Keep desk active across later questions and requests.
 
@@ -30,7 +30,7 @@ A quoted transcript, mention of the skill or host-supplied skill text alone
 is not a startup request. Implicit selection for ordinary repository work
 uses the guidance below and does not activate desk or start a dispatcher.
 
-Codex invokes skills with `$`: `$cb-crewbook` starts desk; `$cb-desk` is the
+Codex invokes skills with `$`: `$crewbook` starts desk; `$cb-desk` is the
 optional dedicated skill in [.agents/skills/cb-desk/SKILL.md](.agents/skills/cb-desk/SKILL.md)
 when discovered/installed. `/cb-desk` is a Claude Code command; shipping its
 Markdown file does not register that slash command in Codex.

@@ -42,7 +42,7 @@ substitute for packaged prompts. Portable roles use the explicit [project config
 and [team manual](docs/team.md). The [execution contract](docs/team.md#coordinator-and-leaf-execution-contract)
 separates designated coordinators from directly executing leaves. All role,
 profile and command identities use cb-*; the skill
-entrypoint is cb-crewbook. The product/package name remains crewbook.
+entrypoint is `crewbook`, invoked as `$crewbook`. The product/package name remains crewbook.
 
 ## Policy composition
 
@@ -86,7 +86,8 @@ current Hard rules remain in its own project policy, not in this package.
   **conceptual/unverified**, tracked in historical workharbor integration issue #283. This package supplies
   no enforcement, tool permissions or workharbor runtime adapter.
 
-Explicit `$cb-crewbook` (Codex) or `/cb-desk` (Claude Code) enters cb-desk
+Explicit `$crewbook` (Codex) or `/cb-desk` (Claude Code) enters
+`crewbook/desk` through the canonical cb-desk workflow
 and automatically starts or reuses one pinned cb-dispatch
 subagent. Desk stays the human contact and routes later work through the same
 handle; dispatch owns claims and worker/review starts. The dispatch child is
@@ -167,19 +168,20 @@ unverified until publication and an actual GitHub run.
 
 ## Install, update, uninstall
 
-For Codex, place the package in `~/.codex/skills/cb-crewbook` (or the corresponding
-`$CODEX_HOME/skills` directory). For a local source checkout, use an absolute
+For Codex, install one copy of the skillset in `~/.agents/skills/crewbook`. For a local source checkout, use an absolute
 symlink; keep it outside the target repository's instruction directories:
 
 ```sh
-mkdir -p ~/.codex/skills
-ln -s /absolute/path/crewbook ~/.codex/skills/cb-crewbook
+mkdir -p ~/.agents/skills
+ln -s /absolute/path/crewbook ~/.agents/skills/crewbook
 ```
 
 If that destination already exists, inspect it before replacing anything.
+An existing legacy `cb-crewbook` symlink already points to the renamed skill;
+keep that single installation rather than adding a duplicate.
 Restart Codex or open a new session to refresh discovery. `agents/openai.yaml`
 enables implicit invocation: ordinary repository requests can select Crewbook
-automatically without switching roles. Explicit `$cb-crewbook` starts desk
+automatically without switching roles. Explicit `$crewbook` starts desk
 and its persistent dispatcher; it is not a load-only command. The host's
 loaded skill uses relative links; no launcher or environment variable is
 necessary. Routine coding, review, docs and verification use existing project
@@ -189,7 +191,7 @@ Start Codex from the target repository with eight subagent slots and desk
 activation in one command:
 
 ```sh
-codex -m gpt-6.1-sol -c model_reasoning_effort=low -c agents.max_concurrent_threads_per_session=8 '$cb-crewbook'
+codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_threads_per_session=8 '$crewbook'
 ```
 
 Keep the prompt single-quoted so the shell passes the skill name literally.
@@ -212,7 +214,7 @@ ln -s /absolute/path/crewbook/.agents/skills/cb-desk ~/.agents/skills/cb-desk
 
 Inspect an existing destination before replacing it. Codex skills use `$`;
 `.claude/commands/cb-desk.md` cannot register `/cb-desk` in Codex. The existing
-`$cb-crewbook` installation is sufficient to start desk without the optional
+`$crewbook` installation is sufficient to start desk without the optional
 alias. See [official skill discovery](https://learn.chatgpt.com/docs/build-skills).
 
 A symlink follows local edits; use a reviewed text export in the skill directory
@@ -225,7 +227,7 @@ pin/adapter checks remain a separate integration contract.
 To update a linked checkout, review and validate its changes. For a fixed copy,
 validate a new export before switching registration for new sessions. Keep old
 copies while active sessions use them. To uninstall a linked skill, remove only
-the `cb-crewbook` symlink; retain the source checkout and target project policy.
+the `crewbook` symlink (or its legacy installation name); retain the source checkout and target project policy.
 
 ## Licence and provenance
 
