@@ -217,14 +217,16 @@ def scan(root, policy):
 
     def walk(fd, prefix=''):
         before = os.fstat(fd)
-        # listdir(fd) and all opens/stats are anchored to the opened directory.
+        # scandir(fd) and all opens/stats are anchored to the opened directory.
         # No path-based traversal can follow a replaced parent into another tree.
-        names = os.listdir(fd)
-        require(len(names) <= MAX_ENTRIES, 'filesystem entry limit exceeded')
+        names = []
+        with os.scandir(fd) as entries:
+            for entry in entries:
+                counts[0] += 1
+                require(counts[0] <= MAX_ENTRIES, 'filesystem entry limit exceeded')
+                names.append(entry.name)
         for leaf in sorted(names):
             name = prefix + leaf
-            counts[0] += 1
-            require(counts[0] <= MAX_ENTRIES, 'filesystem entry limit exceeded')
             if excluded(name, policy):
                 continue
             require(valid_path(name), 'invalid path: ' + repr(name))

@@ -196,6 +196,39 @@ class PackageTests(unittest.TestCase):
             with self.assertRaisesRegex(pkg.PackageError, 'directory changed'):
                 self.scan()
 
+    def test_scan_stops_directory_iterator_at_remaining_entry_budget(self):
+        consumed, closed = [], []
+
+        class Entries:
+            def __init__(self, names):
+                self.names = names
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                closed.append(self)
+
+            def __iter__(self):
+                for name in self.names:
+                    consumed.append(name)
+                    entry = mock.Mock()
+                    entry.name = name
+                    yield entry
+
+        root_entries = Entries(['tools', '.agents'])
+        child_entries = Entries('role%04d.md' % i for i in range(1000))
+        with mock.patch.object(pkg, 'MAX_ENTRIES', 3), \
+                mock.patch.object(pkg.os, 'scandir', side_effect=[root_entries, child_entries]) as scan:
+            with self.assertRaisesRegex(pkg.PackageError, 'filesystem entry limit exceeded'):
+                self.scan()
+        # The root reserves two entries, leaving one for the child. Read just
+        # one additional child entry to detect overflow, then close immediately.
+        self.assertEqual(consumed, ['tools', '.agents', 'role0000.md', 'role0001.md'])
+        self.assertEqual(closed, [root_entries, child_entries])
+        self.assertEqual(scan.call_count, 2)
+        self.assertTrue(all(isinstance(call.args[0], int) for call in scan.call_args_list))
+
     def test_invalid_paths_and_inventory_aliases(self):
         for name in ('../escape', '/absolute', 'a//b', 'a/./b', 'a/../b', 'a\\b', 'a.',
                      'a/.GIT/b', 'a/é', 'a/', 'a b', 'a' * 241, ''):
