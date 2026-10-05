@@ -33,6 +33,8 @@ Never borrow workharbor endpoints, credentials, hooks or lane paths.
 ## Dispatch without a supervisor
 
 A request to start dispatch designates the current session as coordinator.
+Invoking cb-desk instead automatically starts/reuses one persistent dispatch
+subagent; desk is the human contact and that subagent is the coordinator.
 Check current assignments and issue claims using available session/forge evidence;
 do not require a separate desk session. Use the invoking session for human
 communication. Route user tasks directly when no issue queue is configured.

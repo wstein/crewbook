@@ -86,6 +86,12 @@ current Hard rules remain in its own project policy, not in this package.
   **conceptual/unverified**, tracked in historical workharbor integration issue #283. This package supplies
   no enforcement, tool permissions or workharbor runtime adapter.
 
+Invoking `/cb-desk` automatically starts or reuses one pinned cb-dispatch
+subagent. Desk stays the human contact and routes later work through the same
+handle; dispatch owns claims and worker/review starts. Idle dispatch yields and
+is resumed by desk. This requires client subagent/resume support and does not
+create a background daemon. See the [team manual](docs/team.md).
+
 Public issue/review profiles and direct role commands execute as leaves, never
 re-delegating their assignment. Only cb-dispatch or an explicitly designated
 session coordinator starts those workers; cb-desk routes unless designated in

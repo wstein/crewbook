@@ -16,6 +16,7 @@
     ],
     "claude_agents": [
       ".claude/agents/cb-design.md",
+      ".claude/agents/cb-dispatch.md",
       ".claude/agents/cb-docs-reviewer.md",
       ".claude/agents/cb-docs.md",
       ".claude/agents/cb-helper-edit.md",

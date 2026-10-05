@@ -9,7 +9,7 @@ It does not install tools or measure native client loading.
 
 | Role | Responsibility | Boundary |
 | --- | --- | --- |
-| [cb-desk](../.agents/cb-desk.md) | Human contact, status, discussion and routing | No code or rule decisions |
+| [cb-desk](../.agents/cb-desk.md) | Human contact; start/reuse one persistent dispatcher and route requests | No duplicate claims/worker starts, code or rule decisions |
 | [cb-dispatch](../.agents/cb-dispatch.md) | Coordinate ranked work, own claims/cards and start pinned workers/reviews | No rules, code or self-review |
 | [cb-design](../.agents/cb-design.md) | Configured decisions, rules, threat model and priority | One owner; consequential decisions go to human |
 | [cb-code](../.agents/cb-code.md) | Implementation in configured cb-platform/cb-runtime areas | No owned-rule edits |
@@ -50,8 +50,10 @@ only the affected workflow, explicitly, without substitute or no-op stubs.
 
 The trusted invocation explicitly names one coordinator for an assignment:
 cb-dispatch, or a designated session coordinator using its routing procedure.
-cb-desk routes to that owner; it starts workers only when explicitly designated
-as the session coordinator in place of cb-dispatch. Never run both for the same
+Invoking cb-desk automatically starts or reuses one persistent cb-dispatch
+subagent with an explicit model/effort and recorded handle. Desk routes to that
+owner and resumes it for follow-up work; it starts issue workers only when
+explicitly replacing dispatch as session coordinator. Never run both for the same
 assignment. Merely loading cb-code, cb-docs, cb-verify, cb-design or cb-review
 does not designate a coordinator. Their public profiles and direct commands
 execute as leaves; already-started authors/reviewers perform their assignment
@@ -86,6 +88,23 @@ blocks board operations, not explicitly authorized local edits. Unavailable
 landing yields a local-commit handoff, explicitly unlanded and not ready.
 If fixes change the SHA, invalidate prior readiness; the coordinator arranges
 a new independent review assignment, never the author or reviewer itself.
+
+## Persistent desk and dispatch
+
+Start desk once as the human contact. It starts a pinned dispatcher once and
+retains its handle. The dispatcher keeps separate repository assignments and
+starts bounded authors/reviewers in fresh contexts. Desk routes user requests
+and handbacks through that same dispatcher, resuming it when idle. An empty
+queue yields without GitHub polling. The client supplies subagent/resume tools;
+these prompts cannot create a background daemon or survive a parent ending.
+If those tools are unavailable, report the limit. Restart only after old
+ownership is resolved, with a concise handoff instead of overlapping starts.
+
+A lifecycle trace is: desk start → dispatcher start → author start → author
+handback → reviewer start → review handback → desk report. A later request
+resumes the same dispatcher. Count one dispatcher start; desk creates no
+second issue claim or author/reviewer start. Applicable host permissions and
+publication gates remain in force throughout.
 
 ## Issue workflow
 

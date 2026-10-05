@@ -13,7 +13,9 @@ The workspace, user task, existing repository instructions and available tools
 supply configuration incrementally. Read AGENTS.md when present; its absence
 is not a blocker. No container, launcher, project board, persistent lane layout,
 reference host or full configuration record is required to start dispatch.
-The invoking session is the coordinator and human contact. Defaults and
+A direct dispatch invocation makes the invoking session coordinator. A desk
+invocation starts/reuses one persistent dispatcher as coordinator while desk
+remains the human contact. Defaults and
 operation-specific inputs are in the [generic profile](profile-generic.md).
 Inspect repository metadata and conventions before asking for facts that can
 be resolved locally. Ask for unresolved destinations or ownership only before
