@@ -77,6 +77,48 @@ validate a new export before switching registration for new sessions. Keep old
 copies while active sessions use them. To uninstall a linked skill, remove only
 the `crewbook` symlink (or its legacy installation name); retain the source checkout and target project policy.
 
+## Shared desired behavior across providers
+
+Claude Code, Codex and Antigravity (`agy`) should follow the same canonical
+[roles and lifecycle](team.md#roles-and-boundaries), subject to actual host
+capabilities and authorized target policy. This is the desired behavior
+contract, not a claim that all three clients currently support it:
+
+- Keep desk and its one dispatcher persistent; use fresh contexts for new
+  work items, design batches and bounded helper/research/verification tasks.
+  Continue the same assignment with its author and independent reviewer.
+- Give the designated coordinator sole claim/card and issue/review-start
+  ownership. Authors and reviewers execute as leaves; research stays read-only,
+  and bounded helpers never inherit issue, review, commit or landing ownership.
+- Select explicit provider-appropriate model and effort bindings at each start,
+  preserving the approved role tiers and review strength. The mappings below
+  apply to Claude/Codex; no Antigravity binding is approved. Do not infer one
+  from another provider's names or silently inherit a model.
+- Review the exact immutable revision independently and follow the target's
+  integration policy. Crewbook's own repository requires reviewed linear
+  fast-forward integration; other targets supply their own policy. Local
+  integration and human push/publication remain separate operations.
+- Track criterion checklists and, when configured and authorized, Kanban status
+  through the same ownership and completion rules. A bounded session assignment
+  needs no issue or board. Handbacks identify revision, checks, criteria,
+  findings and limits under the [reporting contract](team.md#precise-issues-handovers-and-review-reports).
+- Respect actual host tool authority and report unavailable operations honestly.
+  Provider wrappers should stay thin: syntax, discovery, model bindings and
+  capability differences must not create different role responsibilities.
+
+Compatibility requires evidence for the named client and setup. Current Codex
+session observations support only the starts/resumes and ownership outcomes
+actually recorded in [the team evidence](team.md#lifecycle-example-and-walkthrough-check);
+full native discovery and managed compatibility remain untested here. Claude
+native wrapper loading/execution remains untested. Antigravity has no approved
+production entrypoint or role/model/effort binding; its historical measurements
+and current gaps are in the [readiness matrix](antigravity.md).
+[Native portability #9](https://github.com/wstein/crewbook/issues/9) and
+[Antigravity #10](https://github.com/wstein/crewbook/issues/10) retain their
+unmet runtime criteria. [Workharbor integration #20](https://github.com/wstein/crewbook/issues/20)
+is deferred by the user. Static walkthroughs, package checks and this contract
+establish no native enforcement, paid-run result or managed runtime promise.
+
 ## Entrypoints and support
 
 

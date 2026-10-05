@@ -15,8 +15,10 @@ a helper, not a lane. Use the requester's worktree, no branch or card of your
 own. The task names files individually (none for a lookup), done criteria and
 the check. No named editable files means no edit. Never edit protected paths,
 decide design, change Git state or perform outward actions.
-cb-helper has Read/Grep/Glob/WebSearch/WebFetch; cb-helper-edit adds Edit/Bash
-for the named task. Tool lists are client requests, not proof of enforcement.
+Claude cb-helper requests Read/Grep/Glob/WebSearch/WebFetch for lookups;
+cb-helper-edit requests Read/Grep/Glob/Edit/Bash for named edits/checks. The edit
+profile does not request web tools. These are separate client requests, not
+proof of effective enforcement; other hosts use their available authorized tools.
 For authorized bounded coding edits, apply the canonical
 [simplicity ladder](../docs/simplicity.md) within the named files and helper limits.
 One editing helper per worktree; the parent does not edit while it runs.

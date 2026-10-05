@@ -3,7 +3,9 @@
 Read [policy composition](policy-composition.md) and
 [project configuration](project-config.md) first. This manual is reusable
 guidance, subordinate to supplied project policy and authorized task scope.
-It does not install tools or measure native client loading.
+It does not install tools or measure native client loading. The
+[shared desired provider behavior](installation.md#shared-desired-behavior-across-providers)
+uses these same roles and lifecycle; provider compatibility needs separate evidence.
 
 ## Roles and boundaries
 
