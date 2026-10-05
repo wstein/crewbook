@@ -58,6 +58,12 @@ Before posting reports, use the configured secret/privacy scanning procedure,
 verify the source is a regular file, and redact sensitive information.
 Missing scanning or posting capability makes that publication unavailable.
 
+On unexpected dispatch yield while desk is active, check its continuation
+registry against the manual's complete drain gate. Resume the same handle with
+pending artifacts/next action; never duplicate claims or workers. Unavailable
+resume/uncertain ownership requires a concrete retained handoff. Progress
+reports do not end supervision and parent completion offers no automatic resume.
+
 Keep the coordinating turn active while authorized children, required reviews
 or actionable handbacks remain outstanding: process results or await named
 artifacts through bounded supported tools, preserving existing handles. Do not

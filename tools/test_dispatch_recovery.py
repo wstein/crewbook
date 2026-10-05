@@ -66,12 +66,42 @@ def replay(state, events):
     pending = any(t['phase'] in ('running', 'in_review', 'review_pending',
                                 'retry', 'resolve_start', 'needs_attention')
                   for t in state['tasks'].values())
+    pending = pending or drain_gate(state)[0] != 'drained'
     if pending or state['backlog']:
         state['empty_requested'] = False
     if not pending and not state['backlog'] and not state['empty_requested']:
         actions.append(('request_work',))
         state['empty_requested'] = True
     return state, actions
+
+
+def drain_gate(state):
+    """Classify explicit scenario obligations, never assume empty means complete."""
+    phases = {'running', 'in_review', 'review_pending', 'retry',
+              'resolve_start', 'needs_attention', 'queued', 'integration',
+              'status_write', 'handback_pending'}
+    obligations = [(key, task['phase']) for key, task in state['tasks'].items()
+                   if task['phase'] in phases or task['phase'] not in
+                   ('approved', 'done', 'blocked')]
+    for queue in ('eligible_queue', 'pending_handbacks', 'fixes',
+                  'required_reviews', 'integration', 'status_writes'):
+        obligations.extend((queue, item) for item in state.get(queue, []))
+    if state['reviews']:
+        obligations.append(('review_slots', state['reviews']))
+    obligations.extend(('unpreserved_handback', thread)
+                       for thread in state['completed'])
+    if state['backlog']:
+        obligations.append(('backlog', 'classify queued work'))
+    blocked = [(key, task.get('blocker'), task.get('next_action'))
+               for key, task in state['tasks'].items() if task['phase'] == 'blocked']
+    # Missing unblock evidence is unresolved work, not a concrete external stop.
+    obligations.extend((key, 'resolve blocker') for key, blocker, action in blocked
+                       if not blocker or not action)
+    if obligations:
+        return 'active', obligations
+    if blocked:
+        return 'blocked', blocked
+    return 'drained', []
 
 
 def parent_continuation(state, handles, wait_available=True):
@@ -81,7 +111,23 @@ def parent_continuation(state, handles, wait_available=True):
                if task['phase'] in ('running', 'in_review', 'review_pending')]
     if awaited:
         return ('await' if wait_available else 'handoff', awaited)
-    return ('resolved', [])
+    outcome, obligations = drain_gate(state)
+    return ('process' if outcome == 'active' else outcome, obligations)
+
+
+def desk_safety_net(state, dispatcher, unexpected_yield, resume_available=True):
+    outcome, obligations = drain_gate(state)
+    if unexpected_yield and outcome == 'active':
+        return ('resume_same' if dispatcher and resume_available else 'handoff',
+                dispatcher, obligations)
+    return (outcome, dispatcher, obligations)
+
+
+def user_steering(state, ordered_tasks):
+    state = copy.deepcopy(state)
+    state['eligible_queue'] = list(ordered_tasks)
+    state['empty_requested'] = False
+    return state, ('route_queue', tuple(ordered_tasks))
 
 
 def fixture():
@@ -213,6 +259,65 @@ class RecoveryReplay(unittest.TestCase):
         self.assertEqual(action, 'await')
         self.assertEqual(artifacts, [('managed', 'existing-other', 'author_handback')])
         self.assertFalse(any(a[0] in ('review', 'retry_same_claim') for a in actions))
+
+    def test_complete_drain_gate_and_blocked_dependencies(self):
+        state = fixture()
+        state['tasks'] = {}
+        self.assertEqual(drain_gate(state), ('drained', []))
+        for queue in ('eligible_queue', 'pending_handbacks', 'fixes',
+                      'required_reviews', 'integration', 'status_writes'):
+            busy = dict(state, **{queue: ['named artifact']})
+            self.assertEqual(drain_gate(busy)[0], 'active', queue)
+            self.assertEqual(parent_continuation(busy, {})[0], 'process')
+            _, actions = replay(busy, [])
+            self.assertNotIn(('request_work',), actions)
+        state['tasks']['blocked'] = dict(phase='blocked', owner='retained-owner',
+                                         blocker='external approval',
+                                         next_action='owner requests approved adapter')
+        self.assertEqual(drain_gate(state)[0], 'blocked')
+        del state['tasks']['blocked']['next_action']
+        self.assertEqual(drain_gate(state)[0], 'active')
+        state['tasks']['blocked']['phase'] = 'unknown'
+        self.assertEqual(drain_gate(state)[0], 'active')
+
+    def test_child_after_would_yield_and_desk_resumes_same_handle(self):
+        state = fixture()
+        dispatcher = 'retained-dispatch'
+        action, handle, obligations = desk_safety_net(state, dispatcher, True)
+        self.assertEqual((action, handle), ('resume_same', dispatcher))
+        self.assertTrue(obligations)
+        resumed, actions = replay(state, [self.handback()])
+        self.assertEqual(resumed['tasks']['generic']['phase'], 'in_review')
+        self.assertEqual(len([a for a in actions if a[0] == 'review']), 1)
+        _, repeated = replay(resumed, [self.handback()])
+        self.assertEqual(repeated, [])
+        self.assertEqual(desk_safety_net(resumed, dispatcher, True, False)[0],
+                         'handoff')
+        self.assertEqual(state['tasks']['generic']['phase'], 'running')
+
+    def test_findings_fix_new_review_and_user_steering_preserve_owners(self):
+        state, _ = replay(fixture(), [self.handback()])
+        review = dict(id='finding', kind='review', task='generic',
+                      reviewer='independent', revision='a' * 40,
+                      model=('gpt-6.1-sol', 'medium'), findings=['fix'])
+        state, actions = replay(state, [review])
+        self.assertIn(('hold', 'generic'), actions)
+        self.assertEqual(parent_continuation(state, {'managed': 'retained'})[0], 'await')
+        steered, action = user_steering(state, ['new-P1', 'later-task'])
+        self.assertEqual(action, ('route_queue', ('new-P1', 'later-task')))
+        self.assertEqual(steered['tasks'], state['tasks'])
+        self.assertEqual(drain_gate(steered)[0], 'active')
+        fix = dict(self.handback(revision='b' * 40), id='fix-handback')
+        state, actions = replay(steered, [fix])
+        self.assertIn(('review', 'generic', 'b' * 40,
+                       ('gpt-6.1-sol', 'medium')), actions)
+        self.assertEqual(state['tasks']['generic']['owner'], 'author')
+        self.assertEqual(state['reviews'], 1)
+        review = dict(review, id='fixed-review', revision='b' * 40, findings=[])
+        state, actions = replay(state, [review])
+        self.assertIn(('approved', 'generic'), actions)
+        self.assertEqual(state['reviews'], 0)
+        self.assertEqual(state['eligible_queue'], ['new-P1', 'later-task'])
 
     def test_empty_transition_once_and_blocked_backlog(self):
         state = fixture()

@@ -49,6 +49,12 @@ without waiting for that round. Keep at most two authors and two independent
 reviewers within actual capacity; verify observed board automation or explicitly
 update/read back configured Kanban transitions as its sole writer. Do not decide rules, write code, review or push.
 
+Declare drained only after the manual's gate confirms no eligible queued work,
+running workers, pending handbacks, fixes, required reviews, integration or
+authorized status writes. Record blocked backlog separately with dependency,
+owner and next action. Consume/process/wait in bounded cycles; progress reports
+are not final handoffs. User steering preserves claims and outstanding reviews.
+
 Keep the coordinating turn active while authorized children, required reviews
 or actionable handbacks remain outstanding: process results or await named
 artifacts through bounded supported tools, preserving existing handles. Do not

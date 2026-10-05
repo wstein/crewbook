@@ -204,6 +204,37 @@ exact evidence, design timing and the next runnable action in a resume note,
 and notify the existing desk. No daemon, forge-triggered runner, live inference
 or unattended timer is supplied or authorized by this procedure.
 
+### Completion gate and desk safety net
+
+Before declaring drained, verify the registry has **no eligible queued work,
+running workers, pending handbacks, fixes, required reviews, integration or
+authorized status writes**. An empty issue queue alone fails this gate. Record
+each remaining obligation with issue/task, owner, retained handle, attained state,
+exact revision, dependency/blocker and next action. Pending authorized integration
+and status writes are work, even after a clean review; process them through their
+established authorized owner/procedure and confirm results. Do not invent landing
+or publication permission to drain the queue.
+
+Blocked backlog is a separate outcome from drained: name concrete external
+dependencies, their owners and unblock/resume actions. Continue independent
+eligible work first. An unresolved ownership/start/status outcome remains an
+obligation to investigate, not proof of drain. Human pause and explicit ownership
+handoff retain all unresolved obligations. A progress report does not terminate
+supervision: consume available events, process/reroute actionable results, then
+use supported bounded waits for named artifacts and repeat while authorized.
+Incorporate user steering into the registry and ready queue without losing
+existing claims, required reviews or the same dispatcher handle.
+
+While desk remains active, an unexpected dispatcher yield triggers a check of
+its continuation registry and available handbacks. If the drain gate fails,
+desk resumes that same dispatcher with the recorded next action and evidence;
+it does not create replacement claims/authors/reviewers. If ownership, handle or
+resume capability cannot be confirmed, report the concrete blocker and preserve
+a handoff instead of fabricating a successful resume. This safety net depends
+on the active parent and supported tools. No continuous forge polling, daemon
+or automatic reactivation after the parent ends is promised; host-event
+integration is separate future work.
+
 Maintenance-only `tools/test_dispatch_recovery.py` replays structured synthetic
 inputs, expected actions and resulting state without parsing prompts or calling
 clients/forges. It measures lost/duplicate handbacks, review omissions, ownership
