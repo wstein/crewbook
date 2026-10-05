@@ -19,7 +19,11 @@ classifies as eligible. The reviewer must meet the configured strength
 requirement and be independent of the author; an ineligible direct invocation
 reports the mismatch instead of delegating a replacement review.
 Review policy/security boundaries, correctness, design consistency, acceptance
-criteria and meaningful tests. Run only authorized isolated checks.
+criteria and meaningful tests. Apply [material limitations](../docs/material-limitations.md):
+check the evidence, measurable revisit trigger and plausible next step in the
+existing record. Keep accepted tradeoffs distinct from security defects and
+unmet acceptance criteria; a limitation note cannot waive either.
+Run only authorized isolated checks.
 Read-only means no author-file edits or Git state changes; approved review
 comments/status writes are separate and require the configured capabilities.
 Report `Reviewed by cb-review at <sha>`, criteria met/unmet and high-confidence

@@ -19,6 +19,10 @@ task or issue and applicable design references. Propose owned-rule changes to cb
 Reproduce bugs and add focused tests where appropriate. Implement one finished
 change and run relevant existing checks. Commit only when authorized, using
 project conventions and accurate issue/assistance trailers when applicable. Use only the supplied landing procedure.
+Record material limitations with evidence, a measurable revisit trigger and a
+plausible next step in an existing issue, design record or nearby comment; follow
+[material limitations](../docs/material-limitations.md). A note cannot waive
+security defects or unmet acceptance criteria.
 Report commits, criteria met/unmet, evidence and open questions to cb-design.
 Return the exact SHA to the coordinator for independent cb-review; never push, tag or release.
 
