@@ -91,6 +91,20 @@ If fixes change the SHA, invalidate prior readiness; the coordinator routes
 the exact new revision to the same independent reviewer for corrections to
 that work item's findings. The author and reviewer never initiate review.
 
+## Local integration and publication
+
+Local commits, local target integration and publication have separate authority.
+Reuse established user/host authorization within its unchanged scope; do not
+ask again merely because the next local commit or integration is ready. Follow
+the supplied target procedure, actual host approval controls and review order.
+When a target requires independent review before integration, the author returns
+the checked immutable candidate first, the coordinator obtains exact-revision
+review, and the assigned author integrates only that approved revision. A rebase
+or other SHA change invalidates prior approval and requires review of the new
+revision before integration. Permission to integrate locally does not authorize
+push/publication; honor the configured human's ownership of those operations.
+No generic permission to update arbitrary targets or rewrite history is supplied.
+
 ## Persistent desk and dispatch
 
 Start desk once as the human contact with explicit `$crewbook` or the
@@ -264,15 +278,18 @@ authorized evidence; retain those criteria as unverified.
    bugs, implement focused changes and verify using real supplied checks.
 4. Commit once each logical change is finished, following project trailers and
    hooks. Never invent an issue number or human sign-off.
-5. Use the supplied landing procedure; never infer permission to merge/publish.
-   Handle conflicts only in files this issue changed. Another checkout's stale
-   lock or index is the human's to repair.
-6. Record each criterion as met or unmet with evidence, commits and limitations.
-   Update authorized statuses only after confirmed success.
-7. The coordinator starts independent review of the exact SHA in fresh context. Fix findings
+5. Record each criterion as met or unmet with evidence, the immutable candidate
+   revision and limitations; return it to the coordinator.
+6. The coordinator starts independent review of the exact SHA in fresh context. Fix findings
    with the author; route high findings or rule questions to cb-design. Only
-   a review with no open findings permits the coordinator to record ready status
-   for that SHA. The reviewer executes directly and returns the review record.
+   a review with no open findings permits approval for that SHA. The reviewer
+   executes directly and returns the review record.
+7. The assigned author uses the supplied authorized target integration procedure
+   in its required order, after exact-revision review when required. Handle
+   conflicts only in files this issue changed; recheck and obtain new review of
+   any rewritten SHA before integration. Never infer push/publication permission.
+   Another checkout's stale lock or index is the human's to repair. The coordinator
+   records permitted statuses only after confirmed checks, review and required landing.
 8. Hand over to cb-desk/the human with commits, issues, checks, unmet criteria
    and unverified claims. Publication remains the human's unless explicitly
    authorized by controlling policy and the current task.
@@ -382,6 +399,8 @@ primary thread. `agents.max_threads` is its legacy alias; see the
 Static example, not a live client test: a trusted generic project supplies real
 issue/board/check/landing adapters, one coordinator C, author A (cb-platform)
 and eligible independent reviewer R (cb-reviewer, explicitly pinned Opus).
+For this example the supplied target authorizes local commits and requires
+exact-revision review before local fast-forward integration; the human owns push.
 For cb-generic, use a session assignment and exclusive checkout; a board is
 optional and landing/publication remain unavailable unless authorized.
 
@@ -389,10 +408,11 @@ optional and landing/publication remain unavailable unless authorized.
 | --- | --- | --- | --- |
 | Assignment | C records the sole claim/In progress and starts A | 1 | 0 |
 | Implementation | A executes directly; optionally asks cb-helper for a named lookup, receives its result and verifies it | 1 | 0 |
-| Completion | A runs checks, commits and uses supplied landing; reports SHA S and criteria to C | 1 | 0 |
-| Review assignment | C records In review after confirmed landing and starts R in separate context on S | 1 | 1 |
+| Candidate | A runs checks and commits; reports immutable SHA S and criteria to C | 1 | 0 |
+| Review assignment | C starts R in separate context on S; records only a target-permitted review status | 1 | 1 |
 | Review completion | R reviews S directly, optionally uses a read-only helper, and records its findings | 1 | 1 |
-| Handoff | C records Ready to push only on R's no-open-findings approval for S and hands off to human | 1 | 1 |
+| Local integration | A fast-forwards the authorized local target to unchanged approved S; a diverged candidate is rebased, checked and reviewed at its new SHA first | 1 | 1 |
+| Handoff | C records Ready to push only after clean exact review and confirmed required integration/checks; human owns push | 1 | 1 |
 
 Walk through actions, not repeated wording: count only C's two worker-start
 events; neither following A's role/profile/command nor following R's

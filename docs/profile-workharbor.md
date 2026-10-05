@@ -35,6 +35,10 @@ supervisor's task/run identity, stop signals, budgets, allowed tools and
 approval gates. Use only explicitly available forge, board and communication
 capabilities. The package supplies workflow guidance, not a container launcher,
 credential store, runtime adapter or permission override.
+Reuse established operation authorization within its scope, subject to actual
+supervisor/host controls. Keep local commits, target integration and publication
+separate; follow the target's exact review/integration order. Authorization for
+local integration alone never authorizes a push or publication.
 
 A board is optional. For a local task without a board, the coordinator records
 a session/supervisor assignment before starting the author. Do not bypass an

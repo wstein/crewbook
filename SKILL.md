@@ -61,6 +61,11 @@ and [docs/project-config.md](docs/project-config.md), then the relevant portions
 of [docs/team.md](docs/team.md). Require only the inputs needed by that operation;
 reuse trusted session/project configuration instead of asking for it again.
 Missing board or landing tools block that operation, not an unrelated local edit.
+Local commits, local target integration and publication are separate operations.
+Reuse established user/host authorization for its unchanged scope instead of
+asking again; follow the target's actual checks, review order and integration
+procedure. Permission for local integration does not imply permission to push
+or publish. Generic work retains its local-diff default when authorization is absent.
 Use [cb-generic](docs/profile-generic.md) by default for any repository in the
 current native session, including crewbook itself. No workharbor container,
 board or separate project-policy file is required. Select

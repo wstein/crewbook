@@ -43,9 +43,13 @@ current main, reruns checks and obtains fresh independent review of the rewritte
 SHA **before** fast-forward integration. Stop on conflicts outside the assigned
 scope. This is this repository's current policy, not a universal target policy.
 
-Use focused Conventional Commits with accurate assistance trailers. Commit and
-publication require authorization; no push or publication unless explicitly
-authorized. For an authorized blocked operation use approved scoped host
+Use focused Conventional Commits with accurate assistance trailers. For an
+authorized repository assignment, the assigned author may create local commits
+and fast-forward independently reviewed exact revisions into local main under
+the procedure above. This established local authorization does not require a
+new permission question for each commit or fast-forward. Push and publication
+remain the human's responsibility; return the reviewed local result for that step.
+For an authorized blocked operation use approved scoped host
 escalation; never delete locks or weaken controls to bypass a permission failure.
 Follow the [team manual](docs/team.md) for coordinator ownership, exact review
 evidence and honest handoffs.

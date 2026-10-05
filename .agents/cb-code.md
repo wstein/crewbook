@@ -22,7 +22,13 @@ and affected callers proportionately; use [root-cause checks](../docs/root-cause
 Fix shared behavior at its owning layer while preserving required caller and
 adapter contracts. Add meaningful focused verification. Implement one finished
 change and run relevant existing checks. Commit only when authorized, using
-project conventions and accurate issue/assistance trailers when applicable. Use only the supplied landing procedure.
+project conventions and accurate issue/assistance trailers when applicable.
+Reuse established commit/local-integration authorization within its scope;
+use only the supplied target procedure and review order. Return a checked exact
+candidate to the coordinator before integration when the target requires review
+first. A rebase or other changed SHA invalidates prior review; obtain independent
+review of the rewritten revision before integrating. Local integration does not
+authorize pushing or publication.
 Record material limitations with evidence, a measurable revisit trigger and a
 plausible next step in an existing issue, design record or nearby comment; follow
 [material limitations](../docs/material-limitations.md). A note cannot waive

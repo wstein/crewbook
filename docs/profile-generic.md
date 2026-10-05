@@ -49,6 +49,13 @@ checkout may run. With one checkout, run editors sequentially. No external
 claim/comment or card write is needed for a local task. Require an independent
 review for publication and report the exact reviewed revision; a local diff
 handoff may remain uncommitted and unlanded. Preserve host approval boundaries.
+Reuse already-established authorization for local commits and local target
+integration within its scope; do not ask again merely because the next commit
+or integration is ready. Follow the target's supplied procedure and review order,
+including exact-revision review before integration when required. Local
+integration does not authorize pushing or publication; those remain with the
+configured human unless separately authorized. No target procedure or authority
+is supplied by this generic default.
 
 When a requested operation lacks a required capability, report that operation
 and continue independent authorized work. Do not turn missing workharbor

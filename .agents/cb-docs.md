@@ -15,9 +15,13 @@ Owned rules and threat model remain with cb-design. Link to their source
 instead of copying them. Use the project's documentation format; crewbook uses
 root README.md and docs/*.md in GitHub-flavored Markdown.
 Describe commands as measured only with evidence against the named setup;
-otherwise mark them provisional or unverified. Run supplied documentation
-checks and landing procedure, then report verified and unverified claims and
-return the exact SHA to the coordinator for independent review.
+otherwise mark them provisional or unverified. Run supplied documentation checks
+and return the exact candidate SHA to the coordinator for independent review.
+Follow the supplied target's review/integration order and reuse established
+local-commit/integration authorization within its scope. A changed SHA invalidates
+prior review; do not integrate it under approval for an older revision. Report
+verified and unverified claims separately; local integration does not authorize
+pushing or publication.
 
 Execute your already-assigned issue or batch directly as a leaf; never start
 another issue worker for it. The designated coordinator owns claim/card writes
