@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "synthetic": true,
+  "configuration": {
+    "repository_revision": "b39858679e20884aa2b47e6f16641703d05d6dfe",
+    "client": "synthetic-client",
+    "model": "synthetic-model",
+    "reasoning": "synthetic-effort",
+    "instruction_sha256": [
+      "0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "environment_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "tasks": [
+    {
+      "id": "synthetic-boundary",
+      "fixture_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "criteria": [
+        "reject-escape",
+        "preserve-valid-input"
+      ]
+    }
+  ],
+  "arms": [
+    "baseline",
+    "guarded"
+  ],
+  "repetitions": 2,
+  "runs": [
+    {
+      "task": "synthetic-boundary",
+      "repetition": 0,
+      "arm": "baseline",
+      "status": "scored",
+      "configuration": {
+        "repository_revision": "b39858679e20884aa2b47e6f16641703d05d6dfe",
+        "client": "synthetic-client",
+        "model": "synthetic-model",
+        "reasoning": "synthetic-effort",
+        "instruction_sha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        "environment_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outcomes": {
+        "criteria": {
+          "reject-escape": false,
+          "preserve-valid-input": true
+        },
+        "meaningful_checks": true,
+        "policy_violations": 1,
+        "review_findings": 0,
+        "human_review_seconds": null
+      },
+      "efficiency": {
+        "billed_cost_usd": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "latency_ms": null,
+        "retries": null,
+        "diff_lines": null,
+        "cache_tokens": null
+      },
+      "note": "Synthetic data only; no target or model execution."
+    },
+    {
+      "task": "synthetic-boundary",
+      "repetition": 0,
+      "arm": "guarded",
+      "status": "scored",
+      "configuration": {
+        "repository_revision": "b39858679e20884aa2b47e6f16641703d05d6dfe",
+        "client": "synthetic-client",
+        "model": "synthetic-model",
+        "reasoning": "synthetic-effort",
+        "instruction_sha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        "environment_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outcomes": {
+        "criteria": {
+          "reject-escape": true,
+          "preserve-valid-input": true
+        },
+        "meaningful_checks": true,
+        "policy_violations": 0,
+        "review_findings": 0,
+        "human_review_seconds": null
+      },
+      "efficiency": {
+        "billed_cost_usd": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "latency_ms": null,
+        "retries": null,
+        "diff_lines": null,
+        "cache_tokens": null
+      },
+      "note": "Synthetic data only; no target or model execution."
+    },
+    {
+      "task": "synthetic-boundary",
+      "repetition": 1,
+      "arm": "baseline",
+      "status": "failed",
+      "configuration": {
+        "repository_revision": "b39858679e20884aa2b47e6f16641703d05d6dfe",
+        "client": "synthetic-client",
+        "model": "synthetic-model",
+        "reasoning": "synthetic-effort",
+        "instruction_sha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        "environment_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outcomes": null,
+      "efficiency": {
+        "billed_cost_usd": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "latency_ms": null,
+        "retries": null,
+        "diff_lines": null,
+        "cache_tokens": null
+      },
+      "note": "Synthetic data only; no target or model execution."
+    },
+    {
+      "task": "synthetic-boundary",
+      "repetition": 1,
+      "arm": "guarded",
+      "status": "missing",
+      "configuration": {
+        "repository_revision": "b39858679e20884aa2b47e6f16641703d05d6dfe",
+        "client": "synthetic-client",
+        "model": "synthetic-model",
+        "reasoning": "synthetic-effort",
+        "instruction_sha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        "environment_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outcomes": null,
+      "efficiency": {
+        "billed_cost_usd": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "latency_ms": null,
+        "retries": null,
+        "diff_lines": null,
+        "cache_tokens": null
+      },
+      "note": "Synthetic data only; no target or model execution."
+    }
+  ]
+}
