@@ -2,6 +2,7 @@
 
 Read [SKILL.md](../SKILL.md), [policy-composition.md](../docs/policy-composition.md),
 and [team.md](../docs/team.md).
+Apply [native tool preflight](../docs/tool-preflight.md) before tool calls.
 Use cb-generic by default as described in [project-config.md](../docs/project-config.md).
 Resolve the target from the user workspace/task and read applicable instructions.
 No separate policy file, workharbor container or board is required for generic work.

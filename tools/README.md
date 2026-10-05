@@ -57,3 +57,7 @@ host credential helpers. Tests never execute instruction fixtures.
 The exported skill contains no maintenance code or dependencies. Source/layout
 checks and provider assertions do not establish native loading, permission
 enforcement or a loadable production default.
+
+Credential-free [preflight scenarios](../docs/tool-preflight.md) run with the
+same unittest command. They test observable offline outcomes, not live agent
+compliance or permission enforcement.
