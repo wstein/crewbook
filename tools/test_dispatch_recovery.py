@@ -18,11 +18,17 @@ def replay(state, events):
             if event['owner'] != task['owner']:
                 actions.append(('ownership_conflict', key))
                 continue
+            state['empty_requested'] = False
             task['evidence'] = event['revision']
             task['phase'] = 'review_pending'
             actions.append(('preserve', key))
             state['completed'].append(task['thread'])
         elif kind == 'review':
+            if task['phase'] != 'in_review':
+                actions.append(('unexpected_review', key))
+                continue
+            state['reviews'] -= 1
+            actions.append(('release_review', key))
             valid = (event['revision'] == task['evidence']
                      and event['reviewer'] != task['owner']
                      and event['model'] == task['review_model']
@@ -60,6 +66,8 @@ def replay(state, events):
     pending = any(t['phase'] in ('running', 'in_review', 'review_pending',
                                 'retry', 'resolve_start', 'needs_attention')
                   for t in state['tasks'].values())
+    if pending or state['backlog']:
+        state['empty_requested'] = False
     if not pending and not state['backlog'] and not state['empty_requested']:
         actions.append(('request_work',))
         state['empty_requested'] = True
@@ -114,18 +122,32 @@ class RecoveryReplay(unittest.TestCase):
 
     def test_frozen_generic_diff_and_managed_review_slot_wait(self):
         initial = fixture()
-        initial['reviews'] = 1
         initial['tasks']['generic']['landed'] = False
+        initial['tasks']['third'] = dict(initial['tasks']['generic'],
+                                          owner='third-author', thread='third-thread')
         snapshot = 'frozen-diff:sha256:' + 'c' * 64
         state, actions = replay(initial, [self.handback(revision=snapshot),
-            self.handback('managed', 'other-author')])
+            self.handback('managed', 'other-author'),
+            self.handback('third', 'third-author')])
         self.assertIn(('review', 'generic', snapshot,
                        ('gpt-6.1-sol', 'medium')), actions)
-        self.assertEqual(state['tasks']['managed']['phase'], 'review_pending')
-        state['reviews'] = 1  # confirmed reviewer release on next resume
-        state, actions = replay(state, [])
-        self.assertEqual(state['tasks']['managed']['phase'], 'in_review')
+        self.assertEqual(state['tasks']['third']['phase'], 'review_pending')
+        reviews = [dict(id=key + '-review', kind='review', task=key,
+                        reviewer='independent-' + key, revision=revision,
+                        model=('gpt-6.1-sol', 'medium'), findings=[])
+                   for key, revision in [('generic', snapshot), ('managed', 'a' * 40)]]
+        state, actions = replay(state, reviews)
+        self.assertEqual(state['tasks']['third']['phase'], 'in_review')
+        self.assertEqual(state['reviews'], 1)
         self.assertEqual(len([a for a in actions if a[0] == 'review']), 1)
+        repeated, more = replay(state, reviews)
+        self.assertEqual(repeated, state)
+        self.assertEqual(more, [])
+        third_review = dict(reviews[0], id='third-review', task='third',
+                            revision='a' * 40)
+        state, actions = replay(state, [third_review])
+        self.assertEqual(state['reviews'], 0)
+        self.assertIn(('request_work',), actions)
 
     def test_full_pool_failed_start_and_uncertain_start(self):
         state = fixture()
@@ -162,6 +184,13 @@ class RecoveryReplay(unittest.TestCase):
         _, actions = replay(dict(state, backlog=True), [])
         self.assertNotIn(('request_work',), actions)
         result, actions = replay(state, [])
+        self.assertEqual(actions, [('request_work',)])
+        result, actions = replay(result, [])
+        self.assertEqual(actions, [])
+        result, actions = replay(dict(result, backlog=True), [])
+        self.assertFalse(result['empty_requested'])
+        self.assertEqual(actions, [])
+        result, actions = replay(dict(result, backlog=False), [])
         self.assertEqual(actions, [('request_work',)])
         _, actions = replay(result, [])
         self.assertEqual(actions, [])
