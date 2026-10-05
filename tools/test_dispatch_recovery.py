@@ -21,7 +21,8 @@ def replay(state, events):
             state['empty_requested'] = False
             if key in state.get('pending_handbacks', []):
                 state['pending_handbacks'].remove(key)
-            if task.get('landing_required'):
+            if (task.get('landing_required')
+                    and event['revision'] != task['evidence']):
                 task['landed'] = False
                 task.pop('cleared_revision', None)
                 task.pop('landing_request', None)
@@ -286,6 +287,25 @@ class RecoveryReplay(unittest.TestCase):
         self.assertIn(('board_ready', 'generic'), actions)
         self.assertIn(('request_work',), actions)
         self.assertEqual(replay(landed, [result]), (landed, []))
+
+    def test_same_revision_handback_preserves_unresolved_landing_request(self):
+        state, _ = self.approved_candidate()
+        handback = dict(self.handback(), id='same-revision-handback')
+        state, _ = replay(state, [handback])
+        state, actions = replay(state, [dict(id='same-revision-review', kind='review',
+            task='generic', reviewer='independent', revision='a' * 40,
+            model=('gpt-6.1-sol', 'medium'), findings=[])])
+        self.assertFalse(any(a[0] == 'resume_landing_same' for a in actions))
+        self.assertEqual(state['tasks']['generic']['landing_request'], 'a' * 40)
+        self.assertEqual(parent_continuation(state, {}),
+                         ('await', [('generic', 'author-thread', 'landing_result')]))
+        result = dict(id='landed-after-repeat', kind='landing_result', task='generic',
+            owner='author', revision='a' * 40, integration_ref='refs/heads/main',
+            result='success')
+        state, _ = replay(state, [result])
+        state, _ = replay(state, [dict(handback, id='same-landed-handback')])
+        self.assertTrue(state['tasks']['generic']['landed'])
+        self.assertEqual(state['tasks']['generic']['integration_result'], result)
 
     def test_rewritten_candidate_invalidates_old_landing_clearance(self):
         state, _ = self.approved_candidate()
