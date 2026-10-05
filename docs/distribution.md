@@ -35,9 +35,11 @@ and host scripts remain target resources. The `.agents/` and `.claude/` paths
 listed here are package resources. A target's unrelated `.agents` must never
 substitute for packaged prompts. Portable roles use the explicit [project configuration](project-config.md)
 and [team manual](team.md). The [execution contract](team.md#coordinator-and-leaf-execution-contract)
-separates designated coordinators from directly executing leaves. All role,
-profile and command identities use cb-*; the skill
-entrypoint is `crewbook`, invoked as `$crewbook`. The package and skill identifiers remain `crewbook`; the reader-facing name is “Crew Book”.
+separates designated coordinators from directly executing leaves. Role identities use `crewbook/<role>` (for example, `crewbook/dispatch`).
+Resource filenames, client profile selectors and commands use `crewbook-*`;
+execution profiles are `crewbook-generic` and `crewbook-workharbor`. The skill
+entrypoint is `crewbook`, invoked as `$crewbook`. The package and skill
+identifiers remain `crewbook`; the reader-facing name is “Crew Book”.
 
 ## Current content artifact
 
@@ -120,8 +122,8 @@ including nested objects. JSON and resources must be UTF-8.
 | Manifest field | Required type and constraint |
 | --- | --- |
 | `contract_version` | Integer exactly `1`. |
-| `identity` | String matching `[a-z][a-z0-9_-]{0,63}`; crewbook identifies itself as `crewbook`. |
-| `entrypoint` | Relative path to one inventoried public text file; crewbook's entrypoint is `SKILL.md`. |
+| `identity` | String matching `[a-z][a-z0-9_-]{0,63}`; Crew Book identifies itself as `crewbook`. |
+| `entrypoint` | Relative path to one inventoried public text file; Crew Book's entrypoint is `SKILL.md`. |
 | `required_project_inputs` | Array of at most 32 unique strings, each using the identity syntax; confirmed separately by the trusted project-input provider. |
 | `adapters` | Array of 1–32 objects, each with required string `name`, `version`, `model`, `effort`; names use the identity syntax and are unique. |
 | `files` | Array of required `{path, sha256}` string pairs, complete and sorted as above, excluding `workharbor.json`. |

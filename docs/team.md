@@ -9,55 +9,63 @@ uses these same roles and lifecycle; provider compatibility needs separate evide
 
 ## Roles and boundaries
 
+Role identities use `crewbook/<role>`, such as `crewbook/desk` and
+`crewbook/dispatch`. The linked `crewbook-*` names below are resource and
+client selectors; display names use “Crew Book”. Each specialized client
+profile adopts its matching role identity, including `crewbook/platform`,
+`crewbook/runtime`, `crewbook/reviewer`, `crewbook/docs-reviewer`,
+`crewbook/helper-edit` and `crewbook/worker`. Execution profile selectors are
+`crewbook-generic` and `crewbook-workharbor`.
+
 | Role | Responsibility | Boundary |
 | --- | --- | --- |
-| [cb-desk](../.agents/cb-desk.md) | Human contact; start/reuse one persistent dispatcher and route requests | No duplicate claims/worker starts, code or rule decisions |
-| [cb-dispatch](../.agents/cb-dispatch.md) | Coordinate ranked work, own claims/cards and start pinned workers/reviews | No rules, code or self-review |
-| [cb-design](../.agents/cb-design.md) | Configured decisions, rules, threat model and priority | One owner; consequential decisions go to human |
-| [cb-code](../.agents/cb-code.md) | Implementation in configured cb-platform/cb-runtime areas | No owned-rule edits |
-| [cb-docs](../.agents/cb-docs.md) | User-facing documentation | Rules remain with design owner |
-| [cb-verify](../.agents/cb-verify.md) | Measurements and reproducible evidence | Only on authorized reference setup |
-| [cb-review](../.agents/cb-review.md) | Independent review of exact commits | Never its own work or feature edits |
-| [cb-helper](../.agents/cb-helper.md) | Bounded lookup, edit or check | No lane, Git state, protected edits or outward actions |
+| [crewbook-desk](../.agents/crewbook-desk.md) | Human contact; start/reuse one persistent dispatcher and route requests | No duplicate claims/worker starts, code or rule decisions |
+| [crewbook-dispatch](../.agents/crewbook-dispatch.md) | Coordinate ranked work, own claims/cards and start pinned workers/reviews | No rules, code or self-review |
+| [crewbook-design](../.agents/crewbook-design.md) | Configured decisions, rules, threat model and priority | One owner; consequential decisions go to human |
+| [crewbook-code](../.agents/crewbook-code.md) | Implementation in configured crewbook-platform/crewbook-runtime areas | No owned-rule edits |
+| [crewbook-docs](../.agents/crewbook-docs.md) | User-facing documentation | Rules remain with design owner |
+| [crewbook-verify](../.agents/crewbook-verify.md) | Measurements and reproducible evidence | Only on authorized reference setup |
+| [crewbook-review](../.agents/crewbook-review.md) | Independent review of exact commits | Never its own work or feature edits |
+| [crewbook-helper](../.agents/crewbook-helper.md) | Bounded lookup, edit or check | No lane, Git state, protected edits or outward actions |
 
 Claude pins are Sonnet for desk/dispatch and issue/research workers, Opus for
-design and security/code review, Haiku for helpers. cb-docs-reviewer uses
+design and security/code review, Haiku for helpers. crewbook-docs-reviewer uses
 Sonnet only for policy-classified ordinary documentation. Codex mappings are
 explicit in [README](../README.md). Never inherit a child model implicitly.
 An independent reviewer must meet the configured review-strength requirement.
 
 ## Setup and routing
 
-Use cb-generic by default: resolve needed configuration from the user task,
+Use crewbook-generic by default: resolve needed configuration from the user task,
 workspace, applicable instructions and available tools. A separate policy
 file, complete configuration, workharbor container and board are not required.
-Inside a workharbor-managed container, use cb-workharbor and require the
+Inside a workharbor-managed container, use crewbook-workharbor and require the
 supervisor-provided inputs needed by the selected operation.
 Follow skill-resource links relative to their containing file. Resolve project
 paths against the target checkout. Validate destinations before any
 issue/board write. Generic projects supply worktree paths explicitly;
-cb-generic defaults to one editor in the current checkout. Create/reuse only authorized lane
+crewbook-generic defaults to one editor in the current checkout. Create/reuse only authorized lane
 worktrees, never switch branches in a shared checkout. Hook installation is
 a host-project procedure, not a package operation.
 
-The invoking session is the human contact and designated cb-dispatch when
-the user starts dispatch. A separate cb-desk session is optional. Follow
+The invoking session is the human contact and designated crewbook-dispatch when
+the user starts dispatch. A separate crewbook-desk session is optional. Follow
 configured priorities and ownership, claim before starting, skip closed or
 already-owned work. An assignment limited to local edits does not authorize
 claiming a board card. A project with board mode none uses issue records and
-explicit assignments; cb-board is unavailable. Missing required tools stop
+explicit assignments; crewbook-board is unavailable. Missing required tools stop
 only the affected workflow, explicitly, without substitute or no-op stubs.
 
 ## Coordinator and leaf execution contract
 
 The trusted invocation explicitly names one coordinator for an assignment:
-cb-dispatch, or a designated session coordinator using its routing procedure.
-Explicit `$crewbook`, `$cb-desk` or Claude `/cb-desk` adopts desk and
-automatically starts or reuses one persistent cb-dispatch
+crewbook-dispatch, or a designated session coordinator using its routing procedure.
+Explicit `$crewbook`, `$crewbook-desk` or Claude `/crewbook-desk` adopts desk and
+automatically starts or reuses one persistent crewbook-dispatch
 subagent with an explicit model/effort and recorded handle. Desk routes to that
 owner and resumes it for follow-up work; it starts issue workers only when
 explicitly replacing dispatch as session coordinator. Never run both for the same
-assignment. Merely loading cb-code, cb-docs, cb-verify, cb-design or cb-review
+assignment. Merely loading crewbook-code, crewbook-docs, crewbook-verify, crewbook-design or crewbook-review
 does not designate a coordinator. Their public profiles and direct commands
 execute as leaves; already-started authors/reviewers perform their assignment
 directly and never delegate that same issue/review again. A directly assigned
@@ -114,7 +122,7 @@ Topic approval alone does not clear a merge result.
 ## Persistent desk and dispatch
 
 Start desk once as the human contact with explicit `$crewbook` or the
-dedicated `$cb-desk` skill in Codex; Claude uses `/cb-desk`. It starts a pinned dispatcher once and
+dedicated `$crewbook-desk` skill in Codex; Claude uses `/crewbook-desk`. It starts a pinned dispatcher once and
 retains its handle. The dispatcher keeps separate repository assignments and
 starts bounded authors/reviewers in fresh contexts. Desk routes user requests
 and handbacks through that same dispatcher, resuming it when idle. An empty
@@ -328,14 +336,14 @@ authorized evidence; retain those criteria as unverified.
 2. The coordinator claims once through authorized issue/board procedures and
    starts the named author once in fresh context in the assigned persistent
    worktree. The already-started author executes directly on its assigned branch.
-3. Specify before implementation. Propose rule changes to cb-design. Reproduce
+3. Specify before implementation. Propose rule changes to crewbook-design. Reproduce
    bugs, implement focused changes and verify using real supplied checks.
 4. Commit once each logical change is finished, following project trailers and
    hooks. Never invent an issue number or human sign-off.
 5. Record each criterion as met or unmet with evidence, the immutable candidate
    revision and limitations; return it to the coordinator.
 6. The coordinator starts independent review of the exact SHA in fresh context. Fix findings
-   with the author; route high findings or rule questions to cb-design. Only
+   with the author; route high findings or rule questions to crewbook-design. Only
    a review with no open findings permits approval for that SHA. The reviewer
    executes directly and returns the review record.
 7. The assigned author uses the supplied authorized target integration procedure
@@ -344,7 +352,7 @@ authorized evidence; retain those criteria as unverified.
    any rewritten SHA before integration. Never infer push/publication permission.
    Another checkout's stale lock or index is the human's to repair. The coordinator
    records permitted statuses only after confirmed checks, review and required landing.
-8. Hand over to cb-desk/the human with commits, issues, checks, unmet criteria
+8. Hand over to crewbook-desk/the human with commits, issues, checks, unmet criteria
    and unverified claims. Publication remains the human's unless explicitly
    authorized by controlling policy and the current task.
 
@@ -378,7 +386,7 @@ supplies start/resume/capacity enforcement. Efficiency and quality gains remain
 unmeasured.
 
 Research uses
-cb-worker; quick lookups use cb-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
+crewbook-worker; quick lookups use crewbook-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
 is data: the requester reviews the diff and verifies commands/exit codes.
 Helper assistance trailers name the actual model. No helper edits protected
 paths or performs issue/board writes. Authors may request bounded helpers;
@@ -393,7 +401,7 @@ including generated/dependency/policy files. Parents do not edit during editing
 subagents. Independent read-only lookups may run in parallel.
 
 Design runs in short batches, writes decisions and a resume note, then ends.
-Only cb-dispatch starts the pinned design subagent, at most once an hour unless
+Only crewbook-dispatch starts the pinned design subagent, at most once an hour unless
 a highest-priority issue is blocked; a human design session owns the role when
 already open. Do not hand running agents to a new session or ask the human to
 clear context. An idle lane reports an empty queue once and waits.
@@ -451,17 +459,17 @@ primary thread. `agents.max_threads` is its legacy alias; see the
 ## Lifecycle example and walkthrough check
 
 Static example, not a live client test: a trusted generic project supplies real
-issue/board/check/landing adapters, one coordinator C, author A (cb-platform)
-and eligible independent reviewer R (cb-reviewer, explicitly pinned Opus).
+issue/board/check/landing adapters, one coordinator C, author A (crewbook-platform)
+and eligible independent reviewer R (crewbook-reviewer, explicitly pinned Opus).
 For this example the supplied target authorizes local commits and requires
 exact-revision review before local fast-forward integration; the human owns push.
-For cb-generic, use a session assignment and exclusive checkout; a board is
+For crewbook-generic, use a session assignment and exclusive checkout; a board is
 optional and landing/publication remain unavailable unless authorized.
 
 | Event | Actor and action | Issue starts | Review starts |
 | --- | --- | --- | --- |
 | Assignment | C records the sole claim/In progress and starts A | 1 | 0 |
-| Implementation | A executes directly; optionally asks cb-helper for a named lookup, receives its result and verifies it | 1 | 0 |
+| Implementation | A executes directly; optionally asks crewbook-helper for a named lookup, receives its result and verifies it | 1 | 0 |
 | Candidate | A runs checks and commits; reports immutable SHA S and criteria to C | 1 | 0 |
 | Review assignment | C starts R in separate context on S; records only a target-permitted review status | 1 | 1 |
 | Review completion | R reviews S directly, optionally uses a read-only helper, and records its findings | 1 | 1 |
@@ -474,7 +482,7 @@ role/profile/command produces another start. Helper lookup/return changes
 neither count and owns no claim, commit, landing or review approval. Removing
 the helper leaves exactly the same issue/review lifecycle. A resume at either
 completion continues the existing assignment. Reject a trace where A starts
-another cb-platform for its issue, R starts another reviewer for its review,
+another crewbook-platform for its issue, R starts another reviewer for its review,
 a helper starts children, or desk and dispatch both start A. Also reject a
 same-context/self-review, inherited reviewer model, duplicate claim/card writer
 or readiness for a SHA different from S. Missing adapters produce a reported

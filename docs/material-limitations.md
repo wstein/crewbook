@@ -22,7 +22,7 @@ from an open defect even when both concern the same component.
 
 ## Examples
 
-These examples illustrate useful records; they are not Crewbook measurements
+These examples illustrate useful records; they are not Crew Book measurements
 or default thresholds for consuming projects.
 
 - **Lock contention:** “The single-writer queue preserves ordering. In the

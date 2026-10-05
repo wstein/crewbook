@@ -1,9 +1,9 @@
-# cb-workharbor: any repository in a managed container
+# Crew Book managed profile (`crewbook-workharbor`)
 
 Use this profile when the agent runs inside a workharbor-managed container.
-The target can be any repository, including crewbook or workharbor itself.
+The target can be any repository, including the Crew Book or workharbor repository itself.
 The profile selects execution context, never repository identity or endpoints.
-For an ordinary native session, use [cb-generic](profile-generic.md).
+For an ordinary native session, use [crewbook-generic](profile-generic.md).
 
 ## Trusted managed context
 
@@ -15,7 +15,7 @@ user task. Do not require a repository-specific profile or governing file.
 
 | Field | Managed behavior |
 | --- | --- |
-| Identity | Assigned target repository; cb-workharbor execution profile |
+| Identity | Assigned target repository; crewbook-workharbor execution profile |
 | Repository | Supervisor-assigned canonical checkout, remote and branch; never assume wstein/workharbor or main |
 | Issues | Assigned issue/task and confirmed target forge endpoint; use supplied authorized capability |
 | Board | None unless explicitly configured for the target; use only its supplied mapping and approved adapter |
@@ -49,7 +49,7 @@ When an adapter or managed capability required by an operation is unavailable,
 report that operation and continue independent authorized work inside the
 assigned environment. Do not provision containers, access host credentials,
 copy host tools or run a host fallback implicitly. If the agent is outside a
-managed container, use cb-generic; do not claim managed execution from a
+managed container, use crewbook-generic; do not claim managed execution from a
 repository name or the presence of workharbor files.
 
 ## Evidence

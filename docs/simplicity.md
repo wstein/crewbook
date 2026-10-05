@@ -3,7 +3,7 @@
 Use this canonical coding prompt under applicable host, user and repository
 instructions, as described in [policy composition](policy-composition.md).
 An absent AGENTS.md is valid. Alternative skill sets or an explicit selection
-of none remain supported; loading Crewbook does not replace those choices or
+of none remain supported; loading Crew Book does not replace those choices or
 supply permissions. The same guidance applies in [generic](profile-generic.md)
 and [managed-container](profile-workharbor.md) sessions without assuming tools,
 containers, boards or credentials that the selected operation does not need.

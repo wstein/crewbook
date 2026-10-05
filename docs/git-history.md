@@ -5,7 +5,7 @@ not Git enforcement. Resolve the target's integration branch, history policy,
 checks, review order and operation authorization from applicable project
 instructions and explicit user/session decisions before integration. Record the
 sources and their scope in the assignment/handoff. Repository identity, existing
-history and cb-generic/cb-workharbor execution profile do not select a policy.
+history and crewbook-generic/crewbook-workharbor execution profile do not select a policy.
 Git configuration describes mechanics; it does not grant integration authority.
 
 Apply the host's instruction hierarchy to a user override or conflicting inputs.
@@ -65,7 +65,7 @@ reviewed and resulting target SHAs, policy sources, checks, reviewer evidence,
 conflict scope and any pending operation. Local integration never implies push,
 tag, release or publication authorization; retain the configured human owner.
 
-Crewbook's source repository currently requires linear, fast-forward-only
+Crew Book's source repository currently requires linear, fast-forward-only
 integration under its source-only AGENTS.md; the human owns push. This example
 supplies no policy or authority to another target.
 

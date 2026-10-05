@@ -9,7 +9,7 @@ credentials, retry controller or runtime enforcement.
 Confirm the target checkout, task scope, applicable instructions, actual tool
 availability and documented paths. Read the tool schema/help when arguments
 are uncertain. Use bounded `rg --files` or `rg` searches within relevant roots;
-do not scan the filesystem to guess a missing resource. In crewbook source,
+do not scan the filesystem to guess a missing resource. In Crew Book source,
 the maintenance policy is `tools/package-policy.json`, not a root-level policy.
 An exported skill deliberately has no maintenance tools; validation uses the
 external policy/inventory paths described in [distribution](distribution.md).

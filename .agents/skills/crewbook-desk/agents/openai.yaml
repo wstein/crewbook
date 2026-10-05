@@ -1,0 +1,6 @@
+interface:
+  display_name: "Crew Book desk"
+  short_description: "Start desk and reuse one dispatcher"
+  default_prompt: "Use $crewbook-desk to start desk and its persistent dispatcher."
+policy:
+  allow_implicit_invocation: false

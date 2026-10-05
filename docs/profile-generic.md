@@ -1,4 +1,4 @@
-# cb-generic: ordinary repository workflow
+# Crew Book generic profile (`crewbook-generic`)
 
 Use this default profile in any repository through the current native agent
 session. No workharbor installation, supervisor, container, reference host,
@@ -17,7 +17,7 @@ Never borrow workharbor endpoints, credentials, hooks or lane paths.
 
 | Field | Generic default |
 | --- | --- |
-| Identity | Target repository; cb-generic |
+| Identity | Target repository; crewbook-generic |
 | Repository | Canonical root from workspace/task; inspect existing remote and branch conventions when Git operations are needed |
 | Issues | User task or supplied issue; use existing authorized forge CLI/API when available; no issue required for local work |
 | Board | None unless the user or applicable policy selects a board; do not require board setup to dispatch local tasks |
@@ -33,7 +33,7 @@ Never borrow workharbor endpoints, credentials, hooks or lane paths.
 ## Dispatch without a supervisor
 
 A request to start dispatch designates the current session as coordinator.
-Invoking cb-desk instead automatically starts/reuses one persistent dispatch
+Invoking crewbook-desk instead automatically starts/reuses one persistent dispatch
 subagent; desk is the human contact and that subagent is the coordinator.
 Check current assignments and issue claims using available session/forge evidence;
 do not require a separate desk session. Use the invoking session for human

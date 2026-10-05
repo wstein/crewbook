@@ -1,7 +1,7 @@
 # Project configuration
 
-Use [cb-generic](profile-generic.md) by default for repository work through the
-current native agent session. Use [cb-workharbor](profile-workharbor.md) for any repository inside a
+Use [crewbook-generic](profile-generic.md) by default for repository work through the
+current native agent session. Use [crewbook-workharbor](profile-workharbor.md) for any repository inside a
 workharbor-managed container. Select by execution environment, never by
 repository name. Both profiles apply to generic repositories.
 Profiles describe workflows; host instructions and user authorization control
@@ -50,8 +50,8 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 
 | Context / request | Expected behavior |
 | --- | --- |
-| Ordinary repository without AGENTS.md; start dispatch | Use cb-generic, current session coordinator and user task; no workharbor setup required |
-| crewbook repository; local edit | Use cb-generic and crewbook checks; no crewbook-specific profile or workharbor container |
+| Ordinary repository without AGENTS.md; start dispatch | Use crewbook-generic, current session coordinator and user task; no workharbor setup required |
+| Crew Book repository; local edit | Use crewbook-generic and Crew Book checks; no repository-specific profile or workharbor container |
 | Confirmed generic GitHub remote; read issue | Use that repository's authorized forge tool, never a hardcoded workharbor endpoint |
 | Generic local task without a board | Record session assignment; no board creation or claim required |
 | Configured workharbor board unavailable | Stop board-dependent claims; continue independent authorized work |
@@ -76,7 +76,7 @@ context and only the configuration needed by that operation. Missing required in
 no `AGENTS.md` exists; specialized operations require their applicable inputs.
 
 Package guidance cannot relax system/platform controls or human approval
-boundaries. crewbook supplies no permission settings, hooks or tool enforcement;
+boundaries. Crew Book supplies no permission settings, hooks or tool enforcement;
 native tool limits are not enforced by Makefiles. The contract documents trusted
 writers and focused missing-policy/conflicting-skill review cases. Workharbor's
 current Hard rules remain in its own project policy, not in this package.

@@ -1,4 +1,4 @@
-# Crewbook repository guidance
+# Crew Book repository guidance
 
 This file applies only to development in this source repository. It is host
 project guidance, excluded from the distributed skill and exported package;

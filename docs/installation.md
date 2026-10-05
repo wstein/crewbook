@@ -19,7 +19,7 @@ If that destination already exists, inspect it before replacing anything.
 An existing legacy `cb-crewbook` symlink already points to the renamed skill;
 keep that single installation rather than adding a duplicate.
 Restart Codex or open a new session to refresh discovery. `agents/openai.yaml`
-enables implicit invocation: ordinary repository requests can select Crewbook
+enables implicit invocation: ordinary repository requests can select Crew Book
 automatically without switching roles. Explicit `$crewbook` starts desk
 and its persistent dispatcher; it is not a load-only command. The host's
 loaded skill uses relative links; no launcher or environment variable is
@@ -37,7 +37,7 @@ Keep the prompt single-quoted so the shell passes the skill name literally.
 Desk is the primary session; eight is the recommended subagent capacity,
 excluding desk. Six covers dispatch, two authors, two reviewers and design;
 the extra two slots allow bounded helpers. This is a ceiling, not a request
-to start eight agents. Crewbook still permits at most two concurrent code
+to start eight agents. Crew Book still permits at most two concurrent code
 authors. See [dynamic allocation](team.md#dynamic-agent-allocation).
 Keep desk and its one dispatcher persistent. Start each new work item, design
 batch and bounded helper/research/verification task in fresh context; resume
@@ -51,17 +51,18 @@ and quality improvements remain unmeasured.
 The installed skill and selected model must be available in the client.
 
 The dedicated Codex desk skill is
-[.agents/skills/cb-desk/SKILL.md](../.agents/skills/cb-desk/SKILL.md). Codex discovers
-it when launched in the crewbook repository. To make `$cb-desk` available in
+[.agents/skills/crewbook-desk/SKILL.md](../.agents/skills/crewbook-desk/SKILL.md). Its repository skill location
+is intended for Codex discovery when launched in the Crew Book repository;
+native discovery under the renamed selector remains unverified. To make `$crewbook-desk` available in
 other repositories, install its folder in a user skill location too:
 
 ```sh
 mkdir -p ~/.agents/skills
-ln -s /absolute/path/crewbook/.agents/skills/cb-desk ~/.agents/skills/cb-desk
+ln -s /absolute/path/crewbook/.agents/skills/crewbook-desk ~/.agents/skills/crewbook-desk
 ```
 
 Inspect an existing destination before replacing it. Codex skills use `$`;
-`.claude/commands/cb-desk.md` cannot register `/cb-desk` in Codex. The existing
+`.claude/commands/crewbook-desk.md` cannot register `/crewbook-desk` in Codex. The existing
 `$crewbook` installation is sufficient to start desk without the optional
 alias. See [official skill discovery](https://learn.chatgpt.com/docs/build-skills).
 
@@ -76,6 +77,39 @@ To update a linked checkout, review and validate its changes. For a fixed copy,
 validate a new export before switching registration for new sessions. Keep old
 copies while active sessions use them. To uninstall a linked skill, remove only
 the `crewbook` symlink (or its legacy installation name); retain the source checkout and target project policy.
+
+## Migrating older role registrations
+
+Current resources and client selectors use `crewbook-*`: for example,
+`.agents/crewbook-desk.md`, `.claude/agents/crewbook-dispatch.md`, Claude
+`/crewbook-desk` and the optional Codex `$crewbook-desk` skill. Role identities
+use `crewbook/<role>`; the execution profiles are `crewbook-generic` and
+`crewbook-workharbor`. Human-facing titles and display names use “Crew Book”.
+The root package directory, repository URL and `$crewbook` entrypoint keep
+their machine identifier. Paths contain no literal spaces.
+
+This package no longer ships the older `cb-*` role resources or selectors.
+Review any explicit role-file references and client registrations before
+switching new sessions to the renamed resources. An optional old `cb-desk`
+user symlink points to a folder that moved; inspect it and migrate that single
+registration if you still want the dedicated desk skill. Keep one registration
+per skill rather than installing both names. An unchanged legacy `cb-crewbook`
+root symlink can still serve the root skill because its target and the root
+`name: crewbook` are unchanged. No backward-compatible command registration
+is supplied or claimed; a client's own documented alias support is a separate
+client configuration decision. Existing sessions keep their recorded revision
+and retained dispatcher handle.
+
+Workharbor integration is separate work: review any consumer instruction paths,
+role selections and client registrations; validate the supported native binding;
+then generate and independently review a new immutable export and operator pin
+before selecting it for new managed sessions. Preserve the earlier export/pin
+for resume and rollback. The current package has no `workharbor.json` runtime
+manifest or runtime role bindings; the path arrays in `crewbook.json` remain
+layout schema v1. This rename does not change an external runtime schema,
+update a consumer, or establish managed compatibility. See the
+[distribution contract](distribution.md#runtime-gate-installation-and-rollback)
+and the separate [Workharbor integration follow-up](https://github.com/wstein/crewbook/issues/20).
 
 ## Shared desired behavior across providers
 
@@ -95,7 +129,7 @@ contract, not a claim that all three clients currently support it:
   apply to Claude/Codex; no Antigravity binding is approved. Do not infer one
   from another provider's names or silently inherit a model.
 - Review the exact immutable revision independently and follow the target's
-  integration policy. Crewbook's own repository requires reviewed linear
+  integration policy. Crew Book's own repository requires reviewed linear
   fast-forward integration; other targets supply their own policy. Local
   integration and human push/publication remain separate operations.
 - Track criterion checklists and, when configured and authorized, Kanban status
@@ -125,9 +159,9 @@ establish no native enforcement, paid-run result or managed runtime promise.
 - **Skill:** discover the installed `SKILL.md`; follow links relative to that file. It may also be loaded by absolute path. Its routing table selects a role without loading all
   prompts. Manual text loading and local path resolution can be checked without
   a live agent runtime.
-- **Claude Code:** profiles are `.claude/agents/cb-*.md`; commands are
-  `.claude/commands/cb-*.md` (including `/cb-code platform`, `/cb-desk`,
-  `/cb-review`, `/cb-delegate`, `/cb-board`, `/cb-land` and `/cb-handover`). A
+- **Claude Code:** profiles are `.claude/agents/crewbook-*.md`; commands are
+  `.claude/commands/crewbook-*.md` (including `/crewbook-code platform`, `/crewbook-desk`,
+  `/crewbook-review`, `/crewbook-delegate`, `/crewbook-board`, `/crewbook-land` and `/crewbook-handover`). A
   client must register/load these files from the installed skill directory; merely setting an environment variable does not register slash
   commands or profiles. Automatic discovery from an external mount is
   **unverified**. Existing `model: sonnet`, `opus` and `haiku` pins remain
@@ -148,9 +182,9 @@ establish no native enforcement, paid-run result or managed runtime promise.
   **conceptual/unverified**, tracked in historical workharbor integration issue #283. This package supplies
   no enforcement, tool permissions or workharbor runtime adapter.
 
-Explicit `$crewbook` (Codex) or `/cb-desk` (Claude Code) enters
-`crewbook/desk` through the canonical cb-desk workflow
-and automatically starts or reuses one pinned cb-dispatch
+Explicit `$crewbook` (Codex) or `/crewbook-desk` (Claude Code) enters
+`crewbook/desk` through the canonical crewbook-desk workflow
+and automatically starts or reuses one pinned crewbook-dispatch
 subagent. Desk stays the human contact and routes later work through the same
 handle; dispatch owns claims and worker/review starts. The dispatch child is
 pinned to Sonnet for Claude and `gpt-6.1-sol` with low reasoning effort for Codex. Idle dispatch yields and
@@ -158,8 +192,8 @@ is resumed by desk. This requires client subagent/resume support and does not
 create a background daemon. See the [team manual](team.md).
 
 Public issue/review profiles and direct role commands execute as leaves, never
-re-delegating their assignment. Only cb-dispatch or an explicitly designated
-session coordinator starts those workers; cb-desk routes unless designated in
+re-delegating their assignment. Only crewbook-dispatch or an explicitly designated
+session coordinator starts those workers; crewbook-desk routes unless designated in
 its place. The manual defines single ownership and a counted lifecycle example.
 
 The [target Git history guidance](git-history.md) resolves linear and
@@ -167,9 +201,9 @@ authorized non-linear integration from target instructions and session choices,
 with static decision walkthroughs.
 The [team manual](team.md) covers roles, delegation, independent review,
 handoffs and context. For configured team workflows, select applicable trusted project configuration:
-[cb-generic](profile-generic.md) is the default for any repository in
+[crewbook-generic](profile-generic.md) is the default for any repository in
 the current native session, without a workharbor container or board;
-[cb-workharbor](profile-workharbor.md) applies to any repository inside
+[crewbook-workharbor](profile-workharbor.md) applies to any repository inside
 a workharbor-managed container. Both profiles use the target repository's
 instructions, destinations and checks; neither selects a specific repository.
 Board and landing capabilities belong to the target project or supervisor;

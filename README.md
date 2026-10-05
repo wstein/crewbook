@@ -22,7 +22,7 @@ Inspect an existing destination before replacing it. Keep one installation;
 an existing legacy `cb-crewbook` link can continue to serve that purpose.
 Restart Codex or open a new session to refresh skill discovery.
 See [installation and client support](docs/installation.md) for fixed copies,
-updates, uninstalling, Claude Code entrypoints and the optional `$cb-desk` alias.
+updates, uninstalling, Claude Code entrypoints and the optional `$crewbook-desk` alias.
 
 ## Try a first task
 
@@ -69,10 +69,10 @@ These settings and static package checks do not establish native runtime behavio
 
 ## Clients
 
-- **Codex:** use `$crewbook`; `$cb-desk` is an optional separately installed
+- **Codex:** use `$crewbook`; `$crewbook-desk` is an optional separately installed
   alias. Desk/dispatch delegation has been observed in a Codex session;
   installed native startup and managed execution remain unverified.
-- **Claude Code:** `/cb-desk` and role wrappers are packaged, but the client
+- **Claude Code:** `/crewbook-desk` and role wrappers are packaged, but the client
   must register/load them. Native loading and external-mount discovery remain
   unverified; shipping the files does not register commands automatically.
 - **Antigravity (`agy`):** there is no approved production entrypoint or binding.

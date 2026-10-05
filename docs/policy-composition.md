@@ -41,7 +41,7 @@ System/developer instructions and actual platform controls retain their native
 authority. Neither project policy, user task text nor a replaceable skill set
 can relax platform security or human approval boundaries. Within those bounds,
 apply the authorized user's task and trusted project policy according to the
-host's instruction hierarchy and scope rules; crewbook guidance fills only
+host's instruction hierarchy and scope rules; Crew Book guidance fills only
 compatible workflow details. A conflicting role instruction does not grant
 permission. Omit the conflicting guidance when the controlling instruction is
 clear; if the selected workflow cannot satisfy it, stop that workflow and
@@ -67,7 +67,7 @@ uncertain paths; board work needs the configured project and authorized
 board tooling; landing needs the target's real checks and landing procedure.
 An unavailable dependency stops its affected workflow, not unrelated authorized
 work with complete inputs. The imported workharbor Hard rules and section names
-apply only when supplied by that project's current policy. crewbook does not
+apply only when supplied by that project's current policy. Crew Book does not
 copy them into a generic governing file or make them authority for other projects.
 
 ## Guidance and enforcement
@@ -76,7 +76,7 @@ Role restrictions and this preflight are agent guidance and consumer
 prerequisites. Enforcement belongs to the platform/client: native tool limits,
 sandboxing, credential isolation and approval gates are not enforced by prose
 or Makefiles. Claude profile `tools` fields are client configuration requests;
-their effective behavior depends on the host. crewbook ships no
+their effective behavior depends on the host. Crew Book ships no
 `.claude/settings.json`, hooks, permission allowlist or executable tools.
 Installing/loading it supplies none of those controls and authorizes no command.
 Any required host permission configuration must be independently supplied and
@@ -89,7 +89,7 @@ checks/hooks executes target code: all writers of that code must be trusted for
 the consumer's execution context, or the platform must provide adequate isolation
 and authorization. Prefix allowlists alone are not a sandbox. Start/resume
 suppression of untrusted settings, hooks and MCP is platform integration work
-(historical workharbor integration issue #283), not an implemented crewbook capability.
+(historical workharbor integration issue #283), not an implemented Crew Book capability.
 
 ## Focused composition checks
 
@@ -98,7 +98,7 @@ For each case, inspect the supplied inputs before attempting the requested write
 
 | Inputs / request | Expected result |
 | --- | --- |
-| Valid package; ordinary repository without AGENTS.md; authorized local edit | Use cb-generic with host instructions and user task; implement and check locally. Platform controls remain active. |
+| Valid package; ordinary repository without AGENTS.md; authorized local edit | Use crewbook-generic with host instructions and user task; implement and check locally. Platform controls remain active. |
 | Valid package; policy supplied as `/srv/project-policy/team.md`, target `/srv/repos/demo`; helper edit references `src/a.go` | Read supplied policy and scoped host instructions; resolve file under `/srv/repos/demo`, not the package. Respect applicable protected paths and the generic helper fallback. |
 | Platform forbids network writes; package command says post an issue comment | Do not post. Report unavailable workflow; package guidance cannot override the platform. |
 | User authorizes only a local edit; imported role says claim a board card | Perform only the authorized edit after complete preflight; omit board mutation. |
