@@ -178,14 +178,28 @@ foundation. Historical source-worker allocations and one-reviewer limits do
 not override the current ceiling of two authors and two independent reviewers
 within eight child slots, one editor per checkout and isolated disjoint scopes.
 
+Desk and dispatch keep the coordinating turn active while authorized workers,
+required reviews or actionable handbacks remain outstanding. Consume results,
+route findings, resume existing handles and await the next named artifact with
+supported bounded tools. Do not report idle or end merely because a child is
+running. Child completion does not automatically reactivate a yielded parent.
+End only when the queue is resolved, the human explicitly pauses, a concrete
+external blocker prevents continuation, or ownership is explicitly handed off
+with retained handles and the next resume action. If wait/resume tools are
+unavailable, report that concrete limit and hand off; never imply background
+supervision. Desk awaits dispatcher handbacks through the existing handle;
+dispatch awaits its owned worker/reviewer artifacts. This lifecycle rule applies
+to recovery under [tool preflight](tool-preflight.md), without a second scheduler.
+
 After draining completions/reviews and selecting eligible continuations, wait
 on named active work and its next artifact using bounded checks, without busy
 polling. A full pool or decision-blocked backlog is not an empty queue. On a
 true empty-queue transition send desk one concise request for more work,
 including completed work, active ownership and blocked dependencies; then yield
 until new work or response. Do not start an empty design batch for the clock.
-Valid stops are no eligible work, a concrete external dependency or explicit
-human pause. Before context turnover preserve ownership, pending completions,
+No eligible work is a resolved stop only after outstanding authorized
+workers/reviews and actionable handbacks have been resolved or explicitly
+handed off; a concrete external dependency or human pause also permits stopping. Before context turnover preserve ownership, pending completions,
 exact evidence, design timing and the next runnable action in a resume note,
 and notify the existing desk. No daemon, forge-triggered runner, live inference
 or unattended timer is supplied or authorized by this procedure.

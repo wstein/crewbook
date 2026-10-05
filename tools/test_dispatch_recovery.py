@@ -74,6 +74,16 @@ def replay(state, events):
     return state, actions
 
 
+def parent_continuation(state, handles, wait_available=True):
+    """Observable parent action for a supplied snapshot, without tool execution."""
+    awaited = [(key, handles[key], {'in_review': 'review', 'review_pending': 'review_slot',
+                 'running': 'author_handback'}[task['phase']]) for key, task in state['tasks'].items()
+               if task['phase'] in ('running', 'in_review', 'review_pending')]
+    if awaited:
+        return ('await' if wait_available else 'handoff', awaited)
+    return ('resolved', [])
+
+
 def fixture():
     task = dict(owner='author', thread='author-thread', phase='running',
                 evidence=None, review_model=('gpt-6.1-sol', 'medium'),
@@ -177,6 +187,32 @@ class RecoveryReplay(unittest.TestCase):
         self.assertIn(('approved_read', 'generic'), actions)
         self.assertNotIn(('request_work',), actions)
         self.assertIsNone(state['tasks']['generic']['evidence'])
+
+    def test_parent_awaits_handback_and_review_using_retained_handles(self):
+        state = fixture()
+        handles = {'generic': 'existing-author', 'managed': 'existing-other'}
+        action, artifacts = parent_continuation(state, handles)
+        self.assertEqual(action, 'await')
+        self.assertIn(('generic', 'existing-author', 'author_handback'), artifacts)
+        state, actions = replay(state, [self.handback()])
+        handles['generic'] = 'assigned-reviewer'
+        action, artifacts = parent_continuation(state, handles)
+        self.assertEqual(action, 'await')
+        self.assertIn(('generic', 'assigned-reviewer', 'review'), artifacts)
+        handoff, retained = parent_continuation(state, handles, wait_available=False)
+        self.assertEqual(handoff, 'handoff')
+        self.assertEqual(retained, artifacts)
+        # Explicit owner resume processes the artifact; completion alone is data.
+        review = dict(id='parent-review', kind='review', task='generic',
+                      reviewer='independent', revision='a' * 40,
+                      model=('gpt-6.1-sol', 'medium'), findings=[])
+        resumed, actions = replay(state, [review])
+        self.assertEqual(state['tasks']['generic']['phase'], 'in_review')
+        self.assertEqual(resumed['tasks']['generic']['phase'], 'approved')
+        action, artifacts = parent_continuation(resumed, handles)
+        self.assertEqual(action, 'await')
+        self.assertEqual(artifacts, [('managed', 'existing-other', 'author_handback')])
+        self.assertFalse(any(a[0] in ('review', 'retry_same_claim') for a in actions))
 
     def test_empty_transition_once_and_blocked_backlog(self):
         state = fixture()

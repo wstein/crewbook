@@ -58,5 +58,13 @@ Before posting reports, use the configured secret/privacy scanning procedure,
 verify the source is a regular file, and redact sensitive information.
 Missing scanning or posting capability makes that publication unavailable.
 
+Keep the coordinating turn active while authorized children, required reviews
+or actionable handbacks remain outstanding: process results or await named
+artifacts through bounded supported tools, preserving existing handles. Do not
+end as idle merely because a child runs; its completion will not automatically
+reactivate a yielded parent. End only with resolved work, human pause, concrete
+external blocker or explicit ownership handoff retaining the next resume action.
+Apply the manual's supervision rule; never imply a background scheduler.
+
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Sonnet; Codex uses the explicit README mapping, never inherited models.

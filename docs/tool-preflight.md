@@ -79,6 +79,10 @@ the already-confirmed canonical checkout. The temporary export is removed on
 context exit. Choose an authorized persistent private parent if retaining the
 artifact is required. A rejected export remains a failure even if cleanup succeeds.
 
+For pending authorized workers or reviews, follow the [active parent lifecycle](team.md#dispatch-supervision-and-recovery): preserve handles, process handbacks or
+await named artifacts. A tool blocker requires a concrete continuation/handoff,
+not a claim that a yielded parent will restart itself.
+
 ## Offline evidence boundary
 
 The maintenance-only scenarios in `tools/test_preflight.py` exercise subprocess
