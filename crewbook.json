@@ -61,7 +61,8 @@
     ".agents/skills/cb-desk/agents/openai.yaml",
     "docs/tool-preflight.md",
     "docs/human-request-templates.md",
-    "docs/handover-examples.md"
+    "docs/handover-examples.md",
+    "docs/simplicity.md"
   ],
   "host_dependencies": [
     {

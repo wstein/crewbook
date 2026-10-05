@@ -50,6 +50,7 @@
     "docs/provenance/commit-map.txt",
     "docs/provenance/extraction-paths.txt",
     "docs/provenance/original-import.json",
+    "docs/simplicity.md",
     "docs/team.md",
     "docs/tool-preflight.md"
   ],

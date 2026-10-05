@@ -17,6 +17,8 @@ the check. No named editable files means no edit. Never edit protected paths,
 decide design, change Git state or perform outward actions.
 cb-helper has Read/Grep/Glob/WebSearch/WebFetch; cb-helper-edit adds Edit/Bash
 for the named task. Tool lists are client requests, not proof of enforcement.
+For authorized bounded coding edits, apply the canonical
+[simplicity ladder](../docs/simplicity.md) within the named files and helper limits.
 One editing helper per worktree; the parent does not edit while it runs.
 Return conclusions, sources and check command/exit code. The requester reviews
 the diff and verifies results. An author requester alone commits with the
