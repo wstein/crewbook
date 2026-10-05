@@ -67,6 +67,22 @@ for the full table and availability limits, and the
 [team manual](docs/team.md#dynamic-agent-allocation) for allocation and context lifetimes.
 These settings and static package checks do not establish native runtime behavior.
 
+## Clients
+
+- **Codex:** use `$crewbook`; `$cb-desk` is an optional separately installed
+  alias. Desk/dispatch delegation has been observed in a Codex session;
+  installed native startup and managed execution remain unverified.
+- **Claude Code:** `/cb-desk` and role wrappers are packaged, but the client
+  must register/load them. Native loading and external-mount discovery remain
+  unverified; shipping the files does not register commands automatically.
+- **Antigravity (`agy`):** there is no approved production entrypoint or binding.
+  See the [readiness matrix](docs/antigravity.md) for evidence and admission
+  requirements; full support is not established.
+
+See [installation and client support](docs/installation.md) for entrypoints,
+requested [model mappings](docs/installation.md#entrypoints-and-support) and
+[role selection](SKILL.md#specialized-workflows).
+
 ## Find the details
 
 | Need | Read |
