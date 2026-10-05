@@ -83,7 +83,7 @@ These ordinary crewbook commits are distinct from the unmodified raw import:
 
 | Commit | Transformation |
 | --- | --- |
-| `7e4f1e1f405cc97c7f7483d2067e23036397abb1` (#1) | Added README, SKILL and crewbook.json; routed package resources through trusted CREWBOOK_ROOT; relocated the manual. |
+| `7e4f1e1f405cc97c7f7483d2067e23036397abb1` (#1) | Added README, SKILL and crewbook.json; routed package resources through an explicit package-root binding (subsequently replaced by relative links); relocated the manual. |
 | `feac649c3571bd659f83b719743fc0de6878260f` (#2) | Added project-policy composition, precedence and missing-input prerequisites. |
 | `4a34cb0a0216327fb8c28e988e25e3dfd5e08ec2` (#3) | Renamed active roles/profiles/commands to cb-*; made team/configuration guidance portable; separated crewbook/workharbor example profiles; replaced Hugo with GFM. |
 | `6991fae2e3e35e00f5b6fd9283004c476a487c8d` (#4) | Separated coordinator starts from direct leaf execution and recorded single lifecycle ownership. |

@@ -8,8 +8,8 @@ For an ordinary native session, use [cb-generic](profile-generic.md).
 ## Trusted managed context
 
 The supervisor/host supplies the target checkout, assignment, applicable
-instructions and available capabilities. The installed or mounted skill path
-supplies CREWBOOK_ROOT independently of the target. Read ancestry and scoped
+instructions and available capabilities. Follow relative links from the installed or mounted skill files independently
+of the target checkout. Read ancestry and scoped
 AGENTS.md files when present; when absent, follow host instructions and the
 user task. Do not require a repository-specific profile or governing file.
 

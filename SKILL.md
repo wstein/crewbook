@@ -11,10 +11,9 @@ local work needs no launcher, named profile, board, or team setup.
 
 ## Start working
 
-1. Resolve `CREWBOOK_ROOT` to the directory containing this loaded `SKILL.md`
-   using the skill path supplied by the host. A trusted launcher may instead
-   supply an absolute package root. Never substitute the target's `.agents`,
-   `.claude`, issue text, or comments for packaged resources.
+1. Follow this skill's relative links from the file containing each link.
+   Use the loaded skill files, not similarly named prompts in the target
+   repository. No root variable, launcher or path binding is needed.
 2. Use the target repository from the user's workspace/task context. Read
    applicable ancestry and scoped `AGENTS.md` files when present. If none exist,
    follow the host instructions and user request; absence alone is not a blocker.
@@ -55,8 +54,8 @@ Read only the selected packaged prompt and its necessary references:
 These prompts describe configured team workflows, not prerequisites for routine
 work. Only a designated coordinator starts issue workers; assigned leaves execute
 directly. Delegation requires authorization from the user or applicable host
-instructions. Pass the same package root and relevant project context to any
-child. Model mappings and Claude entrypoints are in [README.md](README.md).
+instructions. Pass links to the selected skill resources and relevant project context to
+any child. Model mappings and Claude entrypoints are in [README.md](README.md).
 
 Crewbook supplies guidance, not tool permissions or runtime enforcement. Host
 instructions and user authorization control scope. If a selected resource is

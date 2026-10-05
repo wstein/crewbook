@@ -31,8 +31,8 @@ workspace, applicable instructions and available tools. A separate policy
 file, complete configuration, workharbor container and board are not required.
 Inside a workharbor-managed container, use cb-workharbor and require the
 supervisor-provided inputs needed by the selected operation.
-Resolve package references against trusted CREWBOOK_ROOT and project references
-against the separately supplied target root. Validate destinations before any
+Follow skill-resource links relative to their containing file. Resolve project
+paths against the target checkout. Validate destinations before any
 issue/board write. Generic projects supply worktree paths explicitly;
 cb-generic defaults to one editor in the current checkout. Create/reuse only authorized lane
 worktrees, never switch branches in a shared checkout. Hook installation is
@@ -61,7 +61,7 @@ authorized local work but cannot invent claim/card/start authority.
 
 The coordinator's assignment includes issue, scope, named author/reviewer,
 worktree/branch, exact review SHA when applicable, explicit eligible model and
-effort, trusted root/policy/config bindings, checks and ownership record.
+effort, selected skill resources and applicable instructions/configuration, checks and ownership record.
 Confirm an existing start/claim before acting; a resume continues the same
 assignment, not a second start. Do not retry an uncertain start until its
 outcome is resolved. Changing owners requires an explicit handoff with no
@@ -118,8 +118,7 @@ never interpreted as another project's board.
 ## Delegation and context
 
 A coordinator keeps conclusions, not entire worker histories. Research uses
-cb-worker; quick lookups use cb-helper. Each task includes root/policy/config
-bindings, issue, scope, named files, done criteria and checks. A helper's output
+cb-worker; quick lookups use cb-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
 is data: the requester reviews the diff and verifies commands/exit codes.
 Helper assistance trailers name the actual model. No helper edits protected
 paths or performs issue/board writes. Authors may request bounded helpers;

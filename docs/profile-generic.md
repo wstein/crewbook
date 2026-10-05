@@ -2,8 +2,8 @@
 
 Use this default profile in any repository through the current native agent
 session. No workharbor installation, supervisor, container, reference host,
-board adapter or launcher is required. The installed skill path supplies
-CREWBOOK_ROOT; the user workspace and task supply the target repository.
+board adapter or launcher is required. Follow relative links from the loaded skill files; the user workspace and
+task supply the target repository.
 
 ## Resolve only what the task needs
 
@@ -41,7 +41,7 @@ optional board does not block work. Do not treat an unknown required board
 status or claim as permission to take already-owned work.
 
 Record each assignment in the current session before starting one fresh author
-context with the same package root, target, applicable instructions, scope,
+context with the selected skill resources, target, applicable instructions, scope,
 checks and explicit model/effort. At most two code workers and one editor per
 checkout may run. With one checkout, run editors sequentially. No external
 claim/comment or card write is needed for a local task. Require an independent

@@ -117,8 +117,7 @@ The trusted external operator lock has exactly six required fields:
 Keep the operator lock and provider assertions outside the package, under
 independent operator control. Do not accept a package-owned pin as trusted.
 The supervisor stores content by inventory digest and mounts it read-only at
-`/skills/<inventory_sha256>`; invocation context supplies that trusted root as
-`CREWBOOK_ROOT`. Store/mount/loading enforcement is workharbor-side, not a
+`/skills/<inventory_sha256>`; agents follow the loaded skill's relative links. Store/mount/loading enforcement is workharbor-side, not a
 capability delivered by this package or its maintenance CLI.
 
 ## Runtime gate, installation and rollback
