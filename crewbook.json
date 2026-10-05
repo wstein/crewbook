@@ -65,7 +65,8 @@
     "docs/simplicity.md",
     "docs/root-cause.md",
     "docs/antigravity.md",
-    "docs/git-history.md"
+    "docs/git-history.md",
+    "docs/installation.md"
   ],
   "host_dependencies": [
     {

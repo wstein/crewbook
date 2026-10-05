@@ -65,3 +65,18 @@ Resolve history policy from applicable target instructions and explicit
 user/session decisions using [target Git history guidance](git-history.md),
 independently of repository identity or execution profile. Missing or conflicting
 material choices stop integration until resolved; local work may continue.
+
+## Native resource and policy context
+
+
+Native skill use starts with the host instructions and user workspace, as
+described in [SKILL.md](../SKILL.md). Before applying specialized roles, read the
+[policy composition contract](policy-composition.md). Use trusted target
+context and only the configuration needed by that operation. Missing required inputs stop only the affected workflow. Routine native skill use follows existing host/project instructions even when
+no `AGENTS.md` exists; specialized operations require their applicable inputs.
+
+Package guidance cannot relax system/platform controls or human approval
+boundaries. crewbook supplies no permission settings, hooks or tool enforcement;
+native tool limits are not enforced by Makefiles. The contract documents trusted
+writers and focused missing-policy/conflicting-skill review cases. Workharbor's
+current Hard rules remain in its own project policy, not in this package.

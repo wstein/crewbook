@@ -1,5 +1,44 @@
 # Distribution and workharbor consumer contract
 
+## Package root and manifest v1
+
+
+`crewbook.json` is the package contract. `schema_version: 1` identifies this
+format; it is not a runtime plugin API. `name`, `license`, `entrypoints`,
+`resources` and `host_dependencies` are required. Entrypoints are grouped into
+`skill` (one path), `roles`, `claude_agents` and `claude_commands` (path arrays).
+`resources` is the complete list of required non-entrypoint files. Every path
+is relative to the package root, uses `/`, and must resolve to a regular file
+inside that root: reject absolute paths, empty components, `.` and `..`, and
+symlinks escaping the root. No globbing or executable fields are supported.
+The union of entrypoints and resources defines the required package contents;
+`.git` and local maintenance artifacts are not runtime resources.
+
+`host_dependencies` names external prerequisites, each with `name`, `scope`
+and `status`, and optional explicit `paths` for external file references.
+They are descriptions, not install commands or authorization to run anything.
+Relative links resolve from the file containing each link;
+an external file link must use `host:<path>` with an exact declared host path.
+The Python checker validates layout, filesystem safety and the complete
+inventory without interpreting instructions.
+[PROVENANCE.md](../PROVENANCE.md) records the original import
+and post-import transformations; the [distribution contract](distribution.md)
+separates current content integrity from pending runtime compatibility.
+
+Follow relative links from the loaded skill or role file. Package metadata
+paths resolve relative to `crewbook.json`. No root environment variable,
+launcher binding or placeholder expansion is required. Use the loaded skill's
+resources rather than similarly named files in the target repository.
+
+Target `AGENTS.md`, repository configuration, worktrees, issues, design files
+and host scripts remain target resources. The `.agents/` and `.claude/` paths
+listed here are package resources. A target's unrelated `.agents` must never
+substitute for packaged prompts. Portable roles use the explicit [project configuration](project-config.md)
+and [team manual](team.md). The [execution contract](team.md#coordinator-and-leaf-execution-contract)
+separates designated coordinators from directly executing leaves. All role,
+profile and command identities use cb-*; the skill
+entrypoint is `crewbook`, invoked as `$crewbook`. The package and skill identifiers remain `crewbook`; the reader-facing name is “Crew Book”.
+
 ## Current content artifact
 
 The original import is recorded in [PROVENANCE.md](../PROVENANCE.md), including
@@ -162,3 +201,53 @@ resume or rollback. Rollback selects the earlier reviewed pin for new sessions;
 it does not rewrite running sessions. To uninstall, remove the registration/root
 selection, wait for its sessions to finish, then remove only that dedicated
 package copy. Leave project policy, repositories and host tools intact.
+
+## Source maintenance and CI
+
+
+Use Python 3.9 or newer on macOS or Linux. The maintenance CLI uses only the
+standard library; no pip packages, virtual environment, Go toolchain or
+Markdown parser is needed. On a Mac with Apple's command line tools,
+`/usr/bin/python3` is sufficient. Python availability depends on the macOS
+installation; a machine without Python still needs an interpreter.
+
+From the source checkout, use a canonical absolute root:
+
+```sh
+python3 tools/crewbook-package.py check --root /absolute/path/crewbook
+python3 tools/crewbook-package.py inventory --root /absolute/path/crewbook
+python3 tools/crewbook-package.py update --root /absolute/path/crewbook
+python3 tools/crewbook-package.py export --root /absolute/path/crewbook --dest /absolute/path/new-text-package
+python3 -B -m unittest discover -s tools -p 'test_*.py'
+```
+
+`check` validates package layout, file safety and saved inventory digests.
+It does not parse Markdown, validate prompt prose, enforce role/model mappings
+or resolve links. Instruction text is data and is never executed. `update`
+accepts reviewed content changes and writes the inventory; it is not a tamper
+check. Export uses validated snapshot bytes and requires a new destination.
+Source/export policies enumerate the same distributed files, including dot
+directories. Maintenance code, tests, CI and the inventory are not exported.
+
+Inventory records are sorted ASCII
+`<lowercase SHA-256><two spaces><relative POSIX path><LF>`, including the final
+LF. `workharbor.json`, when present, is hashed separately and excluded from
+these records. Keep changed resources, declarations and regenerated inventory
+in the same commit. [tools/README.md](../tools/README.md) describes command flags,
+filesystem safeguards and tests; [docs/distribution.md](distribution.md)
+describes relocation and the runtime contract.
+
+`runtime-check --root … --pin /external/pin.json --provider /external/provider.json`
+requires the v1 `workharbor.json` and an independently reviewed six-field pin.
+`lock --root … --source … --commit <40-hex> --provider /external/provider.json`
+prints a candidate pin after the same checks. Provider assertions describe
+exact version/model/effort bindings and confirmed project inputs. These offline
+checks do not measure native client loading or runtime enforcement. No approved
+production tuple or manifest is currently shipped; both commands fail clearly
+on the missing manifest.
+
+CI runs the Python tests and package check on Linux and macOS, plus isolated
+secret-scanner fixtures. CodeQL analyzes Python maintenance source. External
+HTTP(S) links are checked only on a schedule or manual request. Actions retain
+immutable pins and least-privilege permissions. Hosted results remain
+unverified until publication and an actual GitHub run.
