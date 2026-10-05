@@ -87,8 +87,9 @@ review approval on the reviewer's behalf. All writes still require local policy
 and authorization. Board mode none omits card operations; pending board setup
 blocks board operations, not explicitly authorized local edits. Unavailable
 landing yields a local-commit handoff, explicitly unlanded and not ready.
-If fixes change the SHA, invalidate prior readiness; the coordinator arranges
-a new independent review assignment, never the author or reviewer itself.
+If fixes change the SHA, invalidate prior readiness; the coordinator routes
+the exact new revision to the same independent reviewer for corrections to
+that work item's findings. The author and reviewer never initiate review.
 
 ## Persistent desk and dispatch
 
@@ -131,19 +132,26 @@ record occupied child slots, author/reviewer slots, pending completions, ready
 queue, last design start and next due time. Silence does not release ownership.
 On turnover reconstruct from confirmed session, issue/card and checkout evidence;
 resolve conflicting or unknown ownership before starting replacements. Preserve
-handbacks before closing/releasing completed threads using an available host
-capability. An idle read-only reviewer is not an editing author, but its open
-thread may still occupy client capacity.
+handbacks before any supported host close/release operation. Completion,
+retained handles and list counts alone establish neither occupancy nor available
+capacity. Record confirmed host capacity separately from role limits; a completed
+thread may remain occupied, or the host may permit a fresh start while retaining
+its handle. Do not assume a close/release tool exists. If the host confirms a
+full pool and no release capability, preserve the pending fresh assignment and
+defer it with a concrete next action; do not recycle an unrelated context or
+repeat an unchanged failed start. Confirmed available capacity permits a fresh
+start without requiring a close operation. An idle read-only reviewer is not
+an editing author; host controls determine its capacity use.
 
 | Confirmed event | Coordinator continuation |
 | --- | --- |
 | Author landed or returned review-ready snapshot | Preserve outcome; enqueue exact scoped review immediately; refill eligible author capacity independently |
 | Author paused or stalled | Retain owner; inspect actual tool/test state and request a narrow unblock artifact; do not interrupt healthy long checks |
-| Failed start with known no-child outcome | Keep sole claim; reclaim preserved completed threads and retry only after changed capacity/prerequisites |
+| Failed start with known no-child outcome | Keep sole claim; retry only after confirmed changed host capacity/prerequisites; preserve failed-call evidence |
 | Uncertain start or external write | Resolve actual outcome before retry; never duplicate starts or writes |
 | Clean review | Verify independent reviewer, actual authorized model/strength, unchanged revision and no open findings; record exact evidence |
-| Review findings or changed revision | Invalidate prior readiness; route fixes to author and high/rule findings to design; arrange fresh review |
-| Thread-limit rejection | Inspect actual occupied slots, preserve/release completed children, then continue the same assignment; sequence if no release tool exists |
+| Review findings or changed revision | Invalidate prior readiness; resume the same author for that work item and same independent reviewer for finding corrections on the new exact revision; route high/rule findings to design |
+| Thread-limit rejection | Inspect confirmed host capacity and supported release capabilities; preserve handles/evidence, then retry only after a changed prerequisite; defer fresh starts if full with no release tool |
 | Tool failure | Classify missing input, expected negative, network/permission denial, authentication, implementation failure or unknown outcome; preserve mixed-success results and continue independent work |
 
 Apply [tool preflight](tool-preflight.md) to recovery. An unchanged denial is
@@ -275,7 +283,30 @@ never interpreted as another project's board.
 
 ## Delegation and context
 
-A coordinator keeps conclusions, not entire worker histories. Research uses
+A coordinator keeps conclusions, not entire worker histories. Retain compact
+durable task records with decisions, revision, checks, findings, ownership and
+next action; pass only the relevant record to a fresh assignment, never a full
+prior transcript. Context reuse follows assignment identity:
+
+| Role | Context lifetime |
+| --- | --- |
+| Desk and its one dispatcher | Persistent across requests; resume the same dispatcher handle |
+| Design | Fresh context for each decision batch; save decisions and a resume note before ending |
+| Author | Fresh context for each new work item; reuse the same author for that item's fixes and continuations |
+| Independent reviewer | Fresh context for each new work item, independent of its author/design decisions; reuse the same reviewer for corrections to that item's findings, checking each exact new revision |
+| Helper, research or verification leaf | Fresh context for each bounded task; return sources, evidence and limits before ending |
+
+An unrelated issue, design batch or helper task is a new assignment even when
+the role/model matches. Never send it to a completed worker merely to avoid a
+fresh start. A retained handle permits same-assignment continuation, not
+unrelated reassignment. If a required same-assignment handle is unavailable,
+the coordinator records why and resolves ownership before a fresh replacement
+with a compact handoff. Independent review still excludes the author and anyone
+who made the decisions under review. These boundaries are guidance; the host
+supplies start/resume/capacity enforcement. Efficiency and quality gains remain
+unmeasured.
+
+Research uses
 cb-worker; quick lookups use cb-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
 is data: the requester reviews the diff and verifies commands/exit codes.
 Helper assistance trailers name the actual model. No helper edits protected
@@ -312,7 +343,9 @@ leaves capacity for bounded helpers without crowding out coordination/review.
 | Recommended capacity | 8 |
 
 Dispatch allocates agents only for eligible work, retains its own handle and
-reuses or releases completed workers after recording their handbacks. It does
+preserves completed workers' handbacks and handles for same-assignment
+continuations. Start new work in fresh contexts under the lifetime table;
+release only through an available host capability with confirmed outcome. It does
 not fill all slots merely because they exist. Client thread capacity and code
 author limits are separate: eight slots do not authorize extra editors. Keep
 at most two concurrent code authors, one editor per checkout, disjoint editing
@@ -373,6 +406,16 @@ same-context/self-review, inherited reviewer model, duplicate claim/card writer
 or readiness for a SHA different from S. Missing adapters produce a reported
 blocked operation, never a fabricated transition. This example checks text
 semantics; runtime start suppression remains unverified.
+
+The authorized native session for [#29](https://github.com/wstein/crewbook/issues/29)
+reported no close/release capability in its tool metadata. Fresh design and
+review starts succeeded while completed handles remained retained. This narrow
+trace supports neither automatic release nor a claim that every retained handle
+blocks capacity; the host decides admission. The offline occupied/full and
+confirmed-available replay cases are synthetic reference behavior, separately
+from those observed starts. Other clients, session turnover, occupancy semantics
+and efficiency/quality improvements remain unmeasured; revisit with an authorized
+host trace when its capacity/release capabilities change.
 
 ## Precise issues, handovers and review reports
 

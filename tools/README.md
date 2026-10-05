@@ -64,7 +64,9 @@ compliance or permission enforcement.
 
 Credential-free dispatch recovery replays in `test_dispatch_recovery.py` preserve
 structured events and assert exact review continuations, model substitutions,
-capacity recovery, uncertain starts, stale ownership, mixed tool results and
+confirmed host capacity separately from retained completed handles, same-item
+author/review corrections, unrelated review freshness, unchanged-capacity retry
+suppression, uncertain starts, stale ownership, mixed tool results and
 once-per-transition empty requests. They are a maintenance reference model,
 not runtime enforcement or tests that an agent follows prompt text. Timing and
 native-client recovery remain unverified.

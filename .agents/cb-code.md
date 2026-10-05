@@ -34,6 +34,8 @@ Execute your already-assigned issue or batch directly as a leaf; never start
 another issue worker for it. The designated coordinator owns claim/card writes
 and review initiation; acknowledge its claim and return outcomes to that owner.
 You own your assignment's checks, commits and authorized configured landing.
+Use a fresh author context for each new work item. Resume this same assignment
+for fixes and continuations; retain a compact handback rather than a full transcript.
 Bounded helpers are permitted under the manual, not recursive issue delegation.
 
 Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)

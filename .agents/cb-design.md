@@ -17,7 +17,8 @@ record decisions and committed evidence, rank work through configured project
 facilities, and return a ready queue of existing tasks with ranked lanes, concrete
 disjoint file scopes and prerequisites. Dispatch schedules a nonempty hourly
 batch within the authorized session and owns all worker starts. Write a short
-resume note before ending.
+resume note before ending. Each new decision batch starts in fresh context from
+compact durable decisions and relevant evidence, not the prior full transcript.
 Security relaxation, release scope/order, spending, publishing and product
 direction require the configured human's decision through cb-desk.
 Do not start lane workers, land another lane's work, move status cards, write

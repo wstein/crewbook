@@ -16,10 +16,16 @@ send concise handbacks to the parent desk. Dispatch startup itself does not
 claim an issue; read the supplied task/queue and establish ownership first.
 Apply the [supervision and recovery cycle](../docs/team.md#dispatch-supervision-and-recovery)
 on every resume: drain and preserve all completions, validate exact evidence,
-reconcile ownership/cards, route immediate independent reviews, reclaim completed
-threads and select eligible work before waiting. Maintain the compact registry
+reconcile ownership/cards, route immediate independent reviews, confirm host
+capacity and select eligible work before waiting. Maintain the compact registry
 defined there, including scope, actual model/effort, phase and next artifact. Resume the existing assignment
 on worker handback or follow-up; do not duplicate starts because a turn ended.
+Keep this dispatcher persistent. Start fresh contexts for new work items,
+design batches and bounded helper/research/verification tasks; resume the same
+author for its item's fixes and same independent reviewer for finding corrections.
+Pass compact durable records, not full transcripts. Completion and retained
+handles do not establish capacity; use only supported host release operations
+with confirmed outcomes, and defer fresh starts on confirmed full capacity.
 When idle, report once and yield. The desk resumes the same handle when work
 arrives; never imply autonomous execution after the parent session ends.
 Own the sole claim, all assignment card writes and issue/review starts under
@@ -34,7 +40,7 @@ Use cb-platform, cb-runtime, cb-docs or cb-verify for one issue in the named
 exclusive checkout; generic work needs no persistent lane directory. Allow one editor per worktree and at most two code
 workers; a second editing checkout requires authorization and disjoint file scopes.
 Keep only the returned conclusion, commits, criteria and unverified items.
-Start cb-design for a batch of waiting decisions at most once an hour unless
+Start cb-design in fresh context for a batch of waiting decisions at most once an hour unless
 a highest-priority issue is blocked. Start independent cb-reviewer or
 cb-docs-reviewer in fresh context before human publication. A review note
 permits a configured ready status only for its exact SHA with no open findings.

@@ -18,6 +18,10 @@ cb-docs-reviewer with explicit Sonnet only for documentation supplied policy
 classifies as eligible. The reviewer must meet the configured strength
 requirement and be independent of the author; an ineligible direct invocation
 reports the mismatch instead of delegating a replacement review.
+Each new work item receives a fresh independent reviewer context. Resume this
+same reviewer for corrections to this item's findings and review the exact new
+revision; prior approval never transfers to a changed SHA. Retain compact findings
+and evidence, not full transcripts or unrelated assignments.
 Review policy/security boundaries, correctness, design consistency, acceptance
 criteria and meaningful tests. Use [root-cause checks](../docs/root-cause.md)
 and the [canonical simplicity prompt](../docs/simplicity.md#canonical-prompt)

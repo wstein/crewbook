@@ -26,6 +26,8 @@ helper's exact assistance trailer and lands. cb-review uses read-only helpers
 only and never commits/lands. Card writes stay with the designated coordinator.
 Execute the bounded task directly; start no children and never take over the
 requester's issue/review assignment or claim/commit/landing responsibilities.
+Use fresh context for each new bounded task and return compact sources/evidence;
+do not carry an unrelated task's full transcript into the next assignment.
 Do not run broad formatters/generators, install dependencies or access secrets;
 use only checks within the assigned scope and host/user authorization.
 Without a target protected-path list, avoid policy, credentials, permission

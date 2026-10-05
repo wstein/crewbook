@@ -81,7 +81,14 @@ These prompts describe configured team workflows, not prerequisites for routine
 work. Only a designated coordinator starts issue workers; assigned leaves execute
 directly. Delegation requires authorization from the user or applicable host
 instructions. Pass links to the selected skill resources and relevant project context to
-any child. Model mappings and Claude entrypoints are in [README.md](README.md).
+any child. Keep desk and its one dispatcher persistent; use fresh contexts for
+new work items, design batches and bounded helper/research/verification tasks.
+Reuse the same author for a work item's fixes and the same independent reviewer
+for corrections to that item's findings on each exact revision. Preserve compact
+durable records, not full transcripts, under the [context lifetime contract](docs/team.md#delegation-and-context).
+Completion does not establish host capacity or a release capability; defer fresh
+starts on confirmed full capacity rather than recycling unrelated contexts.
+Model mappings and Claude entrypoints are in [README.md](README.md).
 
 Crewbook supplies guidance, not tool permissions or runtime enforcement. Host
 instructions and user authorization control scope. If a selected resource is

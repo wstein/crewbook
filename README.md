@@ -203,6 +203,15 @@ excluding desk. Six covers dispatch, two authors, two reviewers and design;
 the extra two slots allow bounded helpers. This is a ceiling, not a request
 to start eight agents. Crewbook still permits at most two concurrent code
 authors. See [dynamic allocation](docs/team.md#dynamic-agent-allocation).
+Keep desk and its one dispatcher persistent. Start each new work item, design
+batch and bounded helper/research/verification task in fresh context; resume
+the same author for that item's fixes and same independent reviewer for its
+finding corrections on each exact revision. Save compact durable records,
+not full transcripts. Completed handles do not establish occupancy or available
+capacity, and no release tool is assumed: host controls govern fresh starts.
+See [context lifetimes](docs/team.md#delegation-and-context) and
+[capacity recovery](docs/team.md#dispatch-supervision-and-recovery). Efficiency
+and quality improvements remain unmeasured.
 The installed skill and selected model must be available in the client.
 
 The dedicated Codex desk skill is

@@ -30,11 +30,15 @@ def replay(state, events):
                 actions.append(('unexpected_review', key))
                 continue
             state['reviews'] -= 1
-            actions.append(('release_review', key))
+            actions.append(('preserve_review', key))
             valid = (event['revision'] == task['evidence']
                      and event['reviewer'] != task['owner']
                      and event['model'] == task['review_model']
                      and not event['findings'])
+            task['review_continuation'] = (event['revision'] == task['evidence']
+                     and event['reviewer'] != task['owner']
+                     and event['model'] == task['review_model']
+                     and bool(event['findings']))
             task['phase'] = 'approved' if valid else 'needs_attention'
             actions.append(('approved' if valid else 'hold', key))
             if valid and task['landed'] and task['checks']:
@@ -49,6 +53,10 @@ def replay(state, events):
                 actions.append(('ownership_conflict', key))
         elif kind == 'failed_start':
             task['phase'] = 'retry' if event['known_absent'] else 'resolve_start'
+            task['retry_after'] = state['host_capacity']['generation']
+        elif kind == 'host_capacity':
+            state['host_capacity'] = dict(available=event['available'],
+                                           generation=event['generation'])
         elif kind == 'tool':
             task['blocker'] = (event['operation'], event['context'], event['status'])
             actions.append(('record_result', key, event['status']))
@@ -57,19 +65,25 @@ def replay(state, events):
         elif kind == 'stale_card':
             actions.append(('board_reconcile' if event['owner_confirmed']
                             else 'resolve_owner', key))
-    # Drain all evidence before reclaiming slots and scheduling continuations.
-    for thread in state['completed']:
-        if thread in state['threads']:
-            state['threads'].remove(thread)
-            actions.append(('release', thread))
+    # Handback preservation does not close a handle or establish host capacity.
     state['completed'] = []
     for key, task in state['tasks'].items():
-        if task['phase'] == 'review_pending' and state['reviews'] < 2:
+        if (task['phase'] == 'review_pending' and state['reviews'] < 2
+                and (task.get('review_continuation') or
+                     state['host_capacity']['available'] > 0)):
             state['reviews'] += 1
+            continuation = task.get('review_continuation', False)
+            if not continuation:
+                state['host_capacity']['available'] -= 1
+                task['review_starts'] = task.get('review_starts', 0) + 1
+                task['review_thread'] = 'review-{}-{}'.format(key, task['review_starts'])
             task['phase'] = 'in_review'
-            actions.append(('review', key, task['evidence'], task['review_model']))
-        if task['phase'] == 'retry' and len(state['threads']) < state['capacity']:
+            actions.append(('resume_review_same' if continuation else 'review',
+                            key, task['evidence'], task['review_model']))
+        if (task['phase'] == 'retry' and state['host_capacity']['available'] > 0
+                and state['host_capacity']['generation'] > task['retry_after']):
             task['phase'] = 'running'
+            state['host_capacity']['available'] -= 1
             if task['thread'] not in state['threads']:
                 state['threads'].append(task['thread'])
             actions.append(('retry_same_claim', key))
@@ -122,12 +136,26 @@ def parent_continuation(state, handles, wait_available=True):
     actionable = [(key, artifact) for key, artifact in obligations
                   if artifact not in ('running', 'in_review')
                   and key != 'review_slots'
-                  and not (artifact == 'review_pending' and state['reviews'] >= 2)]
+                  and not (artifact == 'review_pending' and
+                           (state['reviews'] >= 2 or
+                            (state['host_capacity']['available'] == 0 and
+                             not state['tasks'][key].get('review_continuation'))))
+                  and not (artifact == 'retry' and
+                           (state['host_capacity']['available'] == 0 or
+                            state['host_capacity']['generation'] <=
+                            state['tasks'][key]['retry_after']))]
     if actionable:
         return ('process', actionable)
-    awaited = [(key, handles[key], {'in_review': 'review', 'review_pending': 'review_slot',
-                 'running': 'author_handback'}[task['phase']]) for key, task in state['tasks'].items()
-               if task['phase'] in ('running', 'in_review', 'review_pending')]
+    awaited = []
+    for key, task in state['tasks'].items():
+        phase = task['phase']
+        if phase in ('running', 'in_review', 'review_pending', 'retry'):
+            artifact = {'in_review': 'review', 'review_pending': 'review_slot',
+                        'running': 'author_handback', 'retry': 'host_capacity'}[phase]
+            if (phase == 'review_pending' and state['host_capacity']['available'] == 0
+                    and not task.get('review_continuation')):
+                artifact = 'host_capacity'
+            awaited.append((key, handles.get(key), artifact))
     if awaited:
         return ('await' if wait_available else 'handoff', awaited)
     outcome, obligations = drain_gate(state)
@@ -156,7 +184,8 @@ def fixture():
     return dict(tasks={'generic': copy.deepcopy(task), 'managed': dict(task,
                 owner='other-author', thread='other-thread')}, seen=[],
                 threads=['author-thread', 'other-thread'], completed=[],
-                reviews=0, capacity=2, backlog=False, empty_requested=False)
+                reviews=0, host_capacity=dict(available=2, generation=1),
+                backlog=False, empty_requested=False)
 
 
 class RecoveryReplay(unittest.TestCase):
@@ -164,13 +193,84 @@ class RecoveryReplay(unittest.TestCase):
         return dict(id=key + '-completion', kind='handback', task=key,
                     owner=owner, revision=revision)
 
+    def test_completed_occupied_host_without_release_defers_fresh_review(self):
+        initial = fixture()
+        initial['host_capacity'] = dict(available=0, generation=1)
+        state, actions = replay(initial, [self.handback()])
+        self.assertEqual(state['tasks']['generic']['phase'], 'review_pending')
+        self.assertIn('author-thread', state['threads'])
+        self.assertNotIn(('release', 'author-thread'), actions)
+        self.assertFalse(any(a[0] == 'review' for a in actions))
+        repeated, actions = replay(state, [])
+        self.assertEqual(repeated, state)
+        self.assertEqual(actions, [])
+
+    def test_confirmed_inactive_host_allows_fresh_review_without_close(self):
+        initial = fixture()
+        initial['host_capacity'] = dict(available=1, generation=2)
+        state, actions = replay(initial, [self.handback()])
+        self.assertIn('author-thread', state['threads'])
+        self.assertNotIn(('release', 'author-thread'), actions)
+        self.assertEqual(state['tasks']['generic']['phase'], 'in_review')
+        self.assertEqual(len([a for a in actions if a[0] == 'review']), 1)
+
+    def test_finding_corrections_resume_same_review_without_fresh_slot(self):
+        state, _ = replay(fixture(), [self.handback()])
+        retained_reviewer = state['tasks']['generic']['review_thread']
+        review = dict(id='finding', kind='review', task='generic',
+                      reviewer='independent', revision='a' * 40,
+                      model=('gpt-6.1-sol', 'medium'), findings=['fix'])
+        state, _ = replay(state, [review])
+        state['host_capacity']['available'] = 0
+        state, _ = replay(state, [dict(id='fix', kind='route_fix', task='generic',
+                                       owner='author')])
+        state, actions = replay(state, [dict(self.handback(revision='b' * 40),
+                                             id='corrected')])
+        self.assertIn(('resume_review_same', 'generic', 'b' * 40,
+                       ('gpt-6.1-sol', 'medium')), actions)
+        self.assertEqual(state['tasks']['generic']['phase'], 'in_review')
+        self.assertEqual(state['tasks']['generic']['review_thread'], retained_reviewer)
+
+    def test_unchanged_host_capacity_does_not_retry_known_absent_start(self):
+        initial = fixture()
+        failed = dict(id='failed', kind='failed_start', task='generic',
+                      known_absent=True)
+        state, actions = replay(initial, [failed])
+        self.assertNotIn(('retry_same_claim', 'generic'), actions)
+        state, actions = replay(state, [])
+        self.assertEqual(actions, [])
+        action, artifacts = parent_continuation(state, {'managed': 'existing-other'})
+        self.assertEqual(action, 'await')
+        self.assertIn(('generic', None, 'host_capacity'), artifacts)
+        changed = dict(id='new-capacity', kind='host_capacity', task='generic',
+                       available=1, generation=2)
+        state, actions = replay(state, [changed])
+        self.assertIn(('retry_same_claim', 'generic'), actions)
+
+    def test_unrelated_work_has_fresh_independent_review_assignment(self):
+        state, _ = replay(fixture(), [self.handback()])
+        state, _ = replay(state, [dict(id='finding', kind='review', task='generic',
+                         reviewer='independent', revision='a' * 40,
+                         model=('gpt-6.1-sol', 'medium'), findings=['fix'])])
+        # A separate work item carries its own assignment, not the prior history.
+        state['tasks']['unrelated'] = dict(owner='new-author', thread='new-thread',
+            phase='running', evidence=None, review_model=('gpt-6.1-sol', 'medium'),
+            landed=False, checks=True)
+        state, actions = replay(state, [self.handback('unrelated', 'new-author')])
+        self.assertIn(('review', 'unrelated', 'a' * 40,
+                       ('gpt-6.1-sol', 'medium')), actions)
+        self.assertFalse(any(a[0] == 'resume_review_same' for a in actions))
+        self.assertEqual(state['tasks']['generic']['phase'], 'needs_attention')
+        self.assertNotEqual(state['tasks']['unrelated']['review_thread'],
+                            state['tasks']['generic']['review_thread'])
+
     def test_idle_completion_and_two_independent_handbacks(self):
         initial = fixture()
         events = [self.handback(), self.handback('managed', 'other-author')]
         state, actions = replay(initial, events)
         self.assertEqual([a[1] for a in actions if a[0] == 'review'],
                          ['generic', 'managed'])
-        self.assertEqual(state['threads'], [])
+        self.assertEqual(state['threads'], ['author-thread', 'other-thread'])
         self.assertEqual(len(state['seen']), 2)
         repeated, more = replay(state, events)
         self.assertEqual(repeated, state)
@@ -211,7 +311,9 @@ class RecoveryReplay(unittest.TestCase):
                         reviewer='independent-' + key, revision=revision,
                         model=('gpt-6.1-sol', 'medium'), findings=[])
                    for key, revision in [('generic', snapshot), ('managed', 'a' * 40)]]
-        state, actions = replay(state, reviews)
+        capacity = dict(id='inactive-reviews', kind='host_capacity', task='generic',
+                        available=2, generation=2)
+        state, actions = replay(state, reviews + [capacity])
         self.assertEqual(state['tasks']['third']['phase'], 'in_review')
         self.assertEqual(state['reviews'], 1)
         self.assertEqual(len([a for a in actions if a[0] == 'review']), 1)
@@ -227,12 +329,13 @@ class RecoveryReplay(unittest.TestCase):
     def test_full_pool_failed_start_and_uncertain_start(self):
         state = fixture()
         events = [self.handback(), dict(id='failed', task='managed',
-                  kind='failed_start', known_absent=True)]
+                  kind='failed_start', known_absent=True),
+                  dict(id='capacity', task='managed', kind='host_capacity',
+                       available=2, generation=2)]
         result, actions = replay(state, events)
         self.assertIn(('retry_same_claim', 'managed'), actions)
         self.assertEqual(len(result['threads']), len(set(result['threads'])))
-        self.assertLess(actions.index(('release', 'author-thread')),
-                        actions.index(('retry_same_claim', 'managed')))
+        self.assertFalse(any(a[0] == 'release' for a in actions))
         _, actions = replay(fixture(), [dict(events[1], known_absent=False)])
         self.assertNotIn(('retry_same_claim', 'managed'), actions)
 
@@ -342,7 +445,7 @@ class RecoveryReplay(unittest.TestCase):
                          'handoff')
         self.assertEqual(state['tasks']['generic']['phase'], 'running')
 
-    def test_findings_fix_new_review_and_user_steering_preserve_owners(self):
+    def test_findings_fix_same_review_and_user_steering_preserve_owners(self):
         state, _ = replay(fixture(), [self.handback()])
         review = dict(id='finding', kind='review', task='generic',
                       reviewer='independent', revision='a' * 40,
@@ -362,7 +465,7 @@ class RecoveryReplay(unittest.TestCase):
         self.assertEqual(drain_gate(steered)[0], 'active')
         fix = dict(self.handback(revision='b' * 40), id='fix-handback')
         state, actions = replay(steered, [fix])
-        self.assertIn(('review', 'generic', 'b' * 40,
+        self.assertIn(('resume_review_same', 'generic', 'b' * 40,
                        ('gpt-6.1-sol', 'medium')), actions)
         self.assertEqual(state['tasks']['generic']['owner'], 'author')
         self.assertEqual(state['reviews'], 1)
