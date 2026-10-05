@@ -89,6 +89,16 @@ These ordinary crewbook commits are distinct from the unmodified raw import:
 | `6991fae2e3e35e00f5b6fd9283004c476a487c8d` (#4) | Separated coordinator starts from direct leaf execution and recorded single lifecycle ownership. |
 | `a632d67cbefc888a2d9d6e2464bc4dbcb313b3da` (#6) | Recorded original extraction paths, blobs/digests, retained commit mappings and removal boundary. |
 | `403b924dc99f36695c7f99f9127850c7046cd0be` and `f6aadff623cf3e9c567b417951592ed970d1d849` (#8) | Added standard-library Go inventory/export primitives and maintenance CLI; declared the current distribution set and its generated inventory. Maintenance code remains outside the text artifact. |
+| `8dcc0d6b17b56b6def21cd0ecaab7840b7cbfbde` | Added Codex discovery metadata to the declared/exported text package; metadata alone does not establish native loading. |
+| `b45a5403bbc26074ab922760914633b9dd4b715a` | Made the native workspace/task and applicable instructions sufficient for ordinary use without a launcher; separated skill resources from the target context. |
+| `04b72fbd31d20e87ce24c5bc4cc2a2037b61758e` | Replaced the crewbook-specific profile with cb-generic defaults and selected cb-workharbor by managed-container execution environment for any target repository; removed fixed project destinations/checks. |
+| `05319409a20fbbb36f805637812fb06c15c81953` | Applied generic defaults across roles, profiles and commands: session assignments and exclusive checkouts need no mandatory board or persistent lane setup, while configured managed claim gates and authorization remain in force. |
+| `f6f282dbc706ca114f43bd35104f75e4cf98bee2` | Replaced Go maintenance source with standard-library Python 3.9+ CLI, filesystem/layout/inventory/export and runtime-contract checks; ported failure/scanner fixtures and Python CI/CodeQL. Removed the Markdown prompt-content validator and Goldmark dependency; maintenance code remains outside the text export. |
+| `8cf9fc2e40f92eddd472451a999d6b5ac62bf721` | Replaced package-root bindings and launcher propagation with relative links resolved from each loaded resource; retained target repository paths in independent task context. |
+| `798253edc2949ac03e31bcb73475287ffeef4795` | Added automatic pinned persistent dispatcher startup/reuse through desk, with retained handles, coordinator-owned claims/worker starts and explicit client lifecycle limits; added the Claude dispatcher profile. |
+| `41c26606a219859b471f02ae1aba1bdf6b719d89` | Made explicit Crewbook invocation enter desk and keep that role across turns; specified the dispatch model/effort while preserving direct leaf assignments and implicit local-work behavior. |
+| `fbe178f066a579048824cab25f5d4ebc3080d6a8` | Added the dedicated Codex cb-desk skill and invocation metadata with a canonical desk-role link; distinguished optional user installation from Claude slash commands. |
+| `d330620d93f98374f926f5fdc46d0b6d0df7503b` | Renamed the public skill entrypoint to crewbook and updated invocation/discovery documentation and metadata; kept the canonical cb-desk workflow and optional alias. |
 
 The first five post-import commits were rebased to use Werner's verified Git
 author/committer identity. Their file contents and messages were preserved;
@@ -96,9 +106,29 @@ the table names the current local-history IDs. This maintenance rebase is
 separate from the original filter-repo rewrite: the raw import revision,
 selected blobs and extraction commit map were not changed.
 
-#6 completes the provenance narrative and, in a separate change, distribution
-verification and the coordinated consumer schema documentation.
+The table records transformations observed in local Git history, not a new
+extraction or proof of publication, independent review or live compatibility.
 Later edits are recorded in crewbook Git history and their issue references;
 the original selection/map remain historical evidence. The distribution
 inventory records current bytes independently, including changed and added
 resources. It is neither an upstream sync list nor a workharbor deletion list.
+
+## Current verification and remaining runtime boundary
+
+The original extraction revisions, selected blobs, filtering allowlist, commit
+map, licence and removal boundary remain unchanged by these transformations.
+The current [distribution contract](docs/distribution.md) separately describes
+Python maintenance checks and the deterministic inventory/export format.
+Updating that inventory accepts reviewed current bytes; it does not synchronize
+upstream, repeat historical scans or prove native client loading.
+
+No production `workharbor.json`, trusted installation pin or approved measured
+native adapter version/model/effort tuple is supplied here. Production provider
+validation and managed live loading remain external work in
+[workharbor #283](https://github.com/wstein/workharbor/issues/283); the production
+criterion in [crewbook #6](https://github.com/wstein/crewbook/issues/6) remains
+unmet. Do not infer a loadable default from metadata, target model mappings,
+synthetic provider fixtures or passing offline checks. Generic native-session
+use does not require this production manifest/provider. Missing runtime inputs
+stop the dependent runtime operation explicitly, without invented bindings or
+substitute enforcement.
