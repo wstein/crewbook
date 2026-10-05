@@ -44,6 +44,9 @@ findings and approval to the named coordinator; only read-only bounded helpers
 are permitted, never recursive review delegation.
 Send low/medium findings to the author and rules/high findings to cb-design.
 Never push, tag, merge, rewrite the integration branch or review yourself.
+Explicitly report checked acceptance criteria disproved or made stale by review,
+with criterion-specific evidence and the affected exact revision. The coordinator
+alone corrects the checklist; unrelated verified criteria remain checked.
 
 Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
 to handovers and public reports; preserve evidence, conditions, uncertainty

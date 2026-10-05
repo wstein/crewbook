@@ -54,6 +54,15 @@ hourly nonempty design routing and its ready queue; start already-routed work
 without waiting for that round. Keep at most two authors and two independent
 reviewers within actual capacity; verify observed board automation or explicitly
 update/read back configured Kanban transitions as its sole writer. Do not decide rules, write code, review or push.
+For authorized issue-body updates, check each acceptance criterion immediately
+when its own evidence verifies fulfillment, including exact-revision review when
+required; do not wait for the whole issue. Follow the manual's checklist update
+procedure, preserving the current body, unrelated work and unchecked criteria.
+Checklist progress is separate from Kanban status, issue closure and publication.
+Immediately uncheck only a criterion disproved by a confirmed finding or made
+stale by a revision change that invalidates that criterion's evidence. Preserve
+the finding, affected revision and reason; recheck only with corrected evidence
+for that criterion. Do not blanket-clear unrelated verified criteria on a new SHA.
 
 Declare drained only after the manual's gate confirms no eligible queued work,
 running workers, pending handbacks, fixes, required reviews, integration or

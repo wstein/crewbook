@@ -189,6 +189,33 @@ Done requires the established close/publication flow. Unknown mappings or denied
 writes block the board operation, not independent local work. Board mode none
 uses the registry without writes.
 
+For authorized issue checklist maintenance, dispatch checks each acceptance
+criterion immediately when that criterion is fulfilled by actual evidence,
+including required exact-revision review; it does not wait for the whole issue
+to finish. An author claim alone is insufficient, and a measured criterion
+requires its named live evidence. Keep unmet or unverified criteria unchecked.
+Before each issue-body write, reread the current version, reconcile concurrent
+changes, preserve unrelated text/history/subissues and change only the evidenced
+criterion. Read back the result and retain its evidence in the existing durable
+record. A denied or uncertain update follows tool preflight; do not overwrite
+concurrent work or blindly repeat a write.
+
+Progress correction is bidirectional: the reviewer explicitly identifies any
+checked criterion disproved or stale, its evidence and affected exact revision.
+The coordinator alone immediately unchecks the affected criterion on a confirmed
+finding or revision change that invalidates that criterion's evidence, preserving
+the reason in the existing finding/review record. Recheck only after corrected
+criterion-specific evidence. A new SHA never blanket-clears unrelated verified
+criteria; each reversal needs its own invalidation evidence. Apply the same
+current-body reread, concurrent-change reconciliation and readback to reversals.
+
+Checklist marks are progress indicators, separate from configured Kanban state,
+issue closure, review approval, integration and publication. Use checklist
+updates with existing evidence for routine progress; retain comments when needed
+for material review findings, ownership, decisions, blockers or audit evidence.
+Missing issue-write authorization or tooling blocks the outward update, not
+independent local work; preserve the verified criterion and next action privately.
+
 Within an active human-authorized coordination session, start one nonempty
 design batch when an hour has elapsed since its last start, preserving the
 single owner and blocked-highest-priority exception. Record start/due times.
