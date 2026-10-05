@@ -53,7 +53,8 @@
     "docs/team.md",
     "docs/project-config.md",
     "docs/profile-crewbook.md",
-    "docs/profile-workharbor.md"
+    "docs/profile-workharbor.md",
+    "agents/openai.yaml"
   ],
   "host_dependencies": [
     {

@@ -34,6 +34,7 @@
     "PROVENANCE.md",
     "README.md",
     "SKILL.md",
+    "agents/openai.yaml",
     "crewbook.json",
     "docs/distribution.md",
     "docs/policy-composition.md",
