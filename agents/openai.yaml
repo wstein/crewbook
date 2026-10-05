@@ -1,0 +1,6 @@
+interface:
+  display_name: "Crewbook"
+  short_description: "Desk, dispatch, and repository workflows"
+  default_prompt: "Use $cb-crewbook to start desk and its persistent dispatcher."
+policy:
+  allow_implicit_invocation: true

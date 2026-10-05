@@ -86,9 +86,11 @@ current Hard rules remain in its own project policy, not in this package.
   **conceptual/unverified**, tracked in historical workharbor integration issue #283. This package supplies
   no enforcement, tool permissions or workharbor runtime adapter.
 
-Invoking `/cb-desk` automatically starts or reuses one pinned cb-dispatch
+Explicit `$cb-crewbook` (Codex) or `/cb-desk` (Claude Code) enters cb-desk
+and automatically starts or reuses one pinned cb-dispatch
 subagent. Desk stays the human contact and routes later work through the same
-handle; dispatch owns claims and worker/review starts. Idle dispatch yields and
+handle; dispatch owns claims and worker/review starts. The dispatch child is
+pinned to Sonnet for Claude and `gpt-6.1-sol` with low reasoning effort for Codex. Idle dispatch yields and
 is resumed by desk. This requires client subagent/resume support and does not
 create a background daemon. See the [team manual](docs/team.md).
 
@@ -177,10 +179,11 @@ ln -s /absolute/path/crewbook ~/.codex/skills/cb-crewbook
 If that destination already exists, inspect it before replacing anything.
 Restart Codex or open a new session to refresh discovery. `agents/openai.yaml`
 enables implicit invocation: ordinary repository requests can select Crewbook
-automatically. `$cb-crewbook` remains available for explicit selection. The host's
+automatically without switching roles. Explicit `$cb-crewbook` starts desk
+and its persistent dispatcher; it is not a load-only command. The host's
 loaded skill uses relative links; no launcher or environment variable is
 necessary. Routine coding, review, docs and verification use existing project
-instructions without full team setup. Specialized roles load only on demand.
+instructions without full team setup. Explicitly selected roles load immediately; assigned leaves stay leaves.
 
 A symlink follows local edits; use a reviewed text export in the skill directory
 when you need a fixed copy. Run the package check before export and preserve all

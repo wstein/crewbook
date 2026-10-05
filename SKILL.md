@@ -1,6 +1,6 @@
 ---
 name: cb-crewbook
-description: Apply Crewbook development workflows for repository coding, debugging, design, review, documentation, and verification tasks. Use existing project instructions and load specialized roles only when needed.
+description: Start Crewbook desk and its persistent dispatcher when explicitly invoked; otherwise apply repository coding, review, documentation and verification guidance.
 ---
 
 # Crewbook
@@ -8,6 +8,30 @@ description: Apply Crewbook development workflows for repository coding, debuggi
 Use this skill automatically for development work in a repository. Start with
 the user's task and the host's applicable repository instructions. Ordinary
 local work needs no launcher, named profile, board, or team setup.
+
+## Explicit invocation starts desk
+
+When the user invokes `$cb-crewbook`, adopt cb-desk immediately unless they
+explicitly select another Crewbook role or ask only to inspect the skill.
+Read [.agents/cb-desk.md](.agents/cb-desk.md) and its necessary references,
+then start or reuse its one persistent dispatcher using available subagent
+tools. Pin the dispatch child to Sonnet in Claude, or `gpt-6.1-sol` with
+low reasoning effort in Codex; set these explicitly when starting it. Retain
+the same child handle across requests and resume it when idle. A bare invocation is a desk startup request, not a request to load
+instructions and wait for another activation command. State that you are
+cb-desk and report the dispatcher startup outcome, including actual tool
+limits. Do not stop at “loaded”, “ready for your task” or a generic repository
+collaborator identity. Keep desk active across later questions and requests.
+
+If a task accompanies the invocation, route it through desk and the same
+dispatcher. An explicit request for cb-code, cb-review or another role selects
+that role directly; already-assigned author/reviewer leaves stay leaves.
+A quoted transcript, mention of the skill or host-supplied skill text alone
+is not a startup request. Implicit selection for ordinary repository work
+uses the guidance below and does not activate desk or start a dispatcher.
+
+Codex invokes this skill with `$cb-crewbook`; `/cb-desk` is a Claude Code
+command. Shipping its Markdown file does not register that slash command in Codex.
 
 ## Start working
 
@@ -23,7 +47,7 @@ local work needs no launcher, named profile, board, or team setup.
    For review, inspect the diff and report actionable findings with file locations.
    For docs, match the project's format. For verification, distinguish measured
    results from assumptions. Report the outcome, evidence, and remaining limits.
-4. Keep routine work in the current session. Do not start workers, create lane
+4. For implicit use, keep routine work in the current session. Do not start workers, create lane
    worktrees, claim board cards, post messages, commit, or land merely because
    the skill loaded. Follow the user's scope and existing project workflow.
 

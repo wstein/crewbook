@@ -50,7 +50,8 @@ only the affected workflow, explicitly, without substitute or no-op stubs.
 
 The trusted invocation explicitly names one coordinator for an assignment:
 cb-dispatch, or a designated session coordinator using its routing procedure.
-Invoking cb-desk automatically starts or reuses one persistent cb-dispatch
+Explicit `$cb-crewbook`, `$cb-desk` or Claude `/cb-desk` adopts desk and
+automatically starts or reuses one persistent cb-dispatch
 subagent with an explicit model/effort and recorded handle. Desk routes to that
 owner and resumes it for follow-up work; it starts issue workers only when
 explicitly replacing dispatch as session coordinator. Never run both for the same
@@ -91,7 +92,8 @@ a new independent review assignment, never the author or reviewer itself.
 
 ## Persistent desk and dispatch
 
-Start desk once as the human contact. It starts a pinned dispatcher once and
+Start desk once as the human contact with explicit `$cb-crewbook` or the
+dedicated `$cb-desk` skill in Codex; Claude uses `/cb-desk`. It starts a pinned dispatcher once and
 retains its handle. The dispatcher keeps separate repository assignments and
 starts bounded authors/reviewers in fresh contexts. Desk routes user requests
 and handbacks through that same dispatcher, resuming it when idle. An empty
