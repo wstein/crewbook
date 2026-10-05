@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "id": "shared-adapter",
+  "description": "Both JSON and CLI callers must normalize a repository name in the shared service, preserving adapter denial.",
+  "cases": [
+    {
+      "id": "ordinary-json",
+      "input": {
+        "caller": "json",
+        "name": "alpha",
+        "denied": false
+      },
+      "expected": "alpha"
+    },
+    {
+      "id": "ordinary-cli",
+      "input": {
+        "caller": "cli",
+        "name": "alpha",
+        "denied": false
+      },
+      "expected": "alpha"
+    },
+    {
+      "id": "json-trims-space",
+      "input": {
+        "caller": "json",
+        "name": " alpha ",
+        "denied": false
+      },
+      "expected": "alpha"
+    },
+    {
+      "id": "cli-trims-space",
+      "input": {
+        "caller": "cli",
+        "name": " alpha ",
+        "denied": false
+      },
+      "expected": "alpha"
+    },
+    {
+      "id": "adapter-preserves-denial",
+      "input": {
+        "caller": "json",
+        "name": "alpha",
+        "denied": true
+      },
+      "expected": "DENIED"
+    }
+  ],
+  "go_broken": "shared-adapter-broken.go",
+  "go_correct": "shared-adapter-correct.go"
+}

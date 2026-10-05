@@ -1,0 +1,8 @@
+{
+  "path-symlink-broken.go": "fcc243c933ce4350713d755d25cf1992c9152eda9f48816f4d052bf9af7be030",
+  "path-symlink-correct.go": "f6630c9896fc10551299d0a12feaf82de907c2a1bdcc23bc9d1bbbe652584625",
+  "path-symlink.json": "bb7d2449761bea98bfd1381678b5844b2d241a45720064bcbe4134bb770aaa37",
+  "shared-adapter-broken.go": "bc643a41e0204630e18943836672ad785068dbc53a88b0df950aa7051cf0b353",
+  "shared-adapter-correct.go": "e4f5463cd28d6279142d9a4545cd65625ae59a25cf16235a736496278bd6b2c3",
+  "shared-adapter.json": "6f6c030a09c814638ace4e71cc50556b5b433c22fb02864c50097dd7eb8b2d81"
+}

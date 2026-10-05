@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "id": "path-symlink",
+  "description": "Read beneath /repo only: reject absolute names, escaping parents and every symlink component, including in-root links. Static tree; no race safety claim.",
+  "cases": [
+    {
+      "id": "ordinary-file",
+      "input": {
+        "name": "docs/readme",
+        "symlinks": []
+      },
+      "expected": true
+    },
+    {
+      "id": "parent-traversal",
+      "input": {
+        "name": "../secret",
+        "symlinks": []
+      },
+      "expected": false
+    },
+    {
+      "id": "absolute-path",
+      "input": {
+        "name": "/etc/passwd",
+        "symlinks": []
+      },
+      "expected": false
+    },
+    {
+      "id": "sibling-prefix",
+      "input": {
+        "name": "../repo-other/secret",
+        "symlinks": []
+      },
+      "expected": false
+    },
+    {
+      "id": "symlink-leaf",
+      "input": {
+        "name": "docs/readme",
+        "symlinks": [
+          "docs/readme"
+        ]
+      },
+      "expected": false
+    },
+    {
+      "id": "symlink-parent",
+      "input": {
+        "name": "docs/readme",
+        "symlinks": [
+          "docs"
+        ]
+      },
+      "expected": false
+    },
+    {
+      "id": "nested-traversal",
+      "input": {
+        "name": "docs/../../secret",
+        "symlinks": []
+      },
+      "expected": false
+    }
+  ],
+  "go_broken": "path-symlink-broken.go",
+  "go_correct": "path-symlink-correct.go"
+}
