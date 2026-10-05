@@ -75,3 +75,62 @@ These synthetic cases do not establish native landing or parent supervision.
 They are a maintenance reference model,
 not runtime enforcement or tests that an agent follows prompt text. Timing and
 native-client recovery remain unverified.
+
+## Optional source main guard
+
+Crewbook's own source `AGENTS.md` selects linear, fast-forward-only integration.
+The optional `source_linear_history.py` and `git-hooks/reference-transaction`
+enforce that source maintenance choice at Git's prepared reference transaction:
+main updates must descend from its current direct commit and introduce no merge
+commits. Existing historical merges remain unchanged; main creation, deletion,
+symbolic/noncommit main and failed lookups are refused. Replacement objects
+cannot hide physical merges; shallow history and legacy grafts are refused.
+Unspecified old values
+are resolved from the locked current ref. Other refs are unconstrained, but a
+rejected main update aborts the whole prepared transaction.
+
+This is **source-only**, excluded with all `tools/` from exported artifacts.
+It supplies no policy, required hook, launcher or enforcement to consuming
+repositories. Each target selects its history policy in its own `AGENTS.md`.
+
+After independent exact-commit review and explicit operator authorization,
+run the reviewed source installer, naming the full reviewed commit SHA:
+
+```sh
+python3 -I -B tools/source_linear_history.py install --root /absolute/source/repository \
+  --reviewed-sha FULL_REVIEWED_COMMIT_SHA --confirm-effective-hook-routing
+python3 -I -B tools/source_linear_history.py verify --root /absolute/source/repository \
+  --reviewed-sha FULL_REVIEWED_COMMIT_SHA
+```
+
+The confirmation asserts that the operator checked effective hook routing;
+it does not grant review or integration authorization. Installer Git operations
+use null system/global configuration, no credential helper, prompts or SSH agent.
+They never inspect human global/system configuration or credential stores.
+Consequently system/global/command hook overrides remain unknown to the tool;
+the operator must confirm they do not supersede the repository-local routing.
+
+The operator must invoke reviewed bytes from a trusted source; Python isolated
+mode excludes sibling/PYTHONPATH/user-site imports. Self-verification detects
+accidental mismatch, not a malicious already-running installer.
+
+Installation requires matching installer bytes from the reviewed commit, pins
+both installed files to that commit, and reports SHA-256 digests. It places
+a private version directory in the common Git directory, surviving linked
+worktrees and older checkouts. Hook validation binds every Git read explicitly
+to that installed common directory, ignoring invocation cwd and inherited
+repository selection. It validates the installed layout and pinned bytes; running
+the uninstalled source script as a hook is refused. Existing local hooksPath, worktree-specific
+configuration and non-sample default hooks cause refusal; no existing hook or
+unrelated configuration is replaced. Exact existing installations can be
+verified and reused. Installed files are read-only; path links, unsafe directory
+permissions, altered bytes and unexpected files are refused. This checks ordinary
+maintenance integrity, not concurrent hostile filesystem writers.
+
+Git and Python must be available for hook invocation; absence fails the update
+when Git invokes the installed hook. Native isolated tests measured this boundary
+with Apple Git 2.54.0 and stock Python 3.9.6; other Git versions/platforms remain
+unverified. `verify` checks local routing and bytes, not actual hook execution.
+Configuration overrides, deleting hooks and direct filesystem ref writes can
+bypass local hooks; this is not a tamperproof boundary or forge policy. Installing
+or verifying a guard never authorizes main integration, push or publication.
