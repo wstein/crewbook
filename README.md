@@ -117,6 +117,9 @@ without Hugo frontmatter, shortcodes or toolchain. Native client loading (#241)
 and platform doctor (#242) are historical workharbor work items, not measured
 capabilities here. Source checks and CI do not establish native runtime support.
 
+Antigravity support remains incomplete; see the [readiness matrix](docs/antigravity.md)
+for historical evidence, current unverified capabilities and admission requirements.
+
 ## Python maintenance
 
 Use Python 3.9 or newer on macOS or Linux. The maintenance CLI uses only the

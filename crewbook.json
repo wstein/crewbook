@@ -63,7 +63,8 @@
     "docs/human-request-templates.md",
     "docs/handover-examples.md",
     "docs/simplicity.md",
-    "docs/root-cause.md"
+    "docs/root-cause.md",
+    "docs/antigravity.md"
   ],
   "host_dependencies": [
     {

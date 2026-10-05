@@ -39,6 +39,7 @@
     "SKILL.md",
     "agents/openai.yaml",
     "crewbook.json",
+    "docs/antigravity.md",
     "docs/distribution.md",
     "docs/handover-examples.md",
     "docs/human-request-templates.md",
