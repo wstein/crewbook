@@ -117,6 +117,8 @@ def drain_gate(state):
 def parent_continuation(state, handles, wait_available=True):
     """Observable parent action for a supplied snapshot, without tool execution."""
     outcome, obligations = drain_gate(state)
+    if outcome != 'active':
+        return outcome, obligations
     actionable = [(key, artifact) for key, artifact in obligations
                   if artifact not in ('running', 'in_review')
                   and key != 'review_slots'
@@ -292,6 +294,12 @@ class RecoveryReplay(unittest.TestCase):
                                          blocker='external approval',
                                          next_action='owner requests approved adapter')
         self.assertEqual(drain_gate(state)[0], 'blocked')
+        outcome, obligations = parent_continuation(state, {'blocked': 'retained-handle'})
+        self.assertEqual(outcome, 'blocked')
+        self.assertEqual(obligations, [('blocked', 'external approval',
+                                       'owner requests approved adapter')])
+        self.assertEqual(state['tasks']['blocked']['owner'], 'retained-owner')
+        self.assertEqual(desk_safety_net(state, 'same-dispatch', True)[0], 'blocked')
         del state['tasks']['blocked']['next_action']
         self.assertEqual(drain_gate(state)[0], 'active')
         state['tasks']['blocked']['phase'] = 'unknown'
