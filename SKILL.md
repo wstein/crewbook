@@ -36,8 +36,11 @@ and [docs/project-config.md](docs/project-config.md), then the relevant portions
 of [docs/team.md](docs/team.md). Require only the inputs needed by that operation;
 reuse trusted session/project configuration instead of asking for it again.
 Missing board or landing tools block that operation, not an unrelated local edit.
-Select a supplied project profile only when it fits the target; never borrow
-another project's endpoints or tools.
+Use [cb-generic](docs/profile-generic.md) by default for any repository in the
+current native session, including crewbook itself. No workharbor container,
+board or separate project-policy file is required. Select
+[cb-workharbor](docs/profile-workharbor.md) for any repository inside a workharbor-managed
+container; never borrow another project's endpoints or tools.
 
 Read only the selected packaged prompt and its necessary references:
 

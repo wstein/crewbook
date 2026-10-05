@@ -26,16 +26,20 @@ An independent reviewer must meet the configured review-strength requirement.
 
 ## Setup and routing
 
-The trusted operator supplies a complete configuration and applicable scoped
-policy, selects a reviewed package pin, and registers desired entrypoints.
+Use cb-generic by default: resolve needed configuration from the user task,
+workspace, applicable instructions and available tools. A separate policy
+file, complete configuration, workharbor container and board are not required.
+Inside a workharbor-managed container, use cb-workharbor and require the
+supervisor-provided inputs needed by the selected operation.
 Resolve package references against trusted CREWBOOK_ROOT and project references
 against the separately supplied target root. Validate destinations before any
 issue/board write. Generic projects supply worktree paths explicitly;
-crewbook defaults to ../crewbook-<lane>. Create/reuse only authorized lane
+cb-generic defaults to one editor in the current checkout. Create/reuse only authorized lane
 worktrees, never switch branches in a shared checkout. Hook installation is
 a host-project procedure, not a package operation.
 
-The human contacts cb-desk; one cb-dispatch handles mechanical routing. Follow
+The invoking session is the human contact and designated cb-dispatch when
+the user starts dispatch. A separate cb-desk session is optional. Follow
 configured priorities and ownership, claim before starting, skip closed or
 already-owned work. An assignment limited to local edits does not authorize
 claiming a board card. A project with board mode none uses issue records and
@@ -140,8 +144,8 @@ clear context. An idle lane reports an empty queue once and waits.
 Static example, not a live client test: a trusted generic project supplies real
 issue/board/check/landing adapters, one coordinator C, author A (cb-platform)
 and eligible independent reviewer R (cb-reviewer, explicitly pinned Opus).
-For crewbook use cb/platform and ../crewbook-platform; its pending board #7
-and unavailable landing disable those operations instead of borrowing adapters.
+For cb-generic, use a session assignment and exclusive checkout; a board is
+optional and landing/publication remain unavailable unless authorized.
 
 | Event | Actor and action | Issue starts | Review starts |
 | --- | --- | --- | --- |

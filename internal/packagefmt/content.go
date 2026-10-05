@@ -72,7 +72,7 @@ func CheckContent(snapshot Snapshot) error {
 	if err := Decode(snapshot.Content["crewbook.json"], &layout); err != nil {
 		return err
 	}
-	known := map[string]bool{"cb-crewbook": true, "cb-workharbor": true, "cb-board": true, "cb-land": true, "cb-handover": true}
+	known := map[string]bool{"cb-crewbook": true, "cb-generic": true, "cb-workharbor": true, "cb-board": true, "cb-land": true, "cb-handover": true}
 	for name := range profileModels {
 		known[name] = true
 	}

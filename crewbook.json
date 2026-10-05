@@ -52,7 +52,7 @@
     "docs/policy-composition.md",
     "docs/team.md",
     "docs/project-config.md",
-    "docs/profile-crewbook.md",
+    "docs/profile-generic.md",
     "docs/profile-workharbor.md",
     "agents/openai.yaml"
   ],
@@ -85,7 +85,7 @@
     {
       "name": "host-project issue/board/check/landing tools and isolated execution environment",
       "scope": "selected operations only; board may explicitly be none and landing unavailable",
-      "status": "not shipped; current workharbor adapters stay workharbor-side; missing required tools fail explicitly"
+      "status": "not shipped; generic uses current-session tools, workharbor uses managed-container capabilities; missing required tools stop only their operation"
     }
   ]
 }

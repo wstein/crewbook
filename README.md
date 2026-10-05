@@ -102,11 +102,12 @@ its place. The manual defines single ownership and a counted lifecycle example.
 
 The [team manual](docs/team.md) covers roles, delegation, independent review,
 handoffs and context. For configured team workflows, select applicable trusted project configuration:
-[cb-crewbook](docs/profile-crewbook.md) uses crewbook issue destinations and
-../crewbook-<lane> worktrees; [cb-workharbor](docs/profile-workharbor.md) is a
-clearly labeled example for workharbor's external tools and paths. Generic
-projects supply their own explicit paths, destinations and capabilities.
-Board and landing tools are host dependencies, initially workharbor-side;
+[cb-generic](docs/profile-generic.md) is the default for any repository in
+the current native session, without a workharbor container or board;
+[cb-workharbor](docs/profile-workharbor.md) applies to any repository inside
+a workharbor-managed container. Both profiles use the target repository's
+instructions, destinations and checks; neither selects a specific repository.
+Board and landing capabilities belong to the target project or supervisor;
 none is shipped here. Missing host capability
 means report the affected workflow as unavailable; do not fetch a substitute
 from the package or provision infrastructure implicitly.

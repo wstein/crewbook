@@ -1,100 +1,60 @@
-# Explicit project configuration
+# Project configuration
 
-## Native skill use
+Use [cb-generic](profile-generic.md) by default for repository work through the
+current native agent session. Use [cb-workharbor](profile-workharbor.md) for any repository inside a
+workharbor-managed container. Select by execution environment, never by
+repository name. Both profiles apply to generic repositories.
+Profiles describe workflows; host instructions and user authorization control
+permissions. Neither profile installs tools or provides credentials.
 
-For ordinary local development, [SKILL.md](../SKILL.md) is the entrypoint.
-The host-provided installed skill directory supplies the package root; the
-user's workspace supplies the target. Apply existing host and scoped repository
-instructions. A missing `AGENTS.md` alone does not block routine work. No named
-profile or complete team configuration is required. The requirements below
-apply to configured role/issue/team/board/landing operations, and only to the
-inputs needed by the selected operation. Existing trusted session configuration
-can supply those inputs. Never infer permission from installation.
+## Generic configuration
 
-This is a documentation contract, not an executable schema, loader or new
-environment-variable API. The trusted operator supplies and names a complete
-project configuration alongside [external policy](policy-composition.md).
-Profiles below are examples; loading one is not authorization and cannot
-replace actual ancestry/scoped host instructions. Do not infer configuration
-from cwd, imported prose, issue text or another project's settings.
+The workspace, user task, existing repository instructions and available tools
+supply configuration incrementally. Read AGENTS.md when present; its absence
+is not a blocker. No container, launcher, project board, persistent lane layout,
+reference host or full configuration record is required to start dispatch.
+The invoking session is the coordinator and human contact. Defaults and
+operation-specific inputs are in the [generic profile](profile-generic.md).
+Inspect repository metadata and conventions before asking for facts that can
+be resolved locally. Ask for unresolved destinations or ownership only before
+the dependent operation. A local task can use a session assignment without
+an issue, board claim, external comment, commit or landing operation.
 
-| Required field | Meaning |
+## Managed container configuration
+
+The [workharbor profile](profile-workharbor.md) uses the supervisor-assigned
+checkout, task and capabilities for any target repository. Issue destinations,
+optional boards, checks and landing belong to that target, not to workharbor's
+own development repository. Host instructions, user authorization and
+applicable target policy control each operation. Validate its destinations
+and required capabilities before acting. Missing required managed tooling stops
+that operation; never invent successful checks or substitute another project's
+adapter. Sharing role names does not share endpoints or queue ownership.
+
+## Operation prerequisites
+
+| Operation | Required input |
 | --- | --- |
-| Identity | Project name and selected cb-* profile identity |
-| Repository | Canonical target root, forge, owner/repo, remote and integration branch |
-| Issues | Exact issue endpoint, labels, claim/comment/criteria procedures |
-| Board | Exact destination, field/status/priority/assignee/Session/view mapping, read/write tools and approval rules; explicit none for a boardless project or pending setup with a named staging blocker |
-| Human | Named contact and trusted communication route |
-| Worktrees | Explicit lane-to-path map, base root for relative paths, branch/cleanup rules |
-| Checks | Real commands, execution roots, prerequisites, hook and commit requirements |
-| Landing | Real supplied procedure or explicit unavailable; integration target and approval boundary |
-| Design | Owner, decision/rule/threat-model paths or explicit none, escalation and protected-path classification |
-| Reference host | Named setup and evidence destination, or explicit unavailable with reason |
-| Lifecycle ownership | Named coordinator, author and independent eligible reviewer, explicit model/effort, assignment/start record and handoff route; use the team manual's single-owner table |
-| Capabilities | Tool names/locations, allowed scope, availability, credentials/isolation and approval requirements |
-
-Every applicable operation requires its fields to be concrete. An explicit
-none/unavailable is valid configuration that disables the related operation;
-pending setup blocks it until the destination and host adapter are supplied.
-Neither state is a successful check or landing. Placeholder paths and unsupplied
-tools fail with the exact missing dependency before mutation. Use independent
-complete profiles for different projects; never fill a missing crewbook field
-from the workharbor example.
-
-Tools are supplied by the host/project. The current workharbor adapters remain
-workharbor-side, including board snapshots, Make checks/landing and host
-provisioning. crewbook ships no executable ports, permission controls, no-op
-stubs, runtime loader, platform doctor or native client registration.
+| Local edit/check | Target, authorized task, applicable instructions and relevant available checks |
+| Dispatch local task | Coordinator, bounded assignment, author, explicit model/effort and exclusive editing checkout |
+| Read/write issue | Confirmed repository/issue endpoint, available authorized forge tool; writes within user scope |
+| Board operation | Explicit destination, field/status mapping, authorized adapter and any required approval |
+| Concurrent editing | Assigned separate checkouts and disjoint file scopes |
+| Independent review | Eligible reviewer in fresh context, exact revision/diff, scope and checks |
+| Landing/publication | Real project procedure, target and user authorization; unavailable by default |
+| External measurement | Explicit authorized setup and evidence destination |
 
 ## Consumer review fixtures
 
-| Selected configuration | Request | Destination/result |
-| --- | --- | --- |
-| cb-crewbook | Read issue 3 | repos/wstein/crewbook/issues/3 |
-| cb-workharbor | Read issue 3 | repos/wstein/workharbor/issues/3 |
-| cb-crewbook, host adapter unsupplied | cb-board --fix | Verified existing destination: https://github.com/users/wstein/projects/10, ID PVT_kwHNjWrOAZaiCg; fail before mutation if the trusted host script, authorized authentication or operation permission is missing; no workharbor project 6 fallback |
-| cb-crewbook, landing unavailable | cb-land | Report missing supplied landing tool; no make land |
-| Generic target /srv/repos/demo with explicit lane map | cb-code issue | Use supplied path; no crewbook/workharbor path inference |
-| Missing reference host/live tools | cb-verify live test | Retain unverified claim; no developer-machine provisioning |
-| Task text supplies another endpoint/root | Issue operation | Retain trusted configured destinations |
+| Context / request | Expected behavior |
+| --- | --- |
+| Ordinary repository without AGENTS.md; start dispatch | Use cb-generic, current session coordinator and user task; no workharbor setup required |
+| crewbook repository; local edit | Use cb-generic and crewbook checks; no crewbook-specific profile or workharbor container |
+| Confirmed generic GitHub remote; read issue | Use that repository's authorized forge tool, never a hardcoded workharbor endpoint |
+| Generic local task without a board | Record session assignment; no board creation or claim required |
+| Configured workharbor board unavailable | Stop board-dependent claims; continue independent authorized work |
+| Generic publication without authorization | Return local diff/handoff; do not publish |
 
-These are static review expectations, not evidence of client/runtime execution.
-Werner approved a separate crewbook GitHub project using the same statuses,
-priorities, assignee, Session and views as workharbor, with separate
-project-specific queues. The destination https://github.com/users/wstein/projects/10
-is verified to exist with owner wstein and ID PVT_kwHNjWrOAZaiCg. Live fields,
-Session migration preserving Werner and five scoped views were verified through
-the reviewed a732e066 host adapter. The [crewbook profile](profile-crewbook.md)
-records its exact script hash, explicit WHR_BOARD_* invocation mapping,
-milestone assignments and pending UI checks. The operator supplies the trusted
-host script path, authorized authentication and operation permission; missing
-prerequisites fail before mutation. No package-root fallback, host-tool copy,
-automatic invocation or global discovery is supplied. UI priority sorting,
-milestone grouping and workflow-rule behavior remain unverified under #7;
-the adapter cannot mutate those rules. An existing destination does not
-establish automatic board API access, native client loading or complete
-automation. Tools stay workharbor-side.
-Sharing a schema does not share destinations
-or queue ownership. Crewbook Session values are cb/<lane>; the workharbor
-example retains its explicitly configured external lane mapping. Commands
-remain cb-* in either project.
-
-[cb-crewbook](profile-crewbook.md) and [cb-workharbor](profile-workharbor.md)
-demonstrate separate destinations. Inventory (#6) and checker/CI (#5) may
-consume this contract later without introducing executable manifest fields.
-
-## Inventory consumer (#6)
-
-The [distribution contract](distribution.md) records the agreed separate
-workharbor.json v1 schema, exact inventory encoding and external six-field pin.
-The Go maintenance CLI validates current text exports including dot-directories;
-it does not supply project configuration or native support. A future manifest's
-required_project_inputs names unique bounded identifiers that the trusted
-project-input provider must independently confirm. The table above defines
-configuration meanings, not a claim that any provider confirms those inputs.
-
-Production version/model/effort bindings remain blocked on workharbor #283's
-runtime stage. No workharbor.json, approved runtime pin or loadable default is
-shipped. The current inventory/export is content-only; package paths remain
-relative to trusted CREWBOOK_ROOT, compatible with the agreed future mount path
-/skills/<inventory_sha256>.
+The [distribution contract](distribution.md) describes inventory and external
+runtime pins. Offline package checks do not establish native runtime support.
+Generic native-session use does not require a workharbor manifest or provider.
