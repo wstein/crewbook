@@ -61,3 +61,10 @@ enforcement or a loadable production default.
 Credential-free [preflight scenarios](../docs/tool-preflight.md) run with the
 same unittest command. They test observable offline outcomes, not live agent
 compliance or permission enforcement.
+
+Credential-free dispatch recovery replays in `test_dispatch_recovery.py` preserve
+structured events and assert exact review continuations, model substitutions,
+capacity recovery, uncertain starts, stale ownership, mixed tool results and
+once-per-transition empty requests. They are a maintenance reference model,
+not runtime enforcement or tests that an agent follows prompt text. Timing and
+native-client recovery remain unverified.

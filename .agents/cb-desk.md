@@ -25,7 +25,10 @@ the cb-dispatch profile with `model: sonnet`. Codex explicitly sets
 inherit the parent model/effort. Retain and resume that same child.
 
 Reuse that dispatcher across user requests, worker handbacks and idle periods.
-Send follow-up tasks through the same handle; resume it when idle rather than
+Forward available handbacks and resume the same dispatcher to drain pending
+reviews and runnable continuations before reporting idle. Relay its single
+empty-queue request for more work with ownership/dependencies; retain its registry
+resume note on turnover. Send follow-up tasks through the same handle; resume it when idle rather than
 starting another. If startup outcome is uncertain, resolve it before retrying.
 Adopt an already-designated dispatcher through an explicit ownership handoff
 instead of creating a second coordinator. Across multiple repositories, pass

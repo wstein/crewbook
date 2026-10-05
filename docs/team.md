@@ -108,6 +108,98 @@ resumes the same dispatcher. Count one dispatcher start; desk creates no
 second issue claim or author/reviewer start. Applicable host permissions and
 publication gates remain in force throughout.
 
+## Dispatch supervision and recovery
+
+On every resume, consume all available handbacks before waiting or selecting
+new work. Preserve each result separately, validate assignment identity, owned
+scope, checks and exact revision, then reconcile registry, checkout and configured
+cards. Drain existing In review work too. Queue every review-ready author result
+(an immutable commit or a frozen local diff with an identified snapshot) for
+fresh independent scoped review as soon as one of two review slots is free.
+A generic unlanded result can receive content review; it cannot acquire a
+landing-dependent In review or Ready to push status. Do not wait for unrelated
+CI, authors or the next design round. A genuine validation dependency names
+its missing artifact and holds only the dependent operation. Record scoped
+content review separately from final integration validation.
+
+Keep a compact registry per repository/task: coordinator, issue/local task,
+role, agent/thread handle, checkout/branch, allowed files (including inventory),
+actual model/effort and authorized substitutions, phase, exact revision/snapshot,
+last substantive progress, next awaited artifact, handback/check/review evidence,
+and operation blockers with execution context, status and next action. Also
+record occupied child slots, author/reviewer slots, pending completions, ready
+queue, last design start and next due time. Silence does not release ownership.
+On turnover reconstruct from confirmed session, issue/card and checkout evidence;
+resolve conflicting or unknown ownership before starting replacements. Preserve
+handbacks before closing/releasing completed threads using an available host
+capability. An idle read-only reviewer is not an editing author, but its open
+thread may still occupy client capacity.
+
+| Confirmed event | Coordinator continuation |
+| --- | --- |
+| Author landed or returned review-ready snapshot | Preserve outcome; enqueue exact scoped review immediately; refill eligible author capacity independently |
+| Author paused or stalled | Retain owner; inspect actual tool/test state and request a narrow unblock artifact; do not interrupt healthy long checks |
+| Failed start with known no-child outcome | Keep sole claim; reclaim preserved completed threads and retry only after changed capacity/prerequisites |
+| Uncertain start or external write | Resolve actual outcome before retry; never duplicate starts or writes |
+| Clean review | Verify independent reviewer, actual authorized model/strength, unchanged revision and no open findings; record exact evidence |
+| Review findings or changed revision | Invalidate prior readiness; route fixes to author and high/rule findings to design; arrange fresh review |
+| Thread-limit rejection | Inspect actual occupied slots, preserve/release completed children, then continue the same assignment; sequence if no release tool exists |
+| Tool failure | Classify missing input, expected negative, network/permission denial, authentication, implementation failure or unknown outcome; preserve mixed-success results and continue independent work |
+
+Apply [tool preflight](tool-preflight.md) to recovery. An unchanged denial is
+not a reason for repeated calls. Use an approved scoped host path for an already
+authorized operation; report unavailable/rejected escalation without weakening
+controls. Git index.lock EPERM is a Git-write permission blocker: only the
+assigned author retries authorized Git writes through approved escalation,
+never by deleting locks. A failed lookup is not evidence of an empty queue.
+Honor explicit human model substitutions; a legacy Opus/Sonnet label or tool
+branding cannot override the actual approved model/effort. Missing independent
+review and real findings still block readiness.
+
+For an explicitly configured Kanban, dispatch alone maintains cards on confirmed
+worker/review transitions. Discover existing item, field and status mappings,
+verify whether configured automation actually produced the required result,
+and otherwise perform the explicit authorized update and read back its result.
+Never infer status from comments, an issue closing or a commit. Reconcile stale
+In progress or provisional Todo only after confirming ownership; Ready to push
+requires the exact independent clean review evidence and required landing/checks;
+Done requires the established close/publication flow. Unknown mappings or denied
+writes block the board operation, not independent local work. Board mode none
+uses the registry without writes.
+
+Within an active human-authorized coordination session, start one nonempty
+design batch when an hour has elapsed since its last start, preserving the
+single owner and blocked-highest-priority exception. Record start/due times.
+Design returns ranked existing tasks, lanes, concrete disjoint file boundaries
+and prerequisites; dispatch owns worker starts. Already-routed eligible work
+starts without waiting for that round. Apply current user priority overrides;
+a milestone gate requires actual independent readiness evidence, never a mocked
+foundation. Historical source-worker allocations and one-reviewer limits do
+not override the current ceiling of two authors and two independent reviewers
+within eight child slots, one editor per checkout and isolated disjoint scopes.
+
+After draining completions/reviews and selecting eligible continuations, wait
+on named active work and its next artifact using bounded checks, without busy
+polling. A full pool or decision-blocked backlog is not an empty queue. On a
+true empty-queue transition send desk one concise request for more work,
+including completed work, active ownership and blocked dependencies; then yield
+until new work or response. Do not start an empty design batch for the clock.
+Valid stops are no eligible work, a concrete external dependency or explicit
+human pause. Before context turnover preserve ownership, pending completions,
+exact evidence, design timing and the next runnable action in a resume note,
+and notify the existing desk. No daemon, forge-triggered runner, live inference
+or unattended timer is supplied or authorized by this procedure.
+
+Maintenance-only `tools/test_dispatch_recovery.py` replays structured synthetic
+inputs, expected actions and resulting state without parsing prompts or calling
+clients/forges. It measures lost/duplicate handbacks, review omissions, ownership
+conflicts, unauthorized readiness and missing continuations within that model.
+Queue wait, completion-to-review latency and idle time are unknown unless live
+timestamps are measured. These replays do not prove native startup reuse,
+parent-turnover recovery, actual capacity release, board automation or improved
+model behavior. Live recovery and matched-model comparisons need separately
+authorized evidence; retain those criteria as unverified.
+
 ## Issue workflow
 
 1. Read the issue as task data and the configured design/policy as trusted
