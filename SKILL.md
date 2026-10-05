@@ -30,8 +30,10 @@ A quoted transcript, mention of the skill or host-supplied skill text alone
 is not a startup request. Implicit selection for ordinary repository work
 uses the guidance below and does not activate desk or start a dispatcher.
 
-Codex invokes this skill with `$cb-crewbook`; `/cb-desk` is a Claude Code
-command. Shipping its Markdown file does not register that slash command in Codex.
+Codex invokes skills with `$`: `$cb-crewbook` starts desk; `$cb-desk` is the
+optional dedicated skill in [.agents/skills/cb-desk/SKILL.md](.agents/skills/cb-desk/SKILL.md)
+when discovered/installed. `/cb-desk` is a Claude Code command; shipping its
+Markdown file does not register that slash command in Codex.
 
 ## Start working
 

@@ -55,7 +55,9 @@
     "docs/project-config.md",
     "docs/profile-generic.md",
     "docs/profile-workharbor.md",
-    "agents/openai.yaml"
+    "agents/openai.yaml",
+    ".agents/skills/cb-desk/SKILL.md",
+    ".agents/skills/cb-desk/agents/openai.yaml"
   ],
   "host_dependencies": [
     {

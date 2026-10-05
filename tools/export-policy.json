@@ -9,6 +9,8 @@
     ".agents/cb-helper.md",
     ".agents/cb-review.md",
     ".agents/cb-verify.md",
+    ".agents/skills/cb-desk/SKILL.md",
+    ".agents/skills/cb-desk/agents/openai.yaml",
     ".claude/agents/cb-design.md",
     ".claude/agents/cb-dispatch.md",
     ".claude/agents/cb-docs-reviewer.md",

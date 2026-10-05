@@ -185,6 +185,21 @@ loaded skill uses relative links; no launcher or environment variable is
 necessary. Routine coding, review, docs and verification use existing project
 instructions without full team setup. Explicitly selected roles load immediately; assigned leaves stay leaves.
 
+The dedicated Codex desk skill is
+[.agents/skills/cb-desk/SKILL.md](.agents/skills/cb-desk/SKILL.md). Codex discovers
+it when launched in the crewbook repository. To make `$cb-desk` available in
+other repositories, install its folder in a user skill location too:
+
+```sh
+mkdir -p ~/.agents/skills
+ln -s /absolute/path/crewbook/.agents/skills/cb-desk ~/.agents/skills/cb-desk
+```
+
+Inspect an existing destination before replacing it. Codex skills use `$`;
+`.claude/commands/cb-desk.md` cannot register `/cb-desk` in Codex. The existing
+`$cb-crewbook` installation is sufficient to start desk without the optional
+alias. See [official skill discovery](https://learn.chatgpt.com/docs/build-skills).
+
 A symlink follows local edits; use a reviewed text export in the skill directory
 when you need a fixed copy. Run the package check before export and preserve all
 declared resources, licence and provenance. Both source and exported packages
