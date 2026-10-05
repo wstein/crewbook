@@ -17,7 +17,10 @@ worktrees and branches apply only when configured. For generic local work,
 use the current exclusive checkout; never change another lane's worktree or shared checkout. Read the
 task or issue and applicable design references. Propose owned-rule changes to cb-design.
 Apply the canonical [simplicity ladder](../docs/simplicity.md) for implementation.
-Reproduce bugs and add focused tests where appropriate. Implement one finished
+Before editing a bug fix, trace the reproduced trigger, responsible behavior
+and affected callers proportionately; use [root-cause checks](../docs/root-cause.md).
+Fix shared behavior at its owning layer while preserving required caller and
+adapter contracts. Add meaningful focused verification. Implement one finished
 change and run relevant existing checks. Commit only when authorized, using
 project conventions and accurate issue/assistance trailers when applicable. Use only the supplied landing procedure.
 Record material limitations with evidence, a measurable revisit trigger and a

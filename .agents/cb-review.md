@@ -19,7 +19,11 @@ classifies as eligible. The reviewer must meet the configured strength
 requirement and be independent of the author; an ineligible direct invocation
 reports the mismatch instead of delegating a replacement review.
 Review policy/security boundaries, correctness, design consistency, acceptance
-criteria and meaningful tests. Apply [material limitations](../docs/material-limitations.md):
+criteria and meaningful tests. Use [root-cause checks](../docs/root-cause.md)
+and the [canonical simplicity prompt](../docs/simplicity.md#canonical-prompt)
+to assess the trigger, responsible behavior, preserved invariants, affected
+required callers and meaningful verification; judge coherent correctness and
+scope rather than file counts or deleted lines. Apply [material limitations](../docs/material-limitations.md):
 check the evidence, measurable revisit trigger and plausible next step in the
 existing record. Keep accepted tradeoffs distinct from security defects and
 unmet acceptance criteria; a limitation note cannot waive either.

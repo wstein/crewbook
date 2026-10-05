@@ -62,7 +62,8 @@
     "docs/tool-preflight.md",
     "docs/human-request-templates.md",
     "docs/handover-examples.md",
-    "docs/simplicity.md"
+    "docs/simplicity.md",
+    "docs/root-cause.md"
   ],
   "host_dependencies": [
     {
