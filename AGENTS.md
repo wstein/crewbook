@@ -43,13 +43,7 @@ current main, reruns checks and obtains fresh independent review of the rewritte
 SHA **before** fast-forward integration. Stop on conflicts outside the assigned
 scope. This is this repository's current policy, not a universal target policy.
 
-Use focused Conventional Commits with accurate assistance trailers. Work-item
-commits must end with a footer block separated from the body by a blank line,
-with contiguous lines: `Refs: #NN` using the actual assigned issue ID, followed by
-`Assisted-by: codex:<actual-model>/<actual-effort>` using the actual assisting
-model and reasoning effort. Never invent
-issue IDs or retrospectively rewrite integrated main history to add footers.
-For example, a commit for assigned issue #29 can be:
+Use focused Conventional Commits with the actual WI, model and effort:
 
 ```text
 docs: clarify work-item commit footers
