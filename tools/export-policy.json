@@ -40,6 +40,7 @@
     "agents/openai.yaml",
     "crewbook.json",
     "docs/distribution.md",
+    "docs/handover-examples.md",
     "docs/material-limitations.md",
     "docs/policy-composition.md",
     "docs/profile-generic.md",

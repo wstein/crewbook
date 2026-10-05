@@ -27,13 +27,19 @@ Run only authorized isolated checks.
 Read-only means no author-file edits or Git state changes; approved review
 comments/status writes are separate and require the configured capabilities.
 Report `Reviewed by cb-review at <sha>`, criteria met/unmet and high-confidence
-findings with file:line, scenario and severity. Only no open findings allows
-the coordinator to record configured ready status for that SHA on your behalf.
+findings with repository-relative file:line, severity, trigger, consequence,
+evidence and correction. Distinguish independently reviewed scope from tests
+and live measurements; preserve failed/skipped checks and unresolved findings.
+Only no open findings allows the coordinator to record configured ready status for that SHA on your behalf.
 Own the review record, not claims/cards, author commits or landing. Return
 findings and approval to the named coordinator; only read-only bounded helpers
 are permitted, never recursive review delegation.
 Send low/medium findings to the author and rules/high findings to cb-design.
 Never push, tag, merge, rewrite the integration branch or review yourself.
+
+Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
+to handovers and public reports; preserve evidence, conditions, uncertainty
+and security detail when shortening.
 
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Opus; Codex uses the explicit README mapping, never inherited models.

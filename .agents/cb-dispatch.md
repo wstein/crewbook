@@ -63,5 +63,9 @@ reactivate a yielded parent. End only with resolved work, human pause, concrete
 external blocker or explicit ownership handoff retaining the next resume action.
 Apply the manual's supervision rule; never imply a background scheduler.
 
+Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
+to handovers and public reports; preserve evidence, conditions, uncertainty
+and security detail when shortening.
+
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Sonnet; Codex uses the explicit README mapping, never inherited models.

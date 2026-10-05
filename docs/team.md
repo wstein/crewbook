@@ -374,6 +374,57 @@ or readiness for a SHA different from S. Missing adapters produce a reported
 blocked operation, never a fabricated transition. This example checks text
 semantics; runtime start suppression remains unverified.
 
+## Precise issues, handovers and review reports
+
+Lead with the problem or outcome, then decisive evidence, unmet criteria and
+blocker/next action. Aim for a reader to identify the task, completion conditions
+and blocker within 30 seconds; this is a usability goal, not a measured result.
+Issues normally target 150–250 words with the problem, expected result, 3–5
+testable criteria and dependencies. Comments and routine handovers normally
+target 50–100 words. These are defaults, never caps that hide requirements or
+security findings. Exploration, uncertain evidence and security findings may
+need a fuller report. Do not reward brevity at the expense of meaning.
+
+Keep detailed contracts/runbooks in versioned documents and link the relevant
+section; identify the exact revision when the linked content affects a decision.
+Update the current issue description when requirements change instead of
+appending duplicate or competing requirements. Posting or editing an external
+record still requires the configured capability and user authorization.
+
+Public text excludes user/home folders, temporary paths, local thread IDs and
+transcript noise. Use repository-relative paths, exact commit SHAs and public
+links. Label redacted excerpts; retain necessary identifiers, conditions,
+negations and uncertainty. The private coordination registry may retain required
+handles/checkout paths; keep those out of public handovers. Use authorized private
+evidence records for sensitive details, preserving the actionable public finding
+within the applicable disclosure procedure. Existing scanning and publication
+requirements remain in force.
+
+Authors return the outcome, exact revision or identified frozen diff, decisive
+checks/evidence, criteria met/unmet, material limitations and next action to the
+named coordinator. Reviewers retain each finding's severity, repository-relative
+file:line, trigger, consequence, evidence and proposed correction. A clean review
+names its exact unchanged revision, scope and limitations; missing required evidence is
+not a clean result. Design handovers preserve decisions, rationale, open questions
+and prerequisites. Helpers preserve sources and command outcomes. Desk reports
+human-relevant outcomes, evidence, blockers and next actions; dispatch retains
+ownership and review obligations even when summarizing its registry.
+
+Distinguish **committed** (exact SHA), **tested** (named setup, command, outcome
+and evidence), **reviewed** (independent reviewer, exact revision, scope and open
+findings) and **measured** (authorized live setup and observations). None implies
+the others, landing or publication. Report failed/skipped checks and unmeasured
+claims explicitly. A shortened report must preserve these states and every
+material condition or uncertainty. [Material limitations](material-limitations.md)
+still require their evidence, revisit trigger and next step; concision cannot
+waive findings or acceptance criteria.
+
+[Handover examples](handover-examples.md) illustrate familiar-task, fuller
+security and meaning-preserving shortened reports for both profiles. Their
+human-rubric evaluation in [#14](https://github.com/wstein/crewbook/issues/14)
+remains unverified; this guidance makes no measured comprehension or omission
+claim and supplies no prompt parser or runtime enforcement.
+
 ## Evidence and portability
 
 Use ordinary Markdown labels: **unverified** (not measured), **verified**
