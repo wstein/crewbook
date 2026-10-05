@@ -24,8 +24,8 @@ and `status`, and optional explicit `paths` for external file references.
 They are descriptions, not install commands or authorization to run anything.
 Relative links and paths beneath `${CREWBOOK_ROOT}` resolve inside the package;
 an external file link must use `host:<path>` with an exact declared host path.
-The maintained Go checker validates content, profiles, references and the
-complete inventory without executing instructions.
+The Python checker validates layout, filesystem safety and the complete
+inventory without interpreting instructions.
 [PROVENANCE.md](PROVENANCE.md) records the original import
 and post-import transformations; the [distribution contract](docs/distribution.md)
 separates current content integrity from pending runtime compatibility.
@@ -117,84 +117,54 @@ without Hugo frontmatter, shortcodes or toolchain. Native client loading (#241)
 and platform doctor (#242) are historical workharbor work items, not measured
 capabilities here. Source checks and CI do not establish native runtime support.
 
-## Go maintenance
+## Python maintenance
 
-Maintainers use Go 1.27 or newer on Linux or macOS. The standard library handles
-package maintenance; Goldmark parses GFM for content validation. Maintenance
-code and module dependencies are excluded from the distributed text artifact.
-From the source checkout, use a canonical absolute source path:
+Use Python 3.9 or newer on macOS or Linux. The maintenance CLI uses only the
+standard library; no pip packages, virtual environment, Go toolchain or
+Markdown parser is needed. On a Mac with Apple's command line tools,
+`/usr/bin/python3` is sufficient. Python availability depends on the macOS
+installation; a machine without Python still needs an interpreter.
+
+From the source checkout, use a canonical absolute root:
 
 ```sh
-go run ./cmd/crewbook-package check --root /absolute/path/crewbook
-go run ./cmd/crewbook-package inventory --root /absolute/path/crewbook
-go run ./cmd/crewbook-package update --root /absolute/path/crewbook
-go run ./cmd/crewbook-package export --root /absolute/path/crewbook --dest /absolute/path/new-text-package
-go test ./...
-go test -race ./...
-go vet ./...
-go build -trimpath -buildvcs=false -o /tmp/crewbook-package ./cmd/crewbook-package
+python3 tools/crewbook-package.py check --root /absolute/path/crewbook
+python3 tools/crewbook-package.py inventory --root /absolute/path/crewbook
+python3 tools/crewbook-package.py update --root /absolute/path/crewbook
+python3 tools/crewbook-package.py export --root /absolute/path/crewbook --dest /absolute/path/new-text-package
+python3 -B -m unittest discover -s tools -p 'test_*.py'
 ```
 
-Use a fixed Go patch version and `CGO_ENABLED=0` for reproducible optional
-binary builds. No binary is needed by agents. `check` verifies source inventory,
-required resources, supported scalar frontmatter, role/model mappings, prompt
-links, bundled references, helper tool restrictions and GFM links/anchors.
-Hugo shortcodes and undeclared host links fail. Maintenance-only `tools/README.md`
-documents the supported syntax and focused nonzero-exit fixtures.
+`check` validates package layout, file safety and saved inventory digests.
+It does not parse Markdown, validate prompt prose, enforce role/model mappings
+or resolve links. Instruction text is data and is never executed. `update`
+accepts reviewed content changes and writes the inventory; it is not a tamper
+check. Export uses validated snapshot bytes and requires a new destination.
+Source/export policies enumerate the same distributed files, including dot
+directories. Maintenance code, tests, CI and the inventory are not exported.
 
-CI runs this same entrypoint, Go tests including race checks, vet and formatting
-on ordinary pull requests, plus pinned redacted Gitleaks history/tree/message
-scans. CodeQL builds and analyzes the actual Go maintenance packages. External
-HTTP(S) link checks run only weekly or on manual request, with bounded retries
-and timeouts; upstream outages do not gate ordinary package validation.
-Dependabot proposes weekly Action and Go-module updates for human review.
-Every Action has an official-upstream full commit pin and version comment;
-checkout does not persist credentials. Routine jobs receive contents read;
-only CodeQL receives security-events write. There is no agent execution,
-board access, automatic merge, release or deployment. Native GitHub secret
-scanning and push protection are separate enabled repository settings.
-Maintenance-only `tools/CI.md` and `tools/SECURITY.md` record reproduction and
-pin evidence. Hosted execution remains **unverified** until actual publication
-and a GitHub run; passing local checks does not claim hosted success.
-
-`tools/package-policy.json` explicitly enumerates all distributed files,
-including dot-directories and provenance. It excludes maintenance paths
-(`.git/`, `.github/`, `tools/`, `cmd/`, `internal/`, Go module files).
-Unknown distributed files or directories, missing files, unsafe permissions,
-links, path aliases, invalid UTF-8/NUL content and size-limit violations fail.
-`tools/export-policy.json` enumerates the same distributed set with no maintenance
-exclusions, for exact staged-export checks. Review layout and both policies
-before `update`; use its fixed default inventory destination and commit `tools/package.sha256`
-with the changed sources. `update` intentionally accepts reviewed content
-changes; it is not a tamper check. `check` and `export` compare saved digests.
-Export uses validated in-memory file bytes, preserving content deterministically,
-and requires a new destination; it includes no maintenance tooling.
-For export relocation/revalidation commands and coordinated #5 updates, read
-[docs/distribution.md](docs/distribution.md).
-
-Inventory encoding is sorted ASCII
-`<lowercase SHA-256><two spaces><relative POSIX path><LF>`, including the
-final LF. `workharbor.json`, when present, is separately hashed and excluded
-from these lines. There is no self-hashed inventory file in the artifact.
+Inventory records are sorted ASCII
+`<lowercase SHA-256><two spaces><relative POSIX path><LF>`, including the final
+LF. `workharbor.json`, when present, is hashed separately and excluded from
+these records. Keep changed resources, declarations and regenerated inventory
+in the same commit. [tools/README.md](tools/README.md) describes command flags,
+filesystem safeguards and tests; [docs/distribution.md](docs/distribution.md)
+describes relocation and the runtime contract.
 
 `runtime-check --root … --pin /external/pin.json --provider /external/provider.json`
-requires the v1 `workharbor.json` and a trusted external six-field pin:
-`identity`, `source`, `commit`, `manifest_sha256`, `inventory_sha256`,
-`contract_version`. The provider JSON has `bindings` (exact `name`, `version`,
-`model`, `effort` objects) and `project_inputs` (confirmed identifiers).
-These are independently supplied support assertions, not evidence generated by
-the package. Production Claude's name is `claude-code`; its version is the
-exact opaque native CLI version, never an adapter protocol integer.
-This offline command checks assertions; it does not measure a live client.
+requires the v1 `workharbor.json` and an independently reviewed six-field pin.
 `lock --root … --source … --commit <40-hex> --provider /external/provider.json`
-prints a candidate six-field pin only after the same checks; independent review
-must approve it before use.
+prints a candidate pin after the same checks. Provider assertions describe
+exact version/model/effort bindings and confirmed project inputs. These offline
+checks do not measure native client loading or runtime enforcement. No approved
+production tuple or manifest is currently shipped; both commands fail clearly
+on the missing manifest.
 
-No approved native version/model/effort production tuple exists yet. Accordingly
-this source contains no `workharbor.json` or fabricated production adapters.
-Source checks and text export can pass honestly; `runtime-check` and `lock`
-fail clearly on the missing manifest. Native loading and runtime compatibility
-remain unverified, awaiting measured provider support.
+CI runs the Python tests and package check on Linux and macOS, plus isolated
+secret-scanner fixtures. CodeQL analyzes Python maintenance source. External
+HTTP(S) links are checked only on a schedule or manual request. Actions retain
+immutable pins and least-privilege permissions. Hosted results remain
+unverified until publication and an actual GitHub run.
 
 ## Install, update, uninstall
 

@@ -20,7 +20,7 @@ Run locally from the canonical repository root:
 ```sh
 bash tools/install-gitleaks.sh /private/tmp/crewbook-gitleaks-8.30.1
 bash tools/scan-secrets.sh "$(pwd -P)" /private/tmp/crewbook-gitleaks-8.30.1
-GITLEAKS_TEST_BINARY=/private/tmp/crewbook-gitleaks-8.30.1 go test ./internal/cicheck
+GITLEAKS_TEST_BINARY=/private/tmp/crewbook-gitleaks-8.30.1 python3 -B -m unittest discover -s tools -p 'test_scanner.py'
 ```
 
 The installer requires a new destination; reuse the verified binary for later

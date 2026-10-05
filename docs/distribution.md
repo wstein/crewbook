@@ -9,7 +9,7 @@ reviewed source checkout explicitly enumerates its text files. `crewbook.json`
 declares the same resources and entrypoints. `tools/package.sha256` records
 their current byte digests, not the original import digests.
 
-These maintenance files and all Go source, module files, `.github/` and `.git/`
+These maintenance files and all Python maintenance source/tests, `.github/` and `.git/`
 are excluded from the distribution. The export contains LICENSE, provenance,
 README, SKILL, Codex discovery metadata, layout metadata, docs and every declared `.agents/` and `.claude/`
 resource. It contains no agent executable tools, runtime plugins, permission
@@ -26,9 +26,9 @@ staged export cannot be ignored. Supply this policy and the saved inventory
 from the trusted source checkout, outside the export:
 
 ```sh
-go run ./cmd/crewbook-package check --root /absolute/source/crewbook
-go run ./cmd/crewbook-package export --root /absolute/source/crewbook --dest /absolute/staged/crewbook-text
-go run ./cmd/crewbook-package check --root /absolute/staged/crewbook-text --policy /absolute/source/crewbook/tools/export-policy.json --inventory /absolute/source/crewbook/tools/package.sha256
+python3 /absolute/source/crewbook/tools/crewbook-package.py check --root /absolute/source/crewbook
+python3 /absolute/source/crewbook/tools/crewbook-package.py export --root /absolute/source/crewbook --dest /absolute/staged/crewbook-text
+python3 /absolute/source/crewbook/tools/crewbook-package.py check --root /absolute/staged/crewbook-text --policy /absolute/source/crewbook/tools/export-policy.json --inventory /absolute/source/crewbook/tools/package.sha256
 ```
 
 Roots must be canonical absolute paths; no cwd or target-repository fallback
@@ -59,17 +59,17 @@ sets identical; `tools/export-policy.json` must retain `maintenance: []`.
 Then run:
 
 ```sh
-go run ./cmd/crewbook-package update --root /absolute/source/crewbook
-go run ./cmd/crewbook-package check --root /absolute/source/crewbook
-go run ./cmd/crewbook-package inventory --root /absolute/source/crewbook
+python3 /absolute/source/crewbook/tools/crewbook-package.py update --root /absolute/source/crewbook
+python3 /absolute/source/crewbook/tools/crewbook-package.py check --root /absolute/source/crewbook
+python3 /absolute/source/crewbook/tools/crewbook-package.py inventory --root /absolute/source/crewbook
 ```
 
 `update` accepts deliberately reviewed new bytes; it is not a tamper check.
 Commit the changed content, declarations and generated `tools/package.sha256`
 together. Repeating update on unchanged content produces identical bytes.
-The original extraction evidence is not regenerated. The content checker/CI
+The original extraction evidence is not regenerated. The layout checker/CI
 must perform this same coordinated update when it changes packaged resources;
-adding maintenance-only CI or Go source changes no distributed bytes.
+adding maintenance-only CI or Python source changes no distributed bytes.
 
 ## Agreed producer metadata for workharbor #283
 
@@ -145,8 +145,8 @@ not guess a self-referential future commit hash.
 env -u SSH_AUTH_SOCK -u SSH_AGENT_PID \
   GIT_CONFIG_SYSTEM=/dev/null GIT_CONFIG_GLOBAL=/dev/null \
   GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c core.fsmonitor=false rev-parse HEAD
-go run ./cmd/crewbook-package lock --root /absolute/source/crewbook --source https://github.com/wstein/crewbook --commit ACTUAL_FULL_COMMIT --provider /external/reviewed-provider.json > /external/candidate-pin.json
-go run ./cmd/crewbook-package runtime-check --root /absolute/staged/crewbook-text --policy /absolute/source/crewbook/tools/export-policy.json --inventory /absolute/source/crewbook/tools/package.sha256 --pin /external/reviewed-pin.json --provider /external/reviewed-provider.json
+python3 /absolute/source/crewbook/tools/crewbook-package.py lock --root /absolute/source/crewbook --source https://github.com/wstein/crewbook --commit ACTUAL_FULL_COMMIT --provider /external/reviewed-provider.json > /external/candidate-pin.json
+python3 /absolute/source/crewbook/tools/crewbook-package.py runtime-check --root /absolute/staged/crewbook-text --policy /absolute/source/crewbook/tools/export-policy.json --inventory /absolute/source/crewbook/tools/package.sha256 --pin /external/reviewed-pin.json --provider /external/reviewed-provider.json
 ```
 
 These future commands require an admissible manifest and trusted external

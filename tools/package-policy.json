@@ -49,10 +49,6 @@
   "maintenance": [
     ".git/",
     ".github/",
-    "tools/",
-    "cmd/",
-    "internal/",
-    "go.mod",
-    "go.sum"
+    "tools/"
   ]
 }
