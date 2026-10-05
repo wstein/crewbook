@@ -67,6 +67,11 @@ structured events and assert exact review continuations, model substitutions,
 confirmed host capacity separately from retained completed handles, same-item
 author/review corrections, unrelated review freshness, unchanged-capacity retry
 suppression, uncertain starts, stale ownership, mixed tool results and
-once-per-transition empty requests. They are a maintenance reference model,
+once-per-transition empty requests. Explicit required/authorized landing replays
+retain the obligation after clean exact review without a seeded integration queue,
+route the same author once, await validated owner/revision/ref/success evidence,
+reject stale or uncertain results, and preserve content-review-only completion.
+These synthetic cases do not establish native landing or parent supervision.
+They are a maintenance reference model,
 not runtime enforcement or tests that an agent follows prompt text. Timing and
 native-client recovery remain unverified.

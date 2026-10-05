@@ -70,6 +70,14 @@ authorized status writes. Record blocked backlog separately with dependency,
 owner and next action. Consume/process/wait in bounded cycles; progress reports
 are not final handoffs. User steering preserves claims and outstanding reviews.
 
+Check explicit assignment landing requirements after clean review. Required
+authorized landing remains pending even without a manually populated integration
+queue. Route it once for the cleared revision to the retained assigned author;
+a sent request proves neither start nor success. Await and validate the author,
+cleared SHA, supplied integration ref and successful result before readiness.
+Preserve uncertain/failed landing obligations and distinguish review, landing
+and publication evidence. Content-review-only work creates no landing obligation.
+
 Keep the coordinating turn active while authorized children, required reviews
 or actionable handbacks remain outstanding: process results or await named
 artifacts through bounded supported tools, preserving existing handles. Do not

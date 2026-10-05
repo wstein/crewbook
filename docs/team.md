@@ -268,6 +268,27 @@ and status writes are work, even after a clean review; process them through thei
 established authorized owner/procedure and confirm results. Do not invent landing
 or publication permission to drain the queue.
 
+Record `landing_required` and `landing_authorized` explicitly in each assignment,
+with the supplied integration target/procedure and the assigned author's retained
+handle. An unlanded candidate alone does not imply a landing obligation: a
+content-review-only assignment may finish after its clean review. For required
+landing, clean exact-revision review clears that revision for integration; it
+does not discharge the obligation. Derive pending landing from the assignment
+and evidence even when no integration queue was manually populated.
+
+After clearance, route landing once for that revision to the same assigned
+author using its retained handle and supplied procedure. Sending a request proves
+neither that landing started nor that it succeeded. Preserve the obligation and
+await the author's integration result; missing authorization, target/procedure
+or resume capability requires a concrete blocker and retained handoff. Validate
+the result's author, unchanged cleared revision, supplied integration ref and
+explicit successful outcome before recording required landing or readiness.
+Wrong-owner, stale-revision, failed, missing or unknown results remain pending;
+resolve them before retrying an uncertain operation. A rewritten candidate needs
+checks and fresh exact-revision review before a new landing request. Keep review,
+landing and publication evidence separate; local landing does not authorize push.
+Reuse the same author and reviewer contexts for this work item's continuations.
+
 Blocked backlog is a separate outcome from drained: name concrete external
 dependencies, their owners and unblock/resume actions. Continue independent
 eligible work first. An unresolved ownership/start/status outcome remains an

@@ -21,6 +21,11 @@ def replay(state, events):
             state['empty_requested'] = False
             if key in state.get('pending_handbacks', []):
                 state['pending_handbacks'].remove(key)
+            if task.get('landing_required'):
+                task['landed'] = False
+                task.pop('cleared_revision', None)
+                task.pop('landing_request', None)
+                task.pop('integration_result', None)
             task['evidence'] = event['revision']
             task['phase'] = 'review_pending'
             actions.append(('preserve', key))
@@ -41,8 +46,27 @@ def replay(state, events):
                      and bool(event['findings']))
             task['phase'] = 'approved' if valid else 'needs_attention'
             actions.append(('approved' if valid else 'hold', key))
+            if valid:
+                task['cleared_revision'] = event['revision']
             if valid and task['landed'] and task['checks']:
                 actions.append(('board_ready', key))
+        elif kind == 'landing_result':
+            valid = (task['phase'] == 'approved'
+                     and task.get('landing_required') and task.get('landing_authorized')
+                     and task.get('landing_request') == task.get('cleared_revision')
+                     and event.get('owner') == task['owner']
+                     and event.get('revision') == task.get('cleared_revision')
+                     and event.get('revision') == task['evidence']
+                     and task.get('integration_ref')
+                     and event.get('integration_ref') == task['integration_ref']
+                     and event.get('result') == 'success' and task['checks'])
+            actions.append(('preserve_landing_result', key))
+            if valid:
+                task['integration_result'] = copy.deepcopy(event)
+                task['landed'] = True
+                actions.append(('board_ready', key))
+            else:
+                actions.append(('hold_landing', key))
         elif kind == 'route_fix':
             if task['phase'] == 'needs_attention' and event['owner'] == task['owner']:
                 task['phase'] = 'running'
@@ -87,6 +111,14 @@ def replay(state, events):
             if task['thread'] not in state['threads']:
                 state['threads'].append(task['thread'])
             actions.append(('retry_same_claim', key))
+        if (task['phase'] == 'approved' and task.get('landing_required')
+                and not task['landed'] and task.get('landing_authorized')
+                and task.get('integration_ref') and task['checks']
+                and task.get('landing_request') != task.get('cleared_revision')):
+            # Sending this request proves neither start nor successful integration.
+            task['landing_request'] = task['cleared_revision']
+            actions.append(('resume_landing_same', key, task['owner'],
+                            task['thread'], task['cleared_revision']))
     pending = any(t['phase'] in ('running', 'in_review', 'review_pending',
                                 'retry', 'resolve_start', 'needs_attention')
                   for t in state['tasks'].values())
@@ -107,6 +139,11 @@ def drain_gate(state):
     obligations = [(key, task['phase']) for key, task in state['tasks'].items()
                    if task['phase'] in phases or task['phase'] not in
                    ('approved', 'done', 'blocked')]
+    obligations.extend((key, 'landing_result' if task.get('landing_request')
+                        else 'required_landing')
+                       for key, task in state['tasks'].items()
+                       if task['phase'] == 'approved' and task.get('landing_required')
+                       and not task.get('landed'))
     for queue in ('eligible_queue', 'pending_handbacks', 'fixes',
                   'required_reviews', 'integration', 'status_writes'):
         obligations.extend((queue, item) for item in state.get(queue, []))
@@ -134,7 +171,7 @@ def parent_continuation(state, handles, wait_available=True):
     if outcome != 'active':
         return outcome, obligations
     actionable = [(key, artifact) for key, artifact in obligations
-                  if artifact not in ('running', 'in_review')
+                  if artifact not in ('running', 'in_review', 'landing_result')
                   and key != 'review_slots'
                   and not (artifact == 'review_pending' and
                            (state['reviews'] >= 2 or
@@ -149,6 +186,9 @@ def parent_continuation(state, handles, wait_available=True):
     awaited = []
     for key, task in state['tasks'].items():
         phase = task['phase']
+        if (phase == 'approved' and task.get('landing_required')
+                and not task.get('landed') and task.get('landing_request')):
+            awaited.append((key, task['thread'], 'landing_result'))
         if phase in ('running', 'in_review', 'review_pending', 'retry'):
             artifact = {'in_review': 'review', 'review_pending': 'review_slot',
                         'running': 'author_handback', 'retry': 'host_capacity'}[phase]
@@ -192,6 +232,88 @@ class RecoveryReplay(unittest.TestCase):
     def handback(self, key='generic', owner='author', revision='a' * 40):
         return dict(id=key + '-completion', kind='handback', task=key,
                     owner=owner, revision=revision)
+
+    def test_clean_review_retains_required_landing_without_seeded_queue(self):
+        initial = fixture()
+        initial['tasks'] = {'generic': initial['tasks']['generic']}
+        initial['tasks']['generic'].update(landed=False, landing_required=True,
+            landing_authorized=True, integration_ref='refs/heads/main')
+        state, _ = replay(initial, [self.handback()])
+        review = dict(id='clean', kind='review', task='generic',
+                      reviewer='independent', revision='a' * 40,
+                      model=('gpt-6.1-sol', 'medium'), findings=[])
+        state, actions = replay(state, [review])
+        self.assertEqual(drain_gate(state)[0], 'active')
+        self.assertNotIn(('request_work',), actions)
+        self.assertIn(('resume_landing_same', 'generic', 'author',
+                       'author-thread', 'a' * 40), actions)
+        self.assertFalse(state['tasks']['generic']['landed'])
+        self.assertEqual(parent_continuation(state, {'generic': 'author-thread'}),
+                         ('await', [('generic', 'author-thread', 'landing_result')]))
+        self.assertEqual(desk_safety_net(state, 'dispatcher', True)[0], 'resume_same')
+        repeated, actions = replay(state, [])
+        self.assertEqual(repeated, state)
+        self.assertEqual(actions, [])
+
+    def approved_candidate(self, required=True, authorized=True):
+        initial = fixture()
+        initial['tasks'] = {'generic': initial['tasks']['generic']}
+        initial['tasks']['generic'].update(landed=False, landing_required=required,
+            landing_authorized=authorized, integration_ref='refs/heads/main')
+        state, _ = replay(initial, [self.handback()])
+        return replay(state, [dict(id='clean', kind='review', task='generic',
+            reviewer='independent', revision='a' * 40,
+            model=('gpt-6.1-sol', 'medium'), findings=[])])
+
+    def test_landing_requires_owner_cleared_revision_ref_and_success(self):
+        state, _ = self.approved_candidate()
+        result = dict(id='landed', kind='landing_result', task='generic',
+            owner='author', revision='a' * 40, integration_ref='refs/heads/main',
+            result='success')
+        for change in ({'owner': 'other'}, {'revision': 'b' * 40},
+                       {'integration_ref': 'refs/heads/other'},
+                       {'integration_ref': None}, {'result': None}, {'result': 'failure'},
+                       {'result': 'unknown'}):
+            with self.subTest(change=change):
+                pending, actions = replay(state, [dict(result, **change)])
+                self.assertFalse(pending['tasks']['generic']['landed'])
+                self.assertEqual(drain_gate(pending)[0], 'active')
+                self.assertNotIn(('board_ready', 'generic'), actions)
+                self.assertNotIn(('request_work',), actions)
+        landed, actions = replay(state, [result])
+        self.assertEqual(drain_gate(landed), ('drained', []))
+        self.assertEqual(landed['tasks']['generic']['integration_result'], result)
+        self.assertIn(('board_ready', 'generic'), actions)
+        self.assertIn(('request_work',), actions)
+        self.assertEqual(replay(landed, [result]), (landed, []))
+
+    def test_rewritten_candidate_invalidates_old_landing_clearance(self):
+        state, _ = self.approved_candidate()
+        state, _ = replay(state, [dict(self.handback(revision='b' * 40),
+                                      id='new-candidate')])
+        result = dict(id='stale-landing', kind='landing_result', task='generic',
+            owner='author', revision='a' * 40, integration_ref='refs/heads/main',
+            result='success')
+        pending, actions = replay(state, [result])
+        self.assertFalse(pending['tasks']['generic']['landed'])
+        self.assertNotIn(('board_ready', 'generic'), actions)
+        self.assertEqual(pending['tasks']['generic']['phase'], 'in_review')
+        pending, actions = replay(pending, [dict(id='new-review', kind='review',
+            task='generic', reviewer='independent', revision='b' * 40,
+            model=('gpt-6.1-sol', 'medium'), findings=[])])
+        self.assertIn(('resume_landing_same', 'generic', 'author',
+                       'author-thread', 'b' * 40), actions)
+
+    def test_review_only_finishes_and_required_unauthorized_landing_stays_pending(self):
+        state, actions = self.approved_candidate(required=False)
+        self.assertEqual(drain_gate(state), ('drained', []))
+        self.assertIn(('request_work',), actions)
+        self.assertFalse(any(a[0] == 'resume_landing_same' for a in actions))
+        state, actions = self.approved_candidate(authorized=False)
+        self.assertEqual(drain_gate(state)[0], 'active')
+        self.assertEqual(parent_continuation(state, {})[0], 'process')
+        self.assertFalse(any(a[0] == 'resume_landing_same' for a in actions))
+        self.assertNotIn(('request_work',), actions)
 
     def test_completed_occupied_host_without_release_defers_fresh_review(self):
         initial = fixture()

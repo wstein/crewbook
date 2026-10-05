@@ -67,6 +67,14 @@ pending artifacts/next action; never duplicate claims or workers. Unavailable
 resume/uncertain ownership requires a concrete retained handoff. Progress
 reports do not end supervision and parent completion offers no automatic resume.
 
+Check explicit assignment landing requirements after clean review. Required
+authorized landing remains pending even without a manually populated integration
+queue. Resume the same dispatcher to route it to the retained assigned author;
+a sent request proves neither start nor success. Await and validate the author,
+cleared SHA, supplied integration ref and successful result before readiness.
+Preserve uncertain/failed landing obligations and distinguish review, landing
+and publication evidence. Content-review-only work creates no landing obligation.
+
 Keep the coordinating turn active while authorized children, required reviews
 or actionable handbacks remain outstanding: process results or await named
 artifacts through bounded supported tools, preserving existing handles. Do not
