@@ -98,3 +98,7 @@ Model mappings and Claude entrypoints are in [README.md](README.md).
 Crewbook supplies guidance, not tool permissions or runtime enforcement. Host
 instructions and user authorization control scope. If a selected resource is
 missing, report its absolute path; do not load a repository lookalike.
+
+Follow the [target Git history policy](docs/git-history.md) for integration and its
+review evidence. Resolve material ambiguity before integration; for authorized
+merges, checks and independent review cover the final integration result.

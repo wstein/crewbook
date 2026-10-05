@@ -100,6 +100,9 @@ re-delegating their assignment. Only cb-dispatch or an explicitly designated
 session coordinator starts those workers; cb-desk routes unless designated in
 its place. The manual defines single ownership and a counted lifecycle example.
 
+The [target Git history guidance](docs/git-history.md) resolves linear and
+authorized non-linear integration from target instructions and session choices,
+with static decision walkthroughs.
 The [team manual](docs/team.md) covers roles, delegation, independent review,
 handoffs and context. For configured team workflows, select applicable trusted project configuration:
 [cb-generic](docs/profile-generic.md) is the default for any repository in

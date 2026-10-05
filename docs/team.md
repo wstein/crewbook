@@ -104,6 +104,10 @@ or other SHA change invalidates prior approval and requires review of the new
 revision before integration. Permission to integrate locally does not authorize
 push/publication; honor the configured human's ownership of those operations.
 No generic permission to update arbitrary targets or rewrite history is supplied.
+Resolve and follow the [target history policy](git-history.md): linear targets
+require reviewed fast-forwards; authorized non-linear targets require checks
+and independent review of the final integration/conflict-resolution result.
+Topic approval alone does not clear a merge result.
 
 ## Persistent desk and dispatch
 

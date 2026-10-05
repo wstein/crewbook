@@ -60,3 +60,8 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 The [distribution contract](distribution.md) describes inventory and external
 runtime pins. Offline package checks do not establish native runtime support.
 Generic native-session use does not require a workharbor manifest or provider.
+
+Resolve history policy from applicable target instructions and explicit
+user/session decisions using [target Git history guidance](git-history.md),
+independently of repository identity or execution profile. Missing or conflicting
+material choices stop integration until resolved; local work may continue.

@@ -17,3 +17,7 @@ Use the supplied real landing procedure from the assigned worktree for $ARGUMENT
 
 Only the assigned author owns this operation; a coordinator/reviewer returns it
 to that author instead of landing on its behalf or starting a replacement worker.
+
+Follow the [target Git history policy](../../docs/git-history.md) for integration and its
+review evidence. Resolve material ambiguity before integration; for authorized
+merges, checks and independent review cover the final integration result.

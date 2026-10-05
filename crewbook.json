@@ -64,7 +64,8 @@
     "docs/handover-examples.md",
     "docs/simplicity.md",
     "docs/root-cause.md",
-    "docs/antigravity.md"
+    "docs/antigravity.md",
+    "docs/git-history.md"
   ],
   "host_dependencies": [
     {
