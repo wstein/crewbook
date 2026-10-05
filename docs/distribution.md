@@ -11,10 +11,10 @@ their current byte digests, not the original import digests.
 
 These maintenance files and all Go source, module files, `.github/` and `.git/`
 are excluded from the distribution. The export contains LICENSE, provenance,
-README, SKILL, layout metadata, docs and every declared `.agents/` and `.claude/`
+README, SKILL, Codex discovery metadata, layout metadata, docs and every declared `.agents/` and `.claude/`
 resource. It contains no agent executable tools, runtime plugins, permission
-settings, hooks or maintenance inventory. A source clone is not the installable
-text artifact. No automatic upstream synchronization or source deletion follows
+settings, hooks or maintenance inventory. A source checkout can be linked as a native Codex skill; a pinned distribution
+uses the exported text artifact. No automatic upstream synchronization or source deletion follows
 from either inventory.
 
 The maintenance CLI validates source content and emits a deterministic export

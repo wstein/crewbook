@@ -1,5 +1,16 @@
 # Explicit project configuration
 
+## Native skill use
+
+For ordinary local development, [SKILL.md](../SKILL.md) is the entrypoint.
+The host-provided installed skill directory supplies the package root; the
+user's workspace supplies the target. Apply existing host and scoped repository
+instructions. A missing `AGENTS.md` alone does not block routine work. No named
+profile or complete team configuration is required. The requirements below
+apply to configured role/issue/team/board/landing operations, and only to the
+inputs needed by the selected operation. Existing trusted session configuration
+can supply those inputs. Never infer permission from installation.
+
 This is a documentation contract, not an executable schema, loader or new
 environment-variable API. The trusted operator supplies and names a complete
 project configuration alongside [external policy](policy-composition.md).

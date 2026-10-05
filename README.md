@@ -2,8 +2,8 @@
 
 crewbook is an EUPL-1.2 package of development role prompts, imported from
 [historical workharbor source](https://github.com/wstein/workharbor/tree/c6bbb7bcd903ea3027285baa9237f4ad179a9bb7). It is intended to be workharbor's default
-replaceable skill set, installed outside work repositories; native loading is
-currently blocked on a supported production binding. Its distribution contains text
+replaceable skill set, installed outside work repositories; native Codex skill discovery uses the installed skill directory. Workharbor
+runtime integration still awaits a supported production binding. Its distribution contains text
 and declarative metadata, not executable agent tools, runtime plugins or hooks.
 
 ## Package root and manifest v1
@@ -30,8 +30,8 @@ complete inventory without executing instructions.
 and post-import transformations; the [distribution contract](docs/distribution.md)
 separates current content integrity from pending runtime compatibility.
 
-The trusted launcher supplies `CREWBOOK_ROOT`, an absolute canonical path to an
-installed or externally mounted copy of this package. This is a launcher
+The native skill host supplies its installed directory, or a trusted launcher supplies `CREWBOOK_ROOT`, an absolute canonical path to an
+installed or externally mounted copy of this package. This is a host-provided
 binding in invocation context; paths beneath `${CREWBOOK_ROOT}` in prompts use path notation,
 not automatic Markdown or shell interpolation. Resolve each manifest path by
 joining it to that root, verify containment and all required files before
@@ -51,13 +51,12 @@ entrypoint is cb-crewbook. The product/package name remains crewbook.
 
 ## Policy composition
 
-Before applying any entrypoint, identify the host instructions and read the
-[policy composition contract](docs/policy-composition.md). The trusted
-launcher/operator supplies the target root, applicable project policy and
-required workflow configuration separately from `CREWBOOK_ROOT`; no project
-policy binding API is implemented. Missing required policy/configuration stops
-the affected workflow before mutation. A missing target `AGENTS.md` without a
-trusted equivalent leaves composition undefined; platform enforcement remains.
+Native skill use starts with the host instructions and user workspace, as
+described in [SKILL.md](SKILL.md). Before applying specialized roles, read the
+[policy composition contract](docs/policy-composition.md). Use trusted target
+context and the configuration needed by that operation separately from
+`CREWBOOK_ROOT`. Missing required inputs stop only the affected workflow. Routine native skill use follows existing host/project instructions even when
+no `AGENTS.md` exists; specialized operations require their applicable inputs.
 
 Package guidance cannot relax system/platform controls or human approval
 boundaries. crewbook supplies no permission settings, hooks or tool enforcement;
@@ -67,8 +66,8 @@ current Hard rules remain in its own project policy, not in this package.
 
 ## Entrypoints and support
 
-- **Skill:** load the absolute `<package-root>/SKILL.md`, with `CREWBOOK_ROOT`
-  supplied alongside it. Its routing table selects a role without loading all
+- **Skill:** discover the installed `SKILL.md`; its host-provided directory
+  supplies `CREWBOOK_ROOT`. A launcher may also load it by absolute path. Its routing table selects a role without loading all
   prompts. Manual text loading and local path resolution can be checked without
   a live agent runtime.
 - **Claude Code:** profiles are `.claude/agents/cb-*.md`; commands are
@@ -90,11 +89,11 @@ current Hard rules remain in its own project policy, not in this package.
   | Haiku | `gpt-6-luna` | medium |
 
   These are requested mappings, not measured claims about availability or
-  equivalence. Automatic Codex discovery and child model propagation are
-  **unverified**.
+  equivalence. Native Codex discovery is enabled by `agents/openai.yaml`; child model
+  propagation still depends on the host.
 - **workharbor:** mounted provisioning, root propagation and enforcement are
   **conceptual/unverified**, tracked in historical workharbor integration issue #283. This package supplies
-  no enforcement, installation script, tool permissions or runtime adapter.
+  no enforcement, tool permissions or workharbor runtime adapter.
 
 Public issue/review profiles and direct role commands execute as leaves, never
 re-delegating their assignment. Only cb-dispatch or an explicitly designated
@@ -102,7 +101,7 @@ session coordinator starts those workers; cb-desk routes unless designated in
 its place. The manual defines single ownership and a counted lifecycle example.
 
 The [team manual](docs/team.md) covers roles, delegation, independent review,
-handoffs and context. Select a complete trusted project configuration:
+handoffs and context. For configured team workflows, select applicable trusted project configuration:
 [cb-crewbook](docs/profile-crewbook.md) uses crewbook issue destinations and
 ../crewbook-<lane> worktrees; [cb-workharbor](docs/profile-workharbor.md) is a
 clearly labeled example for workharbor's external tools and paths. Generic
@@ -196,41 +195,36 @@ Source checks and text export can pass honestly; `runtime-check` and `lock`
 fail clearly on the missing manifest. Native loading and runtime compatibility
 remain unverified, awaiting measured provider support.
 
-## Install, pin, update, uninstall
+## Install, update, uninstall
 
-Prepare a reviewed source checkout at an immutable commit, then use the Go
-maintenance `export` command to create the dedicated external text artifact.
-Validate that staged artifact against the trusted export policy and inventory,
-retaining LICENSE and all declared files. A full source clone includes Git and
-maintenance code and is not an installable runtime distribution. Today's export
-is content-only: runtime installation/default selection must wait for a measured
-production binding and an admissible `workharbor.json`. Do not install into the
-target's `.agents` or overwrite its policy. The reviewed raw import baseline is
-`1c784080bc0dee2060066aaf2dbc8f3894dc430d`; it predates this package contract.
-It is provenance, not a current compatible runtime pin. After all future package
-changes are committed, generate the external six-field operator lock from that
-actual reviewed full commit and validated manifest/inventory; do not embed an
-impossible self-commit hash. The distribution contract describes that gated flow.
+For Codex, place the package in `~/.codex/skills/cb-crewbook` (or the corresponding
+`$CODEX_HOME/skills` directory). For a local source checkout, use an absolute
+symlink; keep it outside the target repository's instruction directories:
 
-Set the launcher's absolute root to the installed folder and explicitly select
-the desired entrypoint. Client-specific registration is the launcher's job;
-there is no crewbook installer or verified automatic discovery procedure.
-Prerequisites are a reader/launcher capable of supplying trusted absolute paths
-and the dependencies of the chosen workflow. No Node or package runtime is
-required to read the prompts.
+```sh
+mkdir -p ~/.codex/skills
+ln -s /absolute/path/crewbook ~/.codex/skills/cb-crewbook
+```
 
-To update, prepare and validate a new text export from a reviewed immutable
-commit, then, after applicable support checks, switch the launcher's pin/root
-for new invocations. Keep running sessions on their original root; retain the
-old copy while they need it. Never follow a mutable branch silently. To uninstall,
-remove the launcher registration/root binding first and, after active sessions
-finish, remove only the dedicated package copy. Leave target policy and host
-tools alone.
+If that destination already exists, inspect it before replacing anything.
+Restart Codex or open a new session to refresh discovery. `agents/openai.yaml`
+enables implicit invocation: ordinary repository requests can select Crewbook
+automatically. `$cb-crewbook` remains available for explicit selection. The host's
+loaded skill path supplies `CREWBOOK_ROOT`; no launcher or environment variable
+is necessary. Routine coding, review, docs and verification use existing project
+instructions without full team setup. Specialized roles load only on demand.
 
-On a missing/relative root, malformed manifest, unsupported schema version,
-escaping resource or absent required file, stop before loading a role. Report
-the package root and offending relative path (or missing binding), ask the
-operator to repair/reinstall the pinned copy, and never fall back to cwd.
+A symlink follows local edits; use a reviewed text export in the skill directory
+when you need a fixed copy. Run the package check before export and preserve all
+declared resources, licence and provenance. Both source and exported packages
+include the Codex discovery metadata. This installation does not register Claude
+commands or establish workharbor runtime compatibility. Workharbor's production
+pin/adapter checks remain a separate integration contract.
+
+To update a linked checkout, review and validate its changes. For a fixed copy,
+validate a new export before switching registration for new sessions. Keep old
+copies while active sessions use them. To uninstall a linked skill, remove only
+the `cb-crewbook` symlink; retain the source checkout and target project policy.
 
 ## Licence and provenance
 

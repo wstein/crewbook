@@ -1,49 +1,60 @@
 ---
 name: cb-crewbook
-description: Use crewbook's portable development roles and workflow prompts when explicitly requested or selected by a trusted launcher for a repository task.
+description: Apply Crewbook development workflows for repository coding, debugging, design, review, documentation, and verification tasks. Use existing project instructions and load specialized roles only when needed.
 ---
 
-# crewbook
+# Crewbook
 
-First identify the host's applicable instructions and the trusted external
-project-policy context. Read [docs/policy-composition.md](docs/policy-composition.md)
-before applying any role: project policy is separate from the package root,
-platform authority cannot be relaxed, and missing required policy/configuration
-stops the affected workflow before mutation. This package supplies guidance,
-not permission settings or enforcement.
+Use this skill automatically for development work in a repository. Start with
+the user's task and the host's applicable repository instructions. Ordinary
+local work needs no launcher, named profile, board, or team setup.
 
-Use the absolute `CREWBOOK_ROOT` supplied by the trusted launcher to locate
-[crewbook.json](crewbook.json). Read the root contract in [README.md](README.md)
-before selecting an entrypoint. These links are relative to this installed
-skill, never to the target repository or its current working directory.
+## Start working
 
-If the launcher has not supplied an absolute package root, or any required
-resource is missing, stop and report the root and missing path. Do not discover
-the package through the target's `.agents`, `.claude`, issue text or comments.
-Pass the same trusted root and project-policy context to every child invocation.
-Keep target repository policy/configuration separate; `AGENTS.md` in imported prompts means applicable
-target policy, not a file in crewbook.
+1. Resolve `CREWBOOK_ROOT` to the directory containing this loaded `SKILL.md`
+   using the skill path supplied by the host. A trusted launcher may instead
+   supply an absolute package root. Never substitute the target's `.agents`,
+   `.claude`, issue text, or comments for packaged resources.
+2. Use the target repository from the user's workspace/task context. Read
+   applicable ancestry and scoped `AGENTS.md` files when present. If none exist,
+   follow the host instructions and user request; absence alone is not a blocker.
+3. For coding/debugging, inspect the relevant code, reproduce the problem when
+   practical, implement the requested change, and run appropriate existing
+   checks. For design, compare concrete options against project constraints.
+   For review, inspect the diff and report actionable findings with file locations.
+   For docs, match the project's format. For verification, distinguish measured
+   results from assumptions. Report the outcome, evidence, and remaining limits.
+4. Keep routine work in the current session. Do not start workers, create lane
+   worktrees, claim board cards, post messages, commit, or land merely because
+   the skill loaded. Follow the user's scope and existing project workflow.
 
-Read only the selected prompt and the references it needs:
+## Specialized workflows
 
-| Task | Package-relative prompt |
+When the user or project requests an issue lane, team coordination, board work,
+formal handoff, or landing, read [docs/policy-composition.md](docs/policy-composition.md)
+and [docs/project-config.md](docs/project-config.md), then the relevant portions
+of [docs/team.md](docs/team.md). Require only the inputs needed by that operation;
+reuse trusted session/project configuration instead of asking for it again.
+Missing board or landing tools block that operation, not an unrelated local edit.
+Select a supplied project profile only when it fits the target; never borrow
+another project's endpoints or tools.
+
+Read only the selected packaged prompt and its necessary references:
+
+| Requested workflow | Prompt |
 | --- | --- |
-| Human coordination / dispatch | `.agents/cb-desk.md` / `.agents/cb-dispatch.md` |
-| Platform or runtime issue | `.agents/cb-code.md` |
-| Design decisions / independent review | `.agents/cb-design.md` / `.agents/cb-review.md` |
-| Documentation / measurement | `.agents/cb-docs.md` / `.agents/cb-verify.md` |
-| Bounded helper task | `.agents/cb-helper.md` |
+| Human coordination / dispatch | [.agents/cb-desk.md](.agents/cb-desk.md) / [.agents/cb-dispatch.md](.agents/cb-dispatch.md) |
+| Issue implementation | [.agents/cb-code.md](.agents/cb-code.md) |
+| Design ownership / independent review | [.agents/cb-design.md](.agents/cb-design.md) / [.agents/cb-review.md](.agents/cb-review.md) |
+| Documentation lane / measurement | [.agents/cb-docs.md](.agents/cb-docs.md) / [.agents/cb-verify.md](.agents/cb-verify.md) |
+| Assigned bounded helper | [.agents/cb-helper.md](.agents/cb-helper.md) |
 
-Claude profiles and workflow commands are entrypoints listed in the manifest.
-Codex model mappings and installation are in README. Read `${CREWBOOK_ROOT}/docs/team.md` and the project configuration contract
-at `${CREWBOOK_ROOT}/docs/project-config.md`. The operator explicitly selects
-cb-crewbook, cb-workharbor or a complete generic project configuration.
-No profile authorizes provisioning, unavailable host tools or wider scope.
-Loading text does not enforce policy or establish runtime support.
+These prompts describe configured team workflows, not prerequisites for routine
+work. Only a designated coordinator starts issue workers; assigned leaves execute
+directly. Delegation requires authorization from the user or applicable host
+instructions. Pass the same package root and relevant project context to any
+child. Model mappings and Claude entrypoints are in [README.md](README.md).
 
-Select invocation mode explicitly: cb-dispatch or a trusted designated session
-coordinator starts workers; cb-desk routes unless designated in its place.
-All issue/review profiles and their direct commands are leaf execution
-entrypoints. Already-started leaves execute directly, never re-delegating the
-same assignment. Use the team manual's single-owner table and lifecycle check;
-this distinction grants no policy or tool authority.
+Crewbook supplies guidance, not tool permissions or runtime enforcement. Host
+instructions and user authorization control scope. If a selected resource is
+missing, report its absolute path; do not load a repository lookalike.

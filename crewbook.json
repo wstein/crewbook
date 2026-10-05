@@ -58,14 +58,14 @@
   ],
   "host_dependencies": [
     {
-      "name": "trusted launcher with absolute CREWBOOK_ROOT",
-      "scope": "all entrypoints",
-      "status": "required; runtime integration unverified"
+      "name": "host-provided installed skill path or trusted absolute CREWBOOK_ROOT",
+      "scope": "package resource resolution",
+      "status": "installed skill directory is sufficient; launcher optional for native Codex skill use"
     },
     {
       "name": "trusted project-policy context: target root, applicable host instructions and required workflow configuration",
       "scope": "all entrypoints; independent of CREWBOOK_ROOT",
-      "status": "required external input; not shipped; see docs/policy-composition.md"
+      "status": "use applicable host/project instructions; specialized workflows may need additional trusted inputs"
     },
     {
       "name": "Git and authorized GitHub REST access through gh",
@@ -79,7 +79,7 @@
     },
     {
       "name": "explicit selected project configuration: destinations, human, lane paths, checks/landing, design ownership, reference host and capabilities",
-      "scope": "all workflows",
+      "scope": "configured issue, team, board and landing workflows only",
       "status": "required external trusted input; see docs/project-config.md"
     },
     {
