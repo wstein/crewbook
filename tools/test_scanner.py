@@ -5,6 +5,8 @@ import subprocess
 import tempfile
 import unittest
 
+from git_test_environment import isolated_git_environment
+
 ROOT = Path(__file__).resolve().parent.parent
 SCANNER = os.environ.get('GITLEAKS_TEST_BINARY')
 
@@ -12,16 +14,7 @@ SCANNER = os.environ.get('GITLEAKS_TEST_BINARY')
 @unittest.skipUnless(SCANNER, 'set GITLEAKS_TEST_BINARY for pinned scanner fixtures')
 class ScannerTests(unittest.TestCase):
     def test_clean_empty_history_tree_message_and_redaction(self):
-        environment = {
-            'PATH': os.environ.get('PATH', '/usr/bin:/bin'),
-            'TMPDIR': tempfile.gettempdir(),
-            'GIT_CONFIG_SYSTEM': '/dev/null', 'GIT_CONFIG_GLOBAL': '/dev/null',
-            'GIT_TERMINAL_PROMPT': '0', 'GIT_CONFIG_COUNT': '1',
-            'GIT_CONFIG_KEY_0': 'credential.helper', 'GIT_CONFIG_VALUE_0': '',
-            'SSH_AUTH_SOCK': '', 'GIT_SSH_COMMAND': 'ssh -oBatchMode=yes -oIdentityAgent=none',
-            'GIT_AUTHOR_NAME': 'Scanner Fixture', 'GIT_AUTHOR_EMAIL': 'fixture@example.invalid',
-            'GIT_COMMITTER_NAME': 'Scanner Fixture', 'GIT_COMMITTER_EMAIL': 'fixture@example.invalid',
-        }
+        environment = isolated_git_environment()
         marker = 'gh' + 'p_' + 'aK9mQ2vB8cR5' + 'xT1nL7pD4sF6' + 'jH3wZ0uE9yG2'
         for variant in ('clean', 'empty', 'history', 'tree', 'message'):
             with self.subTest(variant=variant), tempfile.TemporaryDirectory() as temp:

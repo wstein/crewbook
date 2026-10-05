@@ -7,6 +7,9 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+
+from git_test_environment import isolated_git_environment
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -76,13 +79,51 @@ class PreflightScenarios(unittest.TestCase):
         self.assertEqual(error.returncode, 2)
         self.assertTrue(error.stderr)
 
+    def test_git_config_scenario_discards_operator_environment(self):
+        operator = {
+            'PATH': '/usr/bin:/bin',
+            'GIT_CONFIG_SYSTEM': '/synthetic/operator-system-config',
+            'GIT_CONFIG_GLOBAL': '/synthetic/operator-global-config',
+            'GIT_CONFIG_COUNT': '2',
+            'GIT_CONFIG_KEY_0': 'credential.helper',
+            'GIT_CONFIG_VALUE_0': 'synthetic-helper',
+            'GIT_CONFIG_KEY_1': 'fixture.operator',
+            'GIT_CONFIG_VALUE_1': 'inherited',
+            'GIT_TERMINAL_PROMPT': '1',
+            'SSH_AUTH_SOCK': '/synthetic/operator-agent',
+            'GIT_SSH_COMMAND': 'synthetic-ssh',
+            'HOME': '/synthetic/operator-home',
+        }
+        results = [subprocess.CompletedProcess([], 1, '', ''),
+                   subprocess.CompletedProcess([], 3, '', 'malformed config')]
+        # Capture the real scenario's subprocess boundary without running Git.
+        with patch.dict(os.environ, operator, clear=True), \
+                patch('shutil.which', return_value='/synthetic/git'), \
+                patch('subprocess.run', side_effect=results) as run:
+            self.test_unset_git_config_is_not_config_error()
+        self.assertEqual(run.call_count, 2)
+        for call in run.call_args_list:
+            environment = call.kwargs['env']
+            self.assertEqual(environment.get('GIT_CONFIG_SYSTEM'), os.devnull)
+            self.assertEqual(environment.get('GIT_CONFIG_GLOBAL'), os.devnull)
+            self.assertEqual(environment.get('GIT_CONFIG_COUNT'), '1')
+            self.assertEqual(environment.get('GIT_CONFIG_KEY_0'), 'credential.helper')
+            self.assertEqual(environment.get('GIT_CONFIG_VALUE_0'), '')
+            self.assertEqual(environment.get('GIT_TERMINAL_PROMPT'), '0')
+            self.assertEqual(environment.get('SSH_AUTH_SOCK'), '')
+            self.assertEqual(environment.get('GIT_SSH_COMMAND'),
+                             'ssh -oBatchMode=yes -oIdentityAgent=none')
+            self.assertNotIn('GIT_CONFIG_KEY_1', environment)
+            self.assertNotIn('GIT_CONFIG_VALUE_1', environment)
+            self.assertNotIn('HOME', environment)
+
     def test_unset_git_config_is_not_config_error(self):
         git = shutil.which('git')
         if git is None:
             self.skipTest('Git unavailable; optional native config scenario')
         config = self.parent / 'config'
         config.write_text('')
-        env = dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+        env = isolated_git_environment()
         absent = command([git, 'config', '--file', str(config), '--get', 'fixture.absent'], env=env)
         config.write_text('[broken\n')
         error = command([git, 'config', '--file', str(config), '--get', 'fixture.absent'], env=env)
