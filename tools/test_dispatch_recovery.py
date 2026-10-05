@@ -19,6 +19,8 @@ def replay(state, events):
                 actions.append(('ownership_conflict', key))
                 continue
             state['empty_requested'] = False
+            if key in state.get('pending_handbacks', []):
+                state['pending_handbacks'].remove(key)
             task['evidence'] = event['revision']
             task['phase'] = 'review_pending'
             actions.append(('preserve', key))
@@ -37,6 +39,14 @@ def replay(state, events):
             actions.append(('approved' if valid else 'hold', key))
             if valid and task['landed'] and task['checks']:
                 actions.append(('board_ready', key))
+        elif kind == 'route_fix':
+            if task['phase'] == 'needs_attention' and event['owner'] == task['owner']:
+                task['phase'] = 'running'
+                if task['thread'] not in state['threads']:
+                    state['threads'].append(task['thread'])
+                actions.append(('resume_author_same', key, task['owner']))
+            else:
+                actions.append(('ownership_conflict', key))
         elif kind == 'failed_start':
             task['phase'] = 'retry' if event['known_absent'] else 'resolve_start'
         elif kind == 'tool':
@@ -106,6 +116,13 @@ def drain_gate(state):
 
 def parent_continuation(state, handles, wait_available=True):
     """Observable parent action for a supplied snapshot, without tool execution."""
+    outcome, obligations = drain_gate(state)
+    actionable = [(key, artifact) for key, artifact in obligations
+                  if artifact not in ('running', 'in_review')
+                  and key != 'review_slots'
+                  and not (artifact == 'review_pending' and state['reviews'] >= 2)]
+    if actionable:
+        return ('process', actionable)
     awaited = [(key, handles[key], {'in_review': 'review', 'review_pending': 'review_slot',
                  'running': 'author_handback'}[task['phase']]) for key, task in state['tasks'].items()
                if task['phase'] in ('running', 'in_review', 'review_pending')]
@@ -280,6 +297,28 @@ class RecoveryReplay(unittest.TestCase):
         state['tasks']['blocked']['phase'] = 'unknown'
         self.assertEqual(drain_gate(state)[0], 'active')
 
+    def test_actionable_handbacks_and_other_obligations_precede_wait(self):
+        state = fixture()
+        handles = {'generic': 'same-author', 'managed': 'other-author'}
+        state['pending_handbacks'] = ['generic']
+        action, obligations = parent_continuation(state, handles)
+        self.assertEqual(action, 'process')
+        self.assertIn(('pending_handbacks', 'generic'), obligations)
+        resumed, actions = replay(state, [self.handback()])
+        self.assertEqual(resumed['pending_handbacks'], [])
+        self.assertIn(('review', 'generic', 'a' * 40,
+                       ('gpt-6.1-sol', 'medium')), actions)
+        handles['generic'] = 'reviewer'
+        self.assertEqual(parent_continuation(resumed, handles)[0], 'await')
+        for queue in ('fixes', 'integration', 'status_writes'):
+            busy = dict(resumed, **{queue: ['confirmed obligation']})
+            self.assertEqual(parent_continuation(busy, handles)[0], 'process', queue)
+        ready = fixture()
+        ready['tasks']['generic']['phase'] = 'review_pending'
+        self.assertEqual(parent_continuation(ready, handles)[0], 'process')
+        ready['reviews'] = 2
+        self.assertEqual(parent_continuation(ready, handles)[0], 'await')
+
     def test_child_after_would_yield_and_desk_resumes_same_handle(self):
         state = fixture()
         dispatcher = 'retained-dispatch'
@@ -302,7 +341,13 @@ class RecoveryReplay(unittest.TestCase):
                       model=('gpt-6.1-sol', 'medium'), findings=['fix'])
         state, actions = replay(state, [review])
         self.assertIn(('hold', 'generic'), actions)
-        self.assertEqual(parent_continuation(state, {'managed': 'retained'})[0], 'await')
+        self.assertEqual(parent_continuation(state, {'managed': 'retained'})[0], 'process')
+        state, actions = replay(state, [dict(id='route-fix', kind='route_fix',
+                                  task='generic', owner='author')])
+        self.assertIn(('resume_author_same', 'generic', 'author'), actions)
+        self.assertEqual(state['tasks']['generic']['phase'], 'running')
+        self.assertEqual(parent_continuation(state, {'generic': 'same-author',
+                         'managed': 'retained'})[0], 'await')
         steered, action = user_steering(state, ['new-P1', 'later-task'])
         self.assertEqual(action, ('route_queue', ('new-P1', 'later-task')))
         self.assertEqual(steered['tasks'], state['tasks'])
