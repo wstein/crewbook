@@ -39,6 +39,17 @@ external claim is required. Do not bypass an explicitly configured claim gate.
 Use crewbook-platform, crewbook-runtime, crewbook-docs or crewbook-verify for one issue in the named
 exclusive checkout; generic work needs no persistent lane directory. Allow one editor per worktree and at most two code
 workers; a second editing checkout requires authorization and disjoint file scopes.
+When the host supplies a physical worktree pool, follow the manual's
+[slot lifecycle](../docs/team.md#physical-worktree-slots): retain slot/path,
+branch, owner/state, base/result revision and next action in the registry; reuse
+only verified clean `IDLE` slots without active owners or pending Git operations.
+Preserve integrated work or a durable handoff before reuse. Each new work item
+gets a fresh branch and fresh author context in the reused directory; same-item
+fixes retain their branch/context. Never force/reset/discard work or delete a
+branch to free a slot; branch cleanup needs verified preservation and explicit
+authorization. Pool size and paths are host supplied, and ordinary local work
+needs no pool. Physical reuse does not establish child capacity or relax fresh
+independent exact-revision review.
 Keep only the returned conclusion, commits, criteria and unverified items.
 Start crewbook-design in fresh context for a batch of waiting decisions at most once an hour unless
 a highest-priority issue is blocked. Start independent crewbook-reviewer or
