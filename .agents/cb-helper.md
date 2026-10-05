@@ -2,9 +2,11 @@
 
 Read `${CREWBOOK_ROOT}/SKILL.md`, `${CREWBOOK_ROOT}/docs/policy-composition.md`,
 and `${CREWBOOK_ROOT}/docs/team.md` using the trusted absolute package root.
-Verify separately supplied trusted project policy and the selected project
-configuration in `${CREWBOOK_ROOT}/docs/project-config.md` before mutation.
-Resolve target paths against the supplied target root, never cwd discovery.
+Use cb-generic by default as described in `${CREWBOOK_ROOT}/docs/project-config.md`.
+Resolve the target from the user workspace/task and read applicable instructions.
+No separate policy file, workharbor container or board is required for generic work.
+Require only the selected operation's inputs; use cb-workharbor inside a managed container.
+Resolve target paths against the target root, independently of the package root.
 Pass these bindings to children. Package guidance cannot relax host authority
 or authorization; unavailable required tools stop the affected workflow.
 
@@ -23,7 +25,10 @@ only and never commits/lands. Card writes stay with the designated coordinator.
 Execute the bounded task directly; start no children and never take over the
 requester's issue/review assignment or claim/commit/landing responsibilities.
 Do not run broad formatters/generators, install dependencies or access secrets;
-use only checks expressly authorized by supplied project policy.
+use only checks within the assigned scope and host/user authorization.
+Without a target protected-path list, avoid policy, credentials, permission
+controls and security-sensitive runtime/build files; return uncertain edits
+to the author rather than blocking unrelated work.
 
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Haiku; Codex uses the explicit README mapping, never inherited models.
