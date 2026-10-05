@@ -185,6 +185,21 @@ loaded skill uses relative links; no launcher or environment variable is
 necessary. Routine coding, review, docs and verification use existing project
 instructions without full team setup. Explicitly selected roles load immediately; assigned leaves stay leaves.
 
+Start Codex from the target repository with eight subagent slots and desk
+activation in one command:
+
+```sh
+codex -m gpt-6.1-sol -c model_reasoning_effort=low -c agents.max_concurrent_threads_per_session=8 '$cb-crewbook'
+```
+
+Keep the prompt single-quoted so the shell passes the skill name literally.
+Desk is the primary session; eight is the recommended subagent capacity,
+excluding desk. Six covers dispatch, two authors, two reviewers and design;
+the extra two slots allow bounded helpers. This is a ceiling, not a request
+to start eight agents. Crewbook still permits at most two concurrent code
+authors. See [dynamic allocation](docs/team.md#dynamic-agent-allocation).
+The installed skill and selected model must be available in the client.
+
 The dedicated Codex desk skill is
 [.agents/skills/cb-desk/SKILL.md](.agents/skills/cb-desk/SKILL.md). Codex discovers
 it when launched in the crewbook repository. To make `$cb-desk` available in

@@ -159,6 +159,54 @@ a highest-priority issue is blocked; a human design session owns the role when
 already open. Do not hand running agents to a new session or ask the human to
 clear context. An idle lane reports an empty queue once and waits.
 
+## Dynamic agent allocation
+
+Recommend **eight subagent slots** for Codex. Desk is the primary session and
+is excluded from this count. Six supports the normal role allocation; eight
+leaves capacity for bounded helpers without crowding out coordination/review.
+
+| Role | Subagent slots |
+| --- | --- |
+| Persistent dispatch | 1 |
+| Authors | Up to 2 |
+| Independent reviewers | Up to 2 |
+| Design batch | Up to 1 |
+| Optional bounded helpers | Up to 2 |
+| Recommended capacity | 8 |
+
+Dispatch allocates agents only for eligible work, retains its own handle and
+reuses or releases completed workers after recording their handbacks. It does
+not fill all slots merely because they exist. Client thread capacity and code
+author limits are separate: eight slots do not authorize extra editors. Keep
+at most two concurrent code authors, one editor per checkout, disjoint editing
+scopes and independent review. Design runs only under its existing scheduling
+and ownership rules. If capacity is lower, sequence work and preserve the
+coordinator/review path rather than duplicate claims or starts.
+
+From the target repository, start a fresh Codex desk session with:
+
+```sh
+codex -m gpt-6.1-sol -c model_reasoning_effort=low -c agents.max_concurrent_threads_per_session=8 '$cb-crewbook'
+```
+
+The single quotes preserve the literal skill invocation. Desk uses Sol/low;
+it starts or resumes dispatch with the same explicit model/effort. Authors,
+reviewers, design and helpers retain their role-specific mappings in
+[README.md](../README.md). Generic and managed profiles use the same allocation
+logic, subject to the actual host's capabilities and limits.
+
+For a persistent Codex capacity default, add to the existing agents table in
+user configuration (do not create a duplicate table):
+
+```toml
+[agents]
+max_concurrent_threads_per_session = 8
+```
+
+The setting limits concurrently open spawned-agent threads, excluding the
+primary thread. `agents.max_threads` is its legacy alias; see the
+[official configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml).
+
 ## Lifecycle example and walkthrough check
 
 Static example, not a live client test: a trusted generic project supplies real
