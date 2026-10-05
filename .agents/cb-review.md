@@ -31,6 +31,12 @@ scope rather than file counts or deleted lines. Apply [material limitations](../
 check the evidence, measurable revisit trigger and plausible next step in the
 existing record. Keep accepted tradeoffs distinct from security defects and
 unmet acceptance criteria; a limitation note cannot waive either.
+For each changed behavior, compare the applicable target design/specification,
+manual/documentation and implementation, following the supplied target instructions
+and authorities. Report demonstrated contradictions with the affected locations
+and behavioral consequence. Missing or inapplicable artifacts do not require new
+documentation and are not automatically findings. This replaceable review guidance
+supplies no native enforcement.
 Run only authorized isolated checks.
 Read-only means no author-file edits or Git state changes; approved review
 comments/status writes are separate and require the configured capabilities.
