@@ -48,13 +48,13 @@ current main, reruns checks and obtains fresh independent review of the rewritte
 SHA **before** fast-forward integration. Stop on conflicts outside the assigned
 scope. This is this repository's current policy, not a universal target policy.
 
-Use focused Conventional Commits with the actual WI, model and effort:
+Use focused Conventional Commits with the actual WI and the tool and model id:
 
 ```text
 docs: clarify work-item commit footers
 
 Refs: #29
-Assisted-by: codex:gpt-6.1-sol/low
+Assisted-by: codex:gpt-6.1-sol
 ```
 
 For an authorized repository assignment, the assigned author may create local commits
