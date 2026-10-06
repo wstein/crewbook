@@ -47,7 +47,8 @@ With no Git directory or denied writes the registry is session-only and desk
 says so.
 
 The file is plain, client-neutral keyed Markdown. A versioned header
-(`crewbook-registry: 1`, `mode`, `coordinator`, `target`, UTC `updated`) is
+(`crewbook-registry: 1`, `mode`, `coordinator`, `target`, `model` (desk's actual
+model), `session` (the writing desk's session marker), UTC `updated`) is
 followed by one keyed block per assignment with the registry fields from the
 [supervision cycle](team.md#dispatch-supervision-and-recovery),
 `landing_required`/`landing_authorized`, `state`, the next awaited artifact and
@@ -63,13 +64,15 @@ post the file; any public excerpt goes through the existing scan and redaction.
 
 A fresh desk reads the file as a handoff record. A record still marked active
 from another session is never adopted silently: desk checks worktrees,
-branches and claims, then asks the human one question. In split mode desk
-writes only the header (mode, coordinator, target, its actual model) and the
-dispatcher's `start requested` record; afterwards the dispatcher is the sole
-writer and desk only reads. Concurrent desks in one repository are forbidden
-unless the human confirms: a second desk reads the registry, does not write and
-asks the human. No daemon, timer or cleanup job exists.
-For the Claude desk launch, record the actual model in the registry header
+branches and claims, then asks the human one question. A header whose `session`
+differs from the reader's is foreign. In split mode desk writes only the header
+and its own `start requested` record, and may update that record's outcome
+(failed, uncertain or confirmed) so it cannot dangle when the dispatcher start
+fails; the dispatcher is the sole writer of everything else and desk otherwise
+only reads. Concurrent desks in one repository are forbidden unless the human
+confirms; even then a second desk is read-only: it reads the registry, asks the
+human and does not write. No daemon, timer or cleanup job exists.
+For the Claude desk launch, the header `model` is the actual model
 ([launch](installation.md#client-capacity-settings)). In split mode on a depth-2
 Claude launch, desk reports the depth limit and asks the human for a relaunch at
 depth 3 (not measured).

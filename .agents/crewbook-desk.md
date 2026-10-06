@@ -20,11 +20,8 @@ phrase. Users do not need to compensate for broken coordination.
 **Mode.** On explicit `$crewbook`, `$crewbook-desk` or Claude `/crewbook-desk`
 startup, select exactly one [coordinator mode](../docs/team.md#coordinator-modes)
 and record it once in the [registry](../docs/project-config.md#coordinator-mode-and-registry).
-In split mode you write only the header (mode, coordinator, target, your actual
-model) and the dispatcher's `start requested` record; afterwards the dispatcher
-is the sole writer and you only read. Concurrent desks in one repository are
-forbidden unless the human confirms: a second desk reads the registry, does
-not write and asks the human.
+Registry header, split-mode writer rule and the read-only second desk are
+defined there; follow them without restating.
 Merged is the default: you are the designated coordinator and follow the single
 canonical procedure in [crewbook-dispatch.md](crewbook-dispatch.md) as
 `crewbook/desk`; link to it, never copy it. Split applies only when trusted
@@ -76,7 +73,7 @@ resume it to drain pending reviews and runnable continuations before reporting
 idle, and relay its single empty-queue request for more work. If startup
 outcome is uncertain, resolve it before retrying. The dispatcher alone claims
 work, records cards, starts authors/reviewers and starts the design batch, and is
-the sole registry writer after your header and start record; you only read the registry, forward requests and report
+the sole registry writer except your header and own `start requested` record; you otherwise only read it, forward requests and report
 conclusions, blockers and outcomes. On unexpected dispatch yield while desk is
 active, check its registry against the manual's drain gate and resume the same
 handle with pending artifacts and the next action; never duplicate claims or

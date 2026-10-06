@@ -262,21 +262,25 @@ def board_operations(policy, mode):
     return 'available' if policy.get('gate_available', True) else 'blocked'
 
 
-def registry_writer(mode, header_written, actor):
-    """Split: desk writes only the header/start record, then the dispatcher alone."""
+def registry_writer(mode, header_written, actor, record='task'):
+    """Split: desk writes the header and its own start-requested record (and
+    that record's outcome); everything else is the dispatcher's alone."""
     if mode == 'merged':
         return 'desk' if actor == 'desk' else None
     if actor == 'desk':
+        if record == 'start_requested':
+            return 'desk'
         return None if header_written else 'desk'
     return 'dispatcher' if actor == 'dispatcher' else None
 
 
-def second_desk_action(reg, session):
-    """A second desk reads an active record from another session, never writes."""
-    foreign = [k for k, f in reg['tasks'].items()
-               if f.get('handle_session') != session
-               and f.get('phase') not in ('done', 'blocked')]
-    return ('read_only', 'ask_human') if foreign else ('write', None)
+def second_desk_action(reg, session, confirmed=False):
+    """A header from another session is foreign: a second desk reads and asks,
+    never writes, even after human confirmation."""
+    header = reg.get('session')
+    if header is not None and header != session:
+        return ('read_only', 'ask_human')
+    return ('write', None)
 
 
 def slot_count(mode, authors, reviewers, design, helpers):
@@ -291,12 +295,14 @@ FORBIDDEN_FIELDS = ('token', 'password', 'credential', 'secret', 'body',
                     'transcript', 'env')
 
 
-def registry_dump(state, mode, session, updated, target='target'):
+def registry_dump(state, mode, session, updated, target='target',
+                  model='model'):
     """Keyed plain text; handles are valid only in their creating session."""
     lines = ['crewbook-registry: 1', 'mode: ' + mode,
              'coordinator: ' + ('crewbook/desk' if mode == 'merged'
                                 else 'crewbook/dispatch'),
-             'target: ' + target, 'updated: ' + updated, '']
+             'target: ' + target, 'model: ' + model, 'session: ' + session,
+             'updated: ' + updated, '']
     for key, task in state['tasks'].items():
         for field, value in task.items():
             if (any(f in field.lower() for f in FORBIDDEN_FIELDS)
@@ -317,7 +323,7 @@ def registry_dump(state, mode, session, updated, target='target'):
 
 
 def registry_load(text, session):
-    reg = dict(tasks={}, session=session)
+    reg = dict(tasks={})
     current = None
     for line in text.splitlines():
         if line.startswith('## '):
@@ -862,8 +868,11 @@ class CoordinatorModes(unittest.TestCase):
         state['tasks']['generic'].update(landing_required=True,
                                          landing_authorized=True)
         text = registry_dump(state, mode='merged', session='s1',
-                             updated='2026-01-01T00:00:00Z', target='repo')
+                             updated='2026-01-01T00:00:00Z', target='repo',
+                             model='sonnet')
         self.assertTrue(text.startswith('crewbook-registry: 1\n'))
+        self.assertEqual(registry_load(text, 's1')['model'], 'sonnet')
+        self.assertEqual(registry_load(text, 's2')['session'], 's1')
         self.assertTrue(text.rstrip().splitlines()[-1].startswith('Resume:'))
         self.assertIn('target: repo', text)
         for forbidden in ('token', 'password', 'credential', 'body'):
@@ -895,7 +904,8 @@ class CoordinatorModes(unittest.TestCase):
         state, _ = replay(fixture(), [])
         stamp = '2026-01-01T00:00:00Z'
         # Desk writes the header and the dispatcher start record, then only reads.
-        header = registry_dump(dict(state, tasks={}), 'split', 's1', stamp, 'repo')
+        header = registry_dump(dict(state, tasks={}), 'split', 's1', stamp, 'repo',
+                               model='target-model')
         self.assertEqual(registry_writer('split', header_written=False,
                                          actor='desk'), 'desk')
         self.assertEqual(registry_writer('split', header_written=True,
@@ -905,13 +915,36 @@ class CoordinatorModes(unittest.TestCase):
         self.assertEqual(registry_writer('merged', header_written=True,
                                          actor='desk'), 'desk')
         self.assertIn('mode: split', header)
+        # Desk may still update its own start-requested outcome record, so a
+        # failed dispatcher start cannot leave it dangling; nothing else.
+        self.assertEqual(registry_writer('split', header_written=True,
+                                         actor='desk',
+                                         record='start_requested'), 'desk')
+        self.assertEqual(registry_writer('split', header_written=True,
+                                         actor='desk', record='task'), None)
+        self.assertEqual(registry_writer('split', header_written=True,
+                                         actor='dispatcher',
+                                         record='start_requested'),
+                         'dispatcher')
+        model = registry_load(header, 's1')
+        self.assertEqual(model['model'], 'target-model')
 
     def test_concurrent_second_desk_does_not_write(self):
         state, _ = replay(fixture(), [])
         text = registry_dump(state, 'merged', 's1', '2026-01-01T00:00:00Z', 'repo')
         self.assertEqual(second_desk_action(registry_load(text, 's2'), 's2'),
                          ('read_only', 'ask_human'))
-        self.assertEqual(second_desk_action(dict(tasks={}, session='s2'), 's2'),
+        # A header from another session is foreign even with no task blocks,
+        # and stays read-only after human confirmation.
+        header = registry_dump(dict(state, tasks={}), 'merged', 's1',
+                               '2026-01-01T00:00:00Z', 'repo')
+        for confirmed in (False, True):
+            self.assertEqual(second_desk_action(registry_load(header, 's2'),
+                                                's2', confirmed),
+                             ('read_only', 'ask_human'))
+        self.assertEqual(second_desk_action(registry_load(header, 's1'), 's1'),
+                         ('write', None))
+        self.assertEqual(second_desk_action(dict(tasks={}), 's2'),
                          ('write', None))
 
     def test_merged_desk_without_wait_tool_writes_registry_and_hands_off(self):

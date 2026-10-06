@@ -176,10 +176,9 @@ Topic approval alone does not clear a merge result.
 Start desk once as the human contact with explicit `$crewbook` or the
 dedicated `$crewbook-desk` skill in Codex; Claude uses `/crewbook-desk`. Desk
 selects exactly one mode and records it once at startup in the
-[registry](project-config.md#coordinator-mode-and-registry); in split mode desk
-writes only the header and the dispatcher's `start requested` record, then the
-dispatcher is the sole writer. Concurrent desks in one repository are forbidden
-unless the human confirms. Switching
+[registry](project-config.md#coordinator-mode-and-registry); the registry
+header, split-mode writer rule and read-only second desk are defined there.
+Concurrent desks in one repository are forbidden unless the human confirms. Switching
 mid-session needs the existing explicit ownership handoff. The client supplies
 subagent/resume/wait tools; these prompts cannot create a background daemon or
 survive a parent ending.
@@ -200,8 +199,9 @@ coordinator.
 dispatcher session found through the registry may be adopted instead of
 auto-starting a subagent), retains its handle and routes requests and handbacks
 through it, resuming it when idle. The dispatcher is the coordinator and
-sole registry writer after desk's header and `start requested` record; desk
-then only reads the registry and reports to the human. On a depth-2 Claude
+sole registry writer except desk's header and own
+[`start requested` record](project-config.md#coordinator-mode-and-registry); desk
+otherwise only reads the registry and reports to the human. On a depth-2 Claude
 launch, desk reports the depth limit and asks the human to relaunch at depth 3
 (not measured).
 
