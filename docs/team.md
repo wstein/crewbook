@@ -704,6 +704,53 @@ from those observed starts. Other clients, session turnover, occupancy semantics
 and efficiency/quality improvements remain unmeasured; revisit with an authorized
 host trace when its capacity/release capabilities change.
 
+## Board, handover and land procedures
+
+This section is the single authoritative text for the board, handover and land
+procedures. The `crewbook-board`, `crewbook-handover` and `crewbook-land`
+commands only point here. Whether a given client loads those command files
+natively is unverified; this section makes no such claim.
+
+<a id="board-procedure"></a>
+### Board procedure
+
+Check only the configured board and permitted lane/card scope against
+configured issues and integration branch. Without `--fix`, read only. With
+`--fix`, repair only cards of work the coordinator started or recorded the claim
+for, under the per-session grant in the [card-owner rule](#card-owner-rule),
+using supplied tooling. Report missing/incorrect status, absent ownership,
+review SHA mismatches and criteria without evidence. A board configured as none
+makes this procedure unavailable; never route to an example board. Card
+ownership and approval follow the card-owner rule.
+
+<a id="handover-procedure"></a>
+### Handover procedure
+
+Write a read-only handoff for the configured human: local commits relative to
+the configured remote/integration branch, issue trailers, exact reviewed SHAs,
+criteria met/unmet, blockers and unverified claims. Read only configured
+destinations and respect shared-checkout restrictions. Do not fetch or write
+implicitly. Missing review evidence means not ready; never push. Include the
+named coordinator, author and independent reviewer, confirmed start and
+ownership records, and whether landing/card operations were unavailable. Report
+content and state labels follow
+[Precise issues, handovers and review reports](#precise-issues-handovers-and-review-reports).
+
+<a id="land-procedure"></a>
+### Land procedure
+
+Use the supplied real landing procedure from the assigned worktree for the
+requested branch (default current branch). Require a clean tree and completed
+checks; never stash another worker's changes. Retry a moving integration branch
+only as supplied policy permits. Never execute suggested repairs in another
+checkout. Cleanup and status transitions occur only after confirmed success. No
+configured landing capability means unavailable. A coordinator or reviewer
+returns the operation to the assigned author instead of starting a replacement
+worker. Integration rules, including conflict scope, ambiguity resolution,
+merge-result review, locks, hooks and landing tools, and operation ownership,
+are in the [target Git history policy](git-history.md) and
+[its ownership section](git-history.md#ownership-and-evidence).
+
 ## Precise issues, handovers and review reports
 
 Lead with the problem or outcome, then decisive evidence, unmet criteria and

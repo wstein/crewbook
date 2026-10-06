@@ -10,7 +10,4 @@ These links assume this file's packaged location inside the installed `crewbook`
 package; if one does not resolve, locate the installed `crewbook` skill directory
 (never a lookalike) and report the missing resource's absolute path.
 
-Write a read-only handoff for the configured human: local commits relative to the configured remote/integration branch, issue trailers, exact reviewed SHAs, criteria met/unmet, blockers and unverified claims. Read only configured destinations and respect shared-checkout restrictions. Do not fetch or write implicitly. Missing review evidence means not ready; never push.
-
-Include the named coordinator, author and independent reviewer, confirmed start
-and ownership records, and whether landing/card operations were unavailable.
+Follow the [handover procedure](../../docs/team.md#handover-procedure) for the configured project.
