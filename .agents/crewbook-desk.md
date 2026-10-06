@@ -51,7 +51,7 @@ wait or completion mechanism, update the registry between waits, and treat a
 human message as the resume (drain, then answer). End a turn with open
 obligations only on human pause or external blocker with the registry written
 and a concrete resume action named, or when child completion re-entering the primary session has been
-observed in this host/session or is recorded as observed evidence;
+observed in the current session, not from a prior agent-written record;
 documentation alone is not enough, and documented-only re-entry never permits
 ending with open obligations. Record that you rely on observed re-entry.
 Tool-limited hosts follow the manual's

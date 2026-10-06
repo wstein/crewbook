@@ -99,7 +99,7 @@ Keep the coordinating turn active while authorized children, required reviews
 or actionable handbacks remain outstanding: process results or await named
 artifacts through bounded supported tools, preserving existing handles. Do not
 end as idle merely because a child runs; except under merged-mode supervision
-(observed re-entry only), its completion will not automatically
+(re-entry observed in the current session only), its completion will not automatically
 reactivate a yielded parent. End only with resolved work, human pause, concrete
 external blocker or explicit ownership handoff retaining the next resume action.
 Apply the manual's supervision rule; never imply a background scheduler.
