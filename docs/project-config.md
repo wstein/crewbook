@@ -139,6 +139,9 @@ Lows as documented limits and same-branch fixes inside authorized scope. Desk
 decides them, logs them `defaulted` and lists them on one veto line in each
 report. Never defaulted: push or landing, forge or board writes, loosening a
 rule or security control, release scope or order, money, product direction.
+These classes are always consequential and win over any standing default. A
+consequential item may carry a `[rec]`, but `ok` (accept all recommended)
+applies to routine items only; a consequential item must be answered explicitly.
 
 <a id="needs-you-example"></a>
 Desk's turn opens like this (reply `1a 2a`, `ok`, `why 2`, `hold 3` or `later`):

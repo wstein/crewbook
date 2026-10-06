@@ -361,7 +361,7 @@ Within an active human-authorized coordination session, start one nonempty
 design batch when an hour has elapsed since its last start, preserving the
 single owner and blocked-highest-priority exception. Record start/due times.
 Design returns ranked existing tasks, lanes, concrete disjoint file boundaries
-and prerequisites; the coordinator owns worker starts. Design returns each human question with an ID, options, a default and the affected work ([decision log](project-config.md#decision-log)); in merged mode desk shows at most 3 items per turn.
+and prerequisites; the coordinator owns worker starts. Design returns each human question with an ID, options, a default and the affected work ([decision log](project-config.md#decision-log)); desk shows at most 3 items per turn in every mode.
 Already-routed eligible work
 starts without waiting for that round. Apply current user priority overrides;
 a milestone gate requires actual independent readiness evidence, never a mocked
