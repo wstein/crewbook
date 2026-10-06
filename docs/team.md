@@ -176,7 +176,10 @@ Topic approval alone does not clear a merge result.
 Start desk once as the human contact with explicit `$crewbook` or the
 dedicated `$crewbook-desk` skill in Codex; Claude uses `/crewbook-desk`. Desk
 selects exactly one mode and records it once at startup in the
-[registry](project-config.md#coordinator-mode-and-registry). Switching
+[registry](project-config.md#coordinator-mode-and-registry); in split mode desk
+writes only the header and the dispatcher's `start requested` record, then the
+dispatcher is the sole writer. Concurrent desks in one repository are forbidden
+unless the human confirms. Switching
 mid-session needs the existing explicit ownership handoff. The client supplies
 subagent/resume/wait tools; these prompts cannot create a background daemon or
 survive a parent ending.
@@ -187,15 +190,20 @@ dispatcher is started. Desk owns the registry, session assignments and claims,
 author/reviewer starts, review routing, landing routing to the retained author,
 the drain gate, authorized checklist updates, the design batch, capacity
 accounting and the empty-queue report straight to the human. Desk still writes
-no feature code, makes no rule decision, performs no review or self-review,
-never lands on the author's behalf, never pushes or publishes, and writes board
-cards only when policy authorizes the coordinator.
+no feature code (except under the explicit user-authorized role change in
+[merged-mode supervision](#merged-mode-supervision)), makes no rule decision,
+performs no review or self-review, never lands on the author's behalf, never
+pushes or publishes, and writes board cards only when policy authorizes the
+coordinator.
 
 **Split mode.** Desk starts or adopts one persistent dispatcher (a peer
 dispatcher session found through the registry may be adopted instead of
 auto-starting a subagent), retains its handle and routes requests and handbacks
 through it, resuming it when idle. The dispatcher is the coordinator and
-registry writer; desk only reads the registry and reports to the human.
+sole registry writer after desk's header and `start requested` record; desk
+then only reads the registry and reports to the human. On a depth-2 Claude
+launch, desk reports the depth limit and asks the human to relaunch at depth 3
+(not measured).
 
 Split mode applies only when trusted project policy or supervisor
 configuration (a) names a board destination with a status mapping and an
@@ -298,7 +306,7 @@ Done requires the established close/publication flow. Unknown mappings or denied
 writes block the board operation, not independent local work. Board mode none
 uses the registry without writes.
 
-For authorized issue checklist maintenance, dispatch checks each acceptance
+For authorized issue checklist maintenance, the coordinator checks each acceptance
 criterion immediately when that criterion is fulfilled by actual evidence,
 including required exact-revision review; it does not wait for the whole issue
 to finish. An author claim alone is insufficient, and a measured criterion
@@ -335,7 +343,7 @@ Within an active human-authorized coordination session, start one nonempty
 design batch when an hour has elapsed since its last start, preserving the
 single owner and blocked-highest-priority exception. Record start/due times.
 Design returns ranked existing tasks, lanes, concrete disjoint file boundaries
-and prerequisites; dispatch owns worker starts. Already-routed eligible work
+and prerequisites; the coordinator owns worker starts. Already-routed eligible work
 starts without waiting for that round. Apply current user priority overrides;
 a milestone gate requires actual independent readiness evidence, never a mocked
 foundation. Historical source-worker allocations and one-reviewer limits do
@@ -346,7 +354,7 @@ The designated coordinator (merged desk or split dispatcher) keeps the coordinat
 required reviews or actionable handbacks remain outstanding. Consume results,
 route findings, resume existing handles and await the next named artifact with
 supported bounded tools. Do not report idle or end merely because a child is
-running. Child completion does not automatically reactivate a yielded parent.
+running. Except under merged-mode supervision, child completion does not automatically reactivate a yielded parent.
 End only when the queue is resolved, the human explicitly pauses, a concrete
 external blocker prevents continuation, or ownership is explicitly handed off
 with retained handles and the next resume action. If wait/resume tools are
@@ -359,14 +367,15 @@ to recovery under [tool preflight](tool-preflight.md), without a second schedule
 After draining completions/reviews and selecting eligible continuations, wait
 on named active work and its next artifact using bounded checks, without busy
 polling. A full pool or decision-blocked backlog is not an empty queue. On a
-true empty-queue transition send desk one concise request for more work,
-including completed work, active ownership and blocked dependencies; then yield
+true empty-queue transition request more work once, including completed work,
+active ownership and blocked dependencies (merged: desk reports straight to the
+human; split: the dispatcher sends desk the request); then yield
 until new work or response. Do not start an empty design batch for the clock.
 No eligible work is a resolved stop only after outstanding authorized
 workers/reviews and actionable handbacks have been resolved or explicitly
 handed off; a concrete external dependency or human pause also permits stopping. Before context turnover preserve ownership, pending completions,
 exact evidence, design timing and the next runnable action in a resume note,
-and notify the existing desk. No daemon, forge-triggered runner, live inference
+and notify the existing desk (split) or the human (merged). No daemon, forge-triggered runner, live inference
 or unattended timer is supplied or authorized by this procedure.
 
 ### Merged-mode supervision
@@ -376,14 +385,15 @@ waits on named artifacts through the client's supported bounded wait or
 completion mechanism, with no forge polling and no busy loop, and updates the
 registry between waits. A human message is the resume: drain first, then answer.
 Desk may end a turn with open obligations only on a human pause or an external
-blocker (registry written, concrete resume action named), or when the client
-documents or has shown that child completion re-enters the primary session;
-record that the turn relies on it, which stays unverified until observed. Never
-imply a background scheduler.
+blocker (registry written, concrete resume action named), or when child completion re-entering the primary session has been observed in
+the current host/session or is recorded as observed evidence; documentation
+alone is not enough, and documented-only re-entry never permits ending with open
+obligations. Record that the turn relies on observed re-entry. Never imply a
+background scheduler.
 
-Tool-limited hosts: with no subagents, use a user-authorized same-session
-coordinator or author, report independent review unavailable and never
-self-review. With subagents but no wait or resume capability, write the
+Tool-limited hosts: with no subagents, desk is a user-authorized same-session
+coordinator, and an author only under an explicit user-authorized role change;
+independent review is reported unavailable and there is no self-review. With subagents but no wait or resume capability, write the
 registry, tell the human the exact resume step and stop.
 
 ### Completion gate and desk safety net
@@ -491,8 +501,8 @@ operational example, not a universal layout or capacity requirement. Child
 context capacity and physical worktree capacity are separate: neither an idle
 checkout nor a completed agent establishes available host capacity.
 
-Dispatch records each slot's path, branch, owner, state, base revision, result
-revision or durable handoff, and next action in its private registry. Mark a
+The coordinator records each slot's path, branch, owner, state, base revision, result
+revision or durable handoff, and next action in the registry. Mark a
 slot `IDLE` only after confirming it has no active owner/editor, its working tree
 and index are clean, and no merge, rebase, cherry-pick, revert or sequencer
 operation is pending. Previous work must be integrated or preserved in a durable

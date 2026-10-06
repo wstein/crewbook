@@ -79,8 +79,11 @@ profiles, start from the target repository with:
 CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=8 CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=2 claude --model sonnet '/crewbook-desk'
 ```
 
-Use depth 3 instead when split mode adds a dispatcher. `--model sonnet` pins the
-desk session to Sonnet; desk records the actual model in its registry. Whether
+Use depth 3 instead when split mode adds a dispatcher; in split mode on a
+depth-2 launch, desk reports the depth limit and asks the human for a relaunch
+at depth 3 (not measured). `--model sonnet` pins the
+desk session to Sonnet; desk records the actual model in the registry header
+(then, in split mode, the dispatcher is the sole writer). Whether
 command frontmatter can pin a model is **unverified**. The Codex launch above
 keeps `gpt-6.1-sol` with low reasoning effort.
 

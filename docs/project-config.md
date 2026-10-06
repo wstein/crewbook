@@ -39,7 +39,7 @@ procedure before a worker starts (a configured but unavailable gate still
 selects split). A Git remote, an issue number, an existing forge or project,
 board mode none or authorization text naming no destination are not gates.
 
-Desk records the mode, coordinator identity, target and actual model once in a
+Desk records the mode, coordinator identity, target and its actual model once in a
 durable registry/handoff file at `<git-common-dir>/crewbook/registry.md`, where
 the directory comes from `git rev-parse --git-common-dir`. Worktrees of one
 repository share it, and Git never commits it. A supervisor-supplied path wins.
@@ -63,10 +63,16 @@ post the file; any public excerpt goes through the existing scan and redaction.
 
 A fresh desk reads the file as a handoff record. A record still marked active
 from another session is never adopted silently: desk checks worktrees,
-branches and claims, then asks the human one question. In split mode the
-dispatcher writes and desk only reads. No daemon, timer or cleanup job exists.
-For the Claude desk launch, record the actual model in the registry
-([launch](installation.md#client-capacity-settings)).
+branches and claims, then asks the human one question. In split mode desk
+writes only the header (mode, coordinator, target, its actual model) and the
+dispatcher's `start requested` record; afterwards the dispatcher is the sole
+writer and desk only reads. Concurrent desks in one repository are forbidden
+unless the human confirms: a second desk reads the registry, does not write and
+asks the human. No daemon, timer or cleanup job exists.
+For the Claude desk launch, record the actual model in the registry header
+([launch](installation.md#client-capacity-settings)). In split mode on a depth-2
+Claude launch, desk reports the depth limit and asks the human for a relaunch at
+depth 3 (not measured).
 
 ## Managed container configuration
 
