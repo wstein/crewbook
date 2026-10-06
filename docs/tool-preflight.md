@@ -27,6 +27,25 @@ blocker. Approval refusal stops that path. Do not alter credentials, disable
 controls, install substitutes or infer write authorization from successful
 reads. Resolve an uncertain external write outcome before repeating it.
 
+## Scan outgoing payloads
+
+Before an authorized issue-body, comment or other external write, resolve the
+target's actual scanning requirements and available scanner. Crew Book does not
+mandate a universal scanner or install one. Prepare the exact outgoing content
+in a regular non-symlink file in an authorized private location; reject unsafe
+file or parent links. Run the target-required scanner against those bytes with
+its required configuration and inspect its status and diagnostics. A finding,
+unsafe payload or missing, denied or failed required scanner prevents the outward
+write, not independent authorized local work. Preserve the blocker and next
+action privately; do not publish raw findings or substitute a no-op scan.
+
+Send only the scanned bytes. If the payload changes, scan it again before
+writing. Preserve current-body/version freshness checks and reconcile concurrent
+edits as described in the [team procedure](team.md#dispatch-supervision-and-recovery);
+read back the external result and verify the intended content. Resolve an
+uncertain write before retrying. These are workflow instructions, not runtime
+enforcement or an atomic-write guarantee.
+
 ## Preserve each result
 
 Keep prerequisite calls sequential: inspect policy before validation, validation

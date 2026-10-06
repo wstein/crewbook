@@ -212,9 +212,15 @@ to finish. An author claim alone is insufficient, and a measured criterion
 requires its named live evidence. Keep unmet or unverified criteria unchecked.
 Before each issue-body write, reread the current version, reconcile concurrent
 changes, preserve unrelated text/history/subissues and change only the evidenced
-criterion. Read back the result and retain its evidence in the existing durable
-record. A denied or uncertain update follows tool preflight; do not overwrite
-concurrent work or blindly repeat a write.
+criterion. Prepare the exact outgoing body as a regular non-symlink payload and
+run the actual target-required scanner before writing, following
+[outgoing payload preflight](tool-preflight.md#scan-outgoing-payloads).
+Recheck the issue version immediately before writing; reconcile intervening
+changes and rescan any changed payload. Use supported conditional updates when
+available; rereads alone do not guarantee atomic protection. Read back the result,
+verify it matches the intended body and retain its evidence in the existing
+durable record. A denied or uncertain update follows tool preflight; do not
+overwrite concurrent work or blindly repeat a write.
 
 Progress correction is bidirectional: the reviewer explicitly identifies any
 checked criterion disproved or stale, its evidence and affected exact revision.
