@@ -49,10 +49,12 @@ SHA **before** fast-forward integration. Stop on conflicts outside the assigned
 scope. This is this repository's current policy, not a universal target policy.
 
 Use focused Conventional Commits with the actual WI. A commit written by an
-agent ends with one `Co-Authored-By: <model display name> <noreply@<vendor domain>>`
-trailer per agent, using the exact line the host's attribution guidance supplies
-(for example `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`); never
-invent an address. It is a normal git trailer: keep it in the same trailer block as
+agent ends with one `Co-Authored-By: <display name> <noreply@<vendor domain>>`
+trailer per agent, using the exact line the host's attribution guidance supplies.
+The display name is the model's as the host writes it, prefixed by the tool for a
+non-Claude tool (for example `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
+or `Co-Authored-By: Antigravity Gemini 3.8 Flash <noreply@google.com>`); never invent
+a name or an address. It is a normal git trailer: keep it in the same trailer block as
 `Refs:` with no blank line between them, otherwise git treats only the last
 paragraph as trailers and drops `Refs:`. If the host supplies no exact line
 (e.g. Codex), add no agent trailer and record the open point in the handoff.
