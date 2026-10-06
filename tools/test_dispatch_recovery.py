@@ -1,6 +1,6 @@
 """Offline structured recovery replay, not an agent scheduler or prompt parser."""
 import copy
-import unicodedata
+import re
 import unittest
 
 
@@ -277,41 +277,68 @@ def registry_writer(mode, header_written, actor, record='task'):
     return None
 
 
-def registry_header(text):
-    """Header fields, or None when damaged: lines split only on \\n or \\r\\n,
-    any other control or line-separator character is damage, and `crewbook-
-    registry` and `session` must each appear exactly once."""
-    fields = {}
-    seen = {'crewbook-registry': 0, 'session': 0}
-    for line in text.split('\n'):
-        if line.endswith('\r'):
-            line = line[:-1]
-        if line.startswith('## ') or line.startswith('Resume:'):
-            break
-        if any(unicodedata.category(c) in ('Cc', 'Zl', 'Zp') and c != '\t'
-               for c in line):
+HEADER_LINE = re.compile(
+    r'(crewbook-registry|mode|coordinator|target|model|session|updated): '
+    r'([\x20-\x7e]+)')
+BLOCK_LINE = re.compile(r'## ([\x20-\x7e]+)')
+TASK_LINE = re.compile(r'(owner|handle|handle_session|phase|evidence|'
+                       r'landing_required|landing_authorized|next_awaited): '
+                       r'([\x20-\x7e]*)')
+RESUME_LINE = re.compile(r'Resume: ([\x20-\x7e]+)')
+
+
+def registry_parse(text):
+    """The one strict registry grammar; None when damaged. Lines end in LF or
+    CRLF; header lines run to the first blank or `## ` line."""
+    lines = [line[:-1] if line.endswith('\r') else line
+             for line in text.split('\n')]
+    while lines and not lines[-1]:
+        lines.pop()
+    reg = dict(tasks={})
+    i = 0
+    while i < len(lines) and lines[i] and not lines[i].startswith('## '):
+        m = HEADER_LINE.fullmatch(lines[i])
+        if not m or m.group(1) in reg:
             return None
-        if ': ' in line:
-            name, value = line.split(': ', 1)
-            if name in seen:
-                seen[name] += 1
-            fields[name] = value
-    return fields if all(n == 1 for n in seen.values()) else None
+        reg[m.group(1)] = m.group(2)
+        i += 1
+    if reg.get('crewbook-registry') != '1' or 'session' not in reg:
+        return None
+    resume = False
+    while i < len(lines):
+        line = lines[i]
+        i += 1
+        if not line:
+            continue
+        if resume:
+            return None
+        if RESUME_LINE.fullmatch(line):
+            resume = True
+            continue
+        m = BLOCK_LINE.fullmatch(line)
+        if not m or m.group(1) in reg['tasks']:
+            return None
+        fields = reg['tasks'][m.group(1)] = {}
+        while i < len(lines) and lines[i]:
+            f = TASK_LINE.fullmatch(lines[i])
+            if not f or f.group(1) in fields:
+                return None
+            fields[f.group(1)] = f.group(2)
+            i += 1
+    return reg if resume else None
 
 
 def second_desk_action(text, session, takeover_confirmed=False):
     """`text` is the raw registry file (None when absent). Only an absent file or
-    one of only space, tab, CR and LF is no registry. Otherwise a valid,
-    undamaged header with version 1 and the reader's session is writable;
-    anything else, including another session, none, damage or unparsable text,
-    is foreign: read-only and ask the human. Only the human's confirmation that
-    the previous session ended (a takeover, never mere concurrency) lets the
-    successor rewrite the header."""
+    one of only space, tab, CR and LF is no registry. Otherwise a well-formed
+    header with the reader's session is writable; anything else (another
+    session, none, damage, unparsable text) is foreign: read-only and ask the
+    human. Only the human's confirmation that the previous session ended (a
+    takeover, never mere concurrency) lets the successor rewrite the header."""
     if text is None or not text.strip(' \t\r\n'):
         return ('write', None)
-    header = registry_header(text)
-    if (header is not None and header['crewbook-registry'] == '1'
-            and header['session'] == session):
+    reg = registry_parse(text)
+    if reg is not None and reg['session'] == session:
         return ('write', None)
     if takeover_confirmed:
         return ('write_header', None)
@@ -358,14 +385,9 @@ def registry_dump(state, mode, session, updated, target='target',
 
 
 def registry_load(text):
-    reg = dict(tasks={})
-    current = None
-    for line in text.splitlines():
-        if line.startswith('## '):
-            current = reg['tasks'].setdefault(line[3:], {})
-        elif ': ' in line and not line.startswith('Resume:'):
-            name, value = line.split(': ', 1)
-            (current if current is not None else reg)[name] = value
+    reg = registry_parse(text)
+    if reg is None:
+        raise ValueError('damaged registry')
     return reg
 
 
@@ -1001,7 +1023,8 @@ class CoordinatorModes(unittest.TestCase):
         legacy_header = ''.join(line + '\n' for line in header.splitlines()
                                 if not line.startswith('session: '))
         for text in (legacy, legacy_header):
-            self.assertNotIn('session', registry_load(text))
+            with self.assertRaises(ValueError):
+                registry_load(text)
             self.assertEqual(second_desk_action(text, 's2'), read_only)
             self.assertEqual(second_desk_action(text, 's2',
                                                 takeover_confirmed=True),
@@ -1030,14 +1053,16 @@ class CoordinatorModes(unittest.TestCase):
                                  ('write_header', None))
         # Repeated header keys and odd line separators in the header are damage;
         # only \n and \r\n split header lines.
-        damaged = ['crewbook-registry: 1\nsession: s1\nsession: s2\n',
-                   'crewbook-registry: 9\ncrewbook-registry: 1\nsession: s2\n',
+        damaged = ['crewbook-registry: 1\nsession: s1\nsession: s2\n\nResume: x\n',
+                   'crewbook-registry: 9\ncrewbook-registry: 1\nsession: s2\n\nResume: x\n',
                    '\x0b\n', '\x85\n']
         for sep in ('\x0b', '\r', '\x85', '\u2028', '\u2029', '\x1c'):
             damaged.append('crewbook-registry: 1\nsession: s1' + sep
-                           + 'session: s2\n')
-            damaged.append('crewbook-registry: 1\nsession: s2\n' + sep + 'x\n')
-            damaged.append('crewbook-registry: 1\nsession: s1\n' + sep + 'x\n')
+                           + 'session: s2\n\nResume: x\n')
+            damaged.append('crewbook-registry: 1\nsession: s2\n' + sep
+                           + 'x\n\nResume: x\n')
+            damaged.append('crewbook-registry: 1\nsession: s1\n' + sep
+                           + 'x\n\nResume: x\n')
         for text in damaged:
             for reader in ('s1', 's2'):
                 self.assertEqual(second_desk_action(text, reader), read_only,
@@ -1047,7 +1072,7 @@ class CoordinatorModes(unittest.TestCase):
                                  ('write_header', None), repr(text))
         # CRLF is a valid line ending.
         self.assertEqual(second_desk_action(
-            'crewbook-registry: 1\r\nsession: s2\r\n\r\n', 's2'),
+            'crewbook-registry: 1\r\nsession: s2\r\n\r\nResume: x\r\n', 's2'),
             ('write', None))
         for text in ('', ' \r\n\t\n'):
             self.assertEqual(second_desk_action(text, 's2'),
@@ -1057,6 +1082,76 @@ class CoordinatorModes(unittest.TestCase):
                          ('write', None))
         self.assertEqual(second_desk_action(None, 's2'),
                          ('write', None))
+
+    def test_strict_registry_grammar(self):
+        """One strict grammar: anything outside it is damaged, hence foreign."""
+        read_only = ('read_only', 'ask_human')
+        tail = '\nResume: x\n'
+        head = 'crewbook-registry: 1\nsession: s2\n'
+        block = '## generic\nowner: a\nphase: running\n'
+        valid = [head + tail,
+                 head.replace('\n', '\r\n') + '\r\nResume: x\r\n',
+                 head + 'mode: merged\ncoordinator: crewbook/desk\n'
+                 'target: repo\nmodel: sonnet\nupdated: 2026-01-01T00:00:00Z\n'
+                 + '\n' + block + '\n' + 'Resume: x\n',
+                 head + block + tail,  # '## ' also ends the header
+                 head + '\n' + block + 'evidence: \n' + tail]
+        for text in valid:
+            self.assertEqual(second_desk_action(text, 's2'), ('write', None),
+                             repr(text))
+            self.assertEqual(second_desk_action(text, 's1'), read_only,
+                             repr(text))
+        full = registry_dump(replay(fixture(), [])[0], 'merged', 's2',
+                             '2026-01-01T00:00:00Z', 'repo', model='sonnet')
+        self.assertEqual(second_desk_action(full, 's2'), ('write', None))
+        self.assertEqual(second_desk_action(full, 's1'), read_only)
+        bad = [
+            'crewbook-registry: 1\nSession: s2\n' + tail,
+            head + '\tsession: s2\n' + tail,
+            'crewbook-registry: 1\nsess\u200bion: s2\n' + tail,
+            head + '\u202e2s :noisses\n' + tail,
+            'crewbook-registry: 1\nsession:s2\n' + tail,
+            head + 'junk\n' + tail,
+            head + '\n##generic\nowner: a\n' + tail,
+            head + 'target: a\ttab\n' + tail,
+            head.replace('session: s2', 'session: ') + tail,
+            head + 'target: caf\u00e9\n' + tail,
+            head + 'Mode: a\n' + tail,
+            head + 'x: 1\n' + tail,
+            head + 'target: a\u200b\n' + tail,
+            head + '\n## generic\u200b\nowner: a\n' + tail,
+            head + '\n' + block + 'evidence: a\u200b\n' + tail,
+            head + '\nResume: x\u200b\n',
+            head + '\n' + block + 'Phase: a\n' + tail,
+            head + 'mode: a\nmode: b\n' + tail,
+            'crewbook-registry: 9\nsession: s2\n' + tail,
+            # parser divergence: a later session line after Resume
+            'crewbook-registry: 1\nsession: s2\nResume: x\nsession: s1\n',
+            # a header key after the header has ended, outside a block
+            head + '\nsession: s1\n' + tail,
+            head + '\n' + block + 'owner: b\n' + tail,
+            head + '\n' + block + '\n' + block + tail,
+            head + '\n' + block + 'bogus: 1\n' + tail,
+            head,  # Resume missing
+            head + '\n' + block,
+            head + tail + tail.lstrip('\n'),  # Resume twice
+            head + tail + block,  # content after Resume
+            head + 'Resume: x\n\n' + block,  # Resume not last
+            head + '\n' + block + 'Resume: x\n',  # Resume glued to a block
+            head + tail.replace('x', ''),  # empty Resume value
+        ]
+        for text in bad:
+            for reader in ('s1', 's2'):
+                self.assertEqual(second_desk_action(text, reader), read_only,
+                                 repr(text))
+                self.assertEqual(second_desk_action(text, reader,
+                                                    takeover_confirmed=True),
+                                 ('write_header', None), repr(text))
+        empty = head.replace('session: s2', 'session: ') + tail
+        self.assertEqual(second_desk_action(empty, ''), read_only)
+        with self.assertRaises(ValueError):
+            registry_load(bad[0])
+        self.assertEqual(registry_load(valid[2])['model'], 'sonnet')
 
     def test_merged_desk_without_wait_tool_writes_registry_and_hands_off(self):
         state, _ = replay(fixture(), [])
