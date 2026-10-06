@@ -51,10 +51,9 @@ The installed skill and selected model must be available in the client.
 
 To update a linked checkout, review and validate its changes. For a fixed copy,
 validate a new export before switching registration for new sessions. Keep old
-copies while active sessions use them. To uninstall a linked skill, remove only
-the `crewbook` symlink; retain the source checkout and target project policy.
-Also remove any Claude links under `~/.claude/agents`, `~/.claude/commands` and
-`~/.claude/skills/crewbook` created for registration.
+copies while active sessions use them. To uninstall, remove only the symlinks you created: the `crewbook` skill link
+and any Claude links under `~/.claude/agents`, `~/.claude/commands` and
+`~/.claude/skills/crewbook`. Retain the source checkout and target project policy.
 
 ## Client capacity settings
 
@@ -143,8 +142,8 @@ command states that they assume its packaged location inside the installed
 `crewbook` package and, when one does not resolve, to locate the installed
 `crewbook` skill directory (never a lookalike) and report the missing
 resource's absolute path. Whether a subagent resolves those links, and whether
-Claude lists the profiles and commands, is unmeasured: verify with a fresh session before relying
-on it. No plugin layout, settings key or hook is supplied or implied.
+Claude lists the profiles and commands, is unmeasured: verify with a fresh
+session before relying on it. No plugin layout, settings key or hook is supplied or implied.
 
 ## Migrating older role registrations
 
