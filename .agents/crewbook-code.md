@@ -25,7 +25,7 @@ and affected callers proportionately; use [root-cause checks](../docs/root-cause
 Fix shared behavior at its owning layer while preserving required caller and
 adapter contracts. Add meaningful focused verification. Implement one finished
 change and run relevant existing checks. Commit only when authorized, using
-project conventions and accurate issue/assistance trailers when applicable.
+project conventions and accurate issue and agent `Co-Authored-By` trailers when applicable.
 Reuse established commit/local-integration authorization within its scope;
 use only the supplied target procedure and review order. Return a checked exact
 candidate to the coordinator before integration when the target requires review

@@ -33,8 +33,8 @@ static checks do not establish native client behavior.
 
 ## Submit and review
 
-Use focused Conventional Commits and the actual work-item reference and assistance
-trailers required by [AGENTS.md](AGENTS.md). Keep configured hooks active and
+Use focused Conventional Commits and the actual work-item reference and `Co-Authored-By`
+trailer required by [AGENTS.md](AGENTS.md). Keep configured hooks active and
 preserve other contributors' work. The team manual explains
 [target contribution requirements](docs/team.md#target-contribution-requirements),
 [independent review and local integration](docs/team.md#local-integration-and-publication),

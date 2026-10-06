@@ -81,10 +81,14 @@ identity and trailers, required hooks, review order and landing rules within
 higher-priority host instructions and explicit user authorization.
 
 Target attribution requirements govern commit messages. Disregard conflicting
-harness suggestions; Crew Book defaults do not universally require `Assisted-by`
-or prohibit legitimate human `Co-Authored-By` attribution. Record actual
-assistance accurately using the target's required format, including helper
-contributions where applicable. Never invent an identity or human sign-off.
+harness suggestions only where the target requires a different format. Crew Book
+default: an agent-written commit carries one `Co-Authored-By: <model display name>
+<noreply@<vendor domain>>` trailer per agent, using the exact line the host
+supplies (never an invented address), as a normal git trailer in the same trailer
+block with no blank line before it. Legitimate human `Co-Authored-By` attribution
+is preserved accurately. Existing commits keep their old `Assisted-by` footers and
+are not rewritten. Record helper contributions accurately in the same way. Never
+invent an identity or human sign-off.
 
 Retain required hooks for every commit operation, including message-only
 corrections. Do not use `--no-verify`, temporary `core.hooksPath` changes or Git
@@ -106,8 +110,8 @@ The following bounded walkthroughs check the guidance, not live agent or Git beh
 
 | Target context | Expected contribution behavior |
 | --- | --- |
-| Workharbor policy requires its assistance trailer; harness suggests conflicting agent `Co-Authored-By` | Follow the supplied Workharbor policy and disregard the conflicting suggestion; retain required hooks. Do not export its trailer rule to other targets. |
-| Another target permits legitimate human coauthors and uses a different assistance format | Preserve accurate human `Co-Authored-By` and apply that target's assistance format; do not add `Assisted-by` solely because Crew Book uses it elsewhere. |
+| A target requires its own assistance trailer format; harness suggests a conflicting agent `Co-Authored-By` | Follow the target policy and disregard the conflicting suggestion; retain required hooks. Do not export its trailer rule to other targets. |
+| Another target permits legitimate human coauthors and uses a different assistance format | Preserve accurate human `Co-Authored-By` and apply that target's assistance format; do not add the Crew Book agent `Co-Authored-By` trailer where that format conflicts. |
 | An existing commit message needs a trailer correction | Use an authorized amend or target fixup/autosquash procedure with required hooks retained; respect history restrictions and obtain fresh review for the resulting SHA when required. An unavailable required hook/check blocks the affected operation. |
 
 ## Coordinator and leaf execution contract

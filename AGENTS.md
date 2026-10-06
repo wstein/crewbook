@@ -48,13 +48,22 @@ current main, reruns checks and obtains fresh independent review of the rewritte
 SHA **before** fast-forward integration. Stop on conflicts outside the assigned
 scope. This is this repository's current policy, not a universal target policy.
 
-Use focused Conventional Commits with the actual WI and the tool and model id:
+Use focused Conventional Commits with the actual WI. A commit written by an
+agent ends with one `Co-Authored-By: <model display name> <noreply@<vendor domain>>`
+trailer per agent, using the exact line the host's attribution guidance supplies
+(for example `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`); never
+invent an address. It is a normal git trailer: keep it in the same trailer block as
+`Refs:` with no blank line between them, otherwise git does not parse it. For
+Codex or other tools whose exact line the host does not supply, use only a
+host-supplied line; if none exists, record the open point instead of guessing.
+This replaces `Assisted-by: <tool>:<model-id>` for new commits; existing commits
+are kept as they are and are not rewritten.
 
 ```text
 docs: clarify work-item commit footers
 
 Refs: #29
-Assisted-by: codex:gpt-6.1-sol
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
 ```
 
 For an authorized repository assignment, the assigned author may create local commits
