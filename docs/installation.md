@@ -16,8 +16,7 @@ ln -s /absolute/path/crewbook ~/.agents/skills/crewbook
 ```
 
 If that destination already exists, inspect it before replacing anything.
-An existing legacy `cb-crewbook` symlink already points to the renamed skill;
-keep that single installation rather than adding a duplicate.
+Keep one installation under the canonical `crewbook` name.
 Restart Codex or open a new session to refresh discovery. `agents/openai.yaml`
 enables implicit invocation: ordinary repository requests can select Crew Book
 automatically without switching roles. Explicit `$crewbook` starts desk
@@ -76,7 +75,7 @@ pin/adapter checks remain a separate integration contract.
 To update a linked checkout, review and validate its changes. For a fixed copy,
 validate a new export before switching registration for new sessions. Keep old
 copies while active sessions use them. To uninstall a linked skill, remove only
-the `crewbook` symlink (or its legacy installation name); retain the source checkout and target project policy.
+the `crewbook` symlink; retain the source checkout and target project policy.
 
 ## Migrating older role registrations
 
@@ -93,12 +92,10 @@ Review any explicit role-file references and client registrations before
 switching new sessions to the renamed resources. An optional old `cb-desk`
 user symlink points to a folder that moved; inspect it and migrate that single
 registration if you still want the dedicated desk skill. Keep one registration
-per skill rather than installing both names. An unchanged legacy `cb-crewbook`
-root symlink can still serve the root skill because its target and the root
-`name: crewbook` are unchanged. No backward-compatible command registration
-is supplied or claimed; a client's own documented alias support is a separate
-client configuration decision. Existing sessions keep their recorded revision
-and retained dispatcher handle.
+per skill rather than installing both names. No backward-compatible command
+registration is supplied or claimed; a client's own documented alias support
+is a separate client configuration decision. Existing sessions keep their
+recorded revision and retained dispatcher handle.
 
 Workharbor integration is separate work: review any consumer instruction paths,
 role selections and client registrations; validate the supported native binding;

@@ -18,8 +18,8 @@ mkdir -p ~/.agents/skills
 ln -s /absolute/path/crewbook ~/.agents/skills/crewbook
 ```
 
-Inspect an existing destination before replacing it. Keep one installation;
-an existing legacy `cb-crewbook` link can continue to serve that purpose.
+Inspect an existing destination before replacing it. Keep one installation
+under the canonical `crewbook` name.
 Restart Codex or open a new session to refresh skill discovery.
 See [installation and client support](docs/installation.md) for fixed copies,
 updates, uninstalling, Claude Code entrypoints and the optional `$crewbook-desk` alias.
