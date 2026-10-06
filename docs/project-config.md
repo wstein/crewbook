@@ -161,16 +161,18 @@ explicitly with an option letter or `y`/`n`.
 
 Replies name the ID, never a position: `H7:a`, `H7:y`, `H7:n`, `H7:a+f` (option
 a plus a flag, only when the item defines that flag), `H7:?` (show detail),
-`H7:later` (defer), `H7:rec` or `H5:veto` (revert a `defaulted` item; an
-explicit answer), combinable on one line (`H7:a H8:a`). Option letters are fixed
+`H7:later` (defer), `H7:rec` or `H5:veto` (an explicit answer that
+reopens a `defaulted` item as a new ID, since an answered ID is never asked
+again; work already done is not undone without a separate answer; on an item
+that is not `defaulted` it is ignored and reported), combinable on one line (`H7:a H8:a`). Option letters are fixed
 per item. An ID is never reused or renumbered; a reply naming an unknown,
 already-answered or superseded ID is ignored and reported, never guessed. IDs
 match exactly: `H` plus a decimal number with no leading zero, case-sensitive,
 so `H07` and `h7` are unknown. A token that is malformed, names an option
-letter or flag the item does not define, repeats an ID with a different answer
-or uses `rec` on a consequential item is ignored and reported, never guessed;
-other tokens on the line still apply. A repeat of the same ID with the same
-answer counts once.
+letter or flag the item does not define or uses `rec` on a consequential item
+is ignored and reported, never guessed; other tokens on the line still apply.
+When one line gives an ID two different answers, all of that ID's tokens are
+ignored and reported; a repeat with the same answer counts once.
 
 <a id="needs-you-example"></a>
 Desk's turn opens like this (reply `H7:a H8:a`, `H7:rec`, `H7:?`, `H7:later` or `H5:veto`):
