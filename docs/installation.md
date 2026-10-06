@@ -246,7 +246,7 @@ establish no native enforcement, paid-run result or managed runtime promise.
   a live agent runtime.
 - **Claude Code:** profiles are `.claude/agents/crewbook-*.md`; commands are
   `.claude/commands/crewbook-*.md` (including `/crewbook-code platform`, `/crewbook-desk`,
-  `/crewbook-review`, `/crewbook-delegate`, `/crewbook-board`, `/crewbook-land` and `/crewbook-handover`). A
+  `/crewbook-review`, `/crewbook-delegate`, `/crewbook-board`, `/crewbook-land`, `/crewbook-handover` and `/crewbook-config`). A
   client must register/load these files from the installed skill directory; merely setting an environment variable does not register slash
   commands or profiles. Automatic discovery from an external mount is
   **unverified**. Existing `model: sonnet`, `opus` and `haiku` pins remain

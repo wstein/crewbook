@@ -31,6 +31,7 @@
     "claude_commands": [
       ".claude/commands/crewbook-board.md",
       ".claude/commands/crewbook-code.md",
+      ".claude/commands/crewbook-config.md",
       ".claude/commands/crewbook-delegate.md",
       ".claude/commands/crewbook-design.md",
       ".claude/commands/crewbook-desk.md",

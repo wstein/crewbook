@@ -226,6 +226,57 @@ pre-filled, omit the sentence. With zero items shown there is no block and no
 reply line. The line is a convenience: the human may
 edit it, and the ID rules above apply unchanged.
 
+<a id="session-configuration"></a>
+## Session configuration
+
+`/crewbook-config` (Claude Code command) and `$crewbook config` (an argument to
+the existing `$crewbook` skill in Codex; no new Codex skill) report or adjust
+the current session through this section alone. The command file only links
+here. Antigravity has no approved binding and reports that. Native loading of
+the command is unverified ([#41](https://github.com/wstein/crewbook/issues/41)).
+
+**`show`** (the default, read-only) works in any session. It reports: profile
+and mode, coordinator and model, the role to tier mapping, the caps, the
+registry and decision-log paths, the policy sources, and host fit for Claude,
+Codex and Antigravity. Each value names its source and is labelled
+**measured** (read or observed this session), **configured** (supplied by
+policy or the user) or **unverified**. Environment variables appear as set or
+unset only, never with a value. Caps are reported with a link to
+[dynamic agent allocation](team.md#dynamic-agent-allocation), not restated.
+
+**`set`** changes one session value and records it as an `H<n>` entry in the
+[decision log](#decision-log). Desk is that log's sole writer and allocates
+the ID, so `set` runs only under desk; in any other session it is refused and
+routed to desk. Without a kept log the entry is shown this session only, and
+desk never reuses an ID. `set` creates no other file, changes no registry key
+(the registry grammar is unchanged), edits no `settings.json` or
+`config.toml`, writes no secret or environment value, ships no executable and
+parses no prompt text. A session value lasts for the session; the entry is
+evidence, never authorization.
+
+- **Routine** (the [standing defaults](#decision-log) may apply): model
+  mapping per the approved mapping ([README](../README.md),
+  [client mappings](installation.md#entrypoints-and-support)) and review
+  routing.
+- **Consequential** (explicit human answer, no default): raising a cap, adding
+  a model outside the approved mapping, and board or landing changes.
+- **Paths**: the registry and decision-log paths are show-only, or settable
+  only to a supervisor-supplied path; no defaulted `set` moves these shared,
+  safety-checked files.
+
+Session configuration can only tighten limits or choose among approved
+options. It cannot raise a cap or relax a rule without the consequential
+answer, and the one-editor-per-worktree limit cannot be raised through it at
+all. Precedence, highest first: platform; then host instructions, `AGENTS.md`
+and user authorization per the host's hierarchy
+([authority](policy-composition.md#authority-and-prerequisites)); then session
+configuration; then Crew Book defaults. Session configuration sits below all
+of these. A `set` that conflicts with a higher layer is refused and reported.
+
+Model-run and unenforced: the labels, the clamping and the refusal are
+procedure text. A pure model of the precedence and clamping may be tested, but
+no prompt parser, executable or hook enforces them.
+
 ## Managed container configuration
 
 The [workharbor profile](profile-workharbor.md) uses the supervisor-assigned

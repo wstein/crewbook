@@ -12,7 +12,9 @@ local work needs no launcher, named profile, board, or team setup.
 ## Explicit invocation starts desk
 
 When the user invokes `$crewbook`, adopt crewbook-desk immediately unless they
-explicitly select another Crew Book role or ask only to inspect the skill.
+explicitly select another Crew Book role or ask only to inspect the skill
+or run `$crewbook config show` ([session configuration](docs/project-config.md#session-configuration);
+`set` is routed there).
 Read [.agents/crewbook-desk.md](.agents/crewbook-desk.md) and its necessary references,
 then select its [coordinator mode](docs/team.md#coordinator-modes). By default
 desk is the coordinator (merged mode) and starts no dispatcher. Only when
