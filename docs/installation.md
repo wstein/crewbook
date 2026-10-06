@@ -207,7 +207,7 @@ contract, not a claim that all three clients currently support it:
   work items, design batches and bounded helper/research/verification tasks.
   Continue the same assignment with its author and independent reviewer.
 - Give the designated coordinator sole claim/card and issue/review-start
-  ownership. Authors and reviewers execute as leaves; research stays read-only,
+  ownership ([card-owner rule](team.md#card-owner-rule)). Authors and reviewers execute as leaves; research stays read-only,
   and bounded helpers never inherit issue, review, commit or landing ownership.
 - Select explicit provider-appropriate model and effort bindings at each start,
   preserving the approved role tiers and review strength. The mappings below

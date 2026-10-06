@@ -11,8 +11,8 @@ These links assume this file's packaged location inside the installed `crewbook`
 package; if one does not resolve, locate the installed `crewbook` skill directory
 (never a lookalike) and report the missing resource's absolute path.
 
-Check only the configured board and permitted lane/card scope against configured issues and integration branch. Without --fix, read only. With --fix, repair only authorized own-lane cards using supplied tooling and approval rules. Report missing/incorrect status, absent ownership, review SHA mismatches and criteria without evidence. A board configured as none makes this command unavailable; never route to an example board.
+Check only the configured board and permitted lane/card scope against configured issues and integration branch. Without --fix, read only. With --fix, repair only cards of work the coordinator started or recorded the claim for, under the per-session grant in the [card-owner rule](../../docs/team.md#card-owner-rule), using supplied tooling. Report missing/incorrect status, absent ownership, review SHA mismatches and criteria without evidence. A board configured as none makes this command unavailable; never route to an example board.
 
 For issue lifecycle cards, the designated coordinator is the sole writer under
-the manual's ownership table. Authors/reviewers report outcomes to that owner;
+the [card-owner rule](../../docs/team.md#card-owner-rule). Authors/reviewers report outcomes to that owner;
 this command grants neither ownership nor review approval.

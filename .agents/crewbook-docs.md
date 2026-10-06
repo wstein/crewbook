@@ -26,8 +26,8 @@ verified and unverified claims separately; local integration does not authorize
 pushing or publication.
 
 Execute your already-assigned issue or batch directly as a leaf; never start
-another issue worker for it. The designated coordinator owns claim/card writes
-and review initiation; acknowledge its claim and return outcomes to that owner.
+another issue worker for it. The designated coordinator owns the claim, review initiation and the card writes
+for work it started or recorded the claim for ([card-owner rule](../docs/team.md#card-owner-rule)); acknowledge its claim and return outcomes to that owner.
 You own your assignment's checks, commits and authorized configured landing.
 Bounded helpers are permitted under the manual, not recursive issue delegation.
 
