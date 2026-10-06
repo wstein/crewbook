@@ -97,6 +97,59 @@ For the Claude desk launch, the header `model` is the actual model
 Claude launch, desk reports the depth limit and asks the human for a relaunch at
 depth 3 (not measured).
 
+<a id="decision-log"></a>
+### Decision log
+
+Desk may keep an optional local log of human decisions at
+`<git-common-dir>/crewbook/decisions.md`, next to the registry and under the
+same safety rules: regular non-symlink file, owner-only where supported, no
+secrets, never posted. Desk is its sole writer in both modes (it is the human
+contact); design and dispatch propose items in handbacks. The log is evidence,
+never authorization: a logged answer never authorizes a later outward action by
+itself. The registry grammar is unchanged; decisions never go into
+`registry.md`. Entries are `## H<n>` blocks of printable-ASCII `key: value`
+lines: `id`, `state`, `asked`, `by`, `class`, `question`, `options`, `default`,
+`affects`, `answer`. States: `open`, `answered`, `defaulted`, `deferred`,
+`superseded`, `expired`.
+
+```text
+## H7
+id: H7
+state: open
+asked: 2026-10-06T09:12Z
+by: crewbook/design
+class: routine
+question: Branch name for issue 44
+options: a docs/desk-needs-you [rec]; b docs/44-human-questions
+default: a
+affects: #44 author start
+answer: none
+```
+
+Expiry needs no timer. An unanswered routine item applies its recommended
+default at the next dependent operation and is marked `defaulted`. A
+consequential item ([rule](team.md#roles-and-boundaries)) has no default and
+blocks only its dependent operation. An item invalidated by a new revision is
+marked `expired` and asked once more under a new ID; an answered ID is never
+asked again. Standing defaults are a short list of routine classes the human
+approves once: naming, `Refs` target, review scope, soak length, fast-forward
+mechanics, trailer wording under existing rules, model mapping per
+[README](../README.md), ordering within a priority, review routing, accepting
+Lows as documented limits and same-branch fixes inside authorized scope. Desk
+decides them, logs them `defaulted` and lists them on one veto line in each
+report. Never defaulted: push or landing, forge or board writes, loosening a
+rule or security control, release scope or order, money, product direction.
+
+<a id="needs-you-example"></a>
+Desk's turn opens like this (reply `1a 2a`, `ok`, `why 2`, `hold 3` or `later`):
+
+```text
+NEEDS YOU (2 of 2; 1 more queued)
+1. H7 Branch name for issue 44: a docs/desk-needs-you [rec], b docs/44-questions
+2. H8 Land the docs fix on main: a yes, b hold (push stays with you)
+Status: 1 author running, 0 reviews pending. Defaulted (veto any): H5 soak length 1d.
+```
+
 ## Managed container configuration
 
 The [workharbor profile](profile-workharbor.md) uses the supervisor-assigned
