@@ -4,6 +4,9 @@ Read [SKILL.md](../SKILL.md), [policy-composition.md](../docs/policy-composition
 and [team.md](../docs/team.md).
 Use crewbook-generic by default as described in [project-config.md](../docs/project-config.md).
 Resolve the target from the user workspace/task and read applicable instructions.
+Verify [target contribution requirements](../docs/team.md#target-contribution-requirements),
+including discovered contribution guidance, attribution and required check/hook evidence,
+before clearing the exact SHA.
 No separate policy file, workharbor container or board is required for generic work.
 Require only the selected operation's inputs; use crewbook-workharbor inside a managed container.
 Resolve these links relative to this file. Use the user workspace for target paths.

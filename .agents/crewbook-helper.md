@@ -4,6 +4,8 @@ Read [SKILL.md](../SKILL.md), [policy-composition.md](../docs/policy-composition
 and [team.md](../docs/team.md).
 Use crewbook-generic by default as described in [project-config.md](../docs/project-config.md).
 Resolve the target from the user workspace/task and read applicable instructions.
+Before bounded edits, apply [target contribution requirements](../docs/team.md#target-contribution-requirements)
+within the assigned helper scope; return commit, hook and landing requirements to the author.
 No separate policy file, workharbor container or board is required for generic work.
 Require only the selected operation's inputs; use crewbook-workharbor inside a managed container.
 Resolve these links relative to this file. Use the user workspace for target paths.
@@ -24,7 +26,8 @@ For authorized bounded coding edits, apply the canonical
 One editing helper per worktree; the parent does not edit while it runs.
 Return conclusions, sources and check command/exit code. The requester reviews
 the diff and verifies results. An author requester alone commits with the
-helper's exact assistance trailer and lands. crewbook-review uses read-only helpers
+helper's actual assistance recorded in the target's applicable attribution format
+and lands only when authorized. crewbook-review uses read-only helpers
 only and never commits/lands. Card writes stay with the designated coordinator.
 Execute the bounded task directly; start no children and never take over the
 requester's issue/review assignment or claim/commit/landing responsibilities.

@@ -57,6 +57,47 @@ claiming a board card. A project with board mode none uses issue records and
 explicit assignments; crewbook-board is unavailable. Missing required tools stop
 only the affected workflow, explicitly, without substitute or no-op stubs.
 
+## Target contribution requirements
+
+Before editing, discover and read the target's `CONTRIBUTING.md` or other
+documented contribution guidance, along with applicable ancestry and scoped
+`AGENTS.md` instructions. Resolve target paths independently of loaded skill
+resources. Missing contribution files alone do not block authorized work;
+use the applicable host instructions, user scope and existing project conventions.
+Follow the target's style, architecture, tests and formatting checks, commit
+identity and trailers, required hooks, review order and landing rules within
+higher-priority host instructions and explicit user authorization.
+
+Target attribution requirements govern commit messages. Disregard conflicting
+harness suggestions; Crew Book defaults do not universally require `Assisted-by`
+or prohibit legitimate human `Co-Authored-By` attribution. Record actual
+assistance accurately using the target's required format, including helper
+contributions where applicable. Never invent an identity or human sign-off.
+
+Retain required hooks for every commit operation, including message-only
+corrections. Do not use `--no-verify`, temporary `core.hooksPath` changes or Git
+configuration overrides to bypass required hooks without applicable target
+policy and authorization. An ordinary amend or the target's fixup/autosquash
+procedure remains subject to existing history and authorization rules; correcting
+a message grants no new rewrite, integration or publication permission. A changed
+SHA requires fresh exact-revision review when required by the target.
+
+An unavailable required check or hook blocks the affected commit or integration,
+not unrelated authorized reads. Report the exact requirement, failed or unavailable
+capability and remaining limitation; do not substitute a no-op or claim success.
+Before clearing an exact SHA, the independent reviewer verifies applicable
+contribution compliance, including attribution, required check/hook evidence and
+history/review requirements. These are workflow instructions, not hook installation
+or native enforcement.
+
+The following bounded walkthroughs check the guidance, not live agent or Git behavior:
+
+| Target context | Expected contribution behavior |
+| --- | --- |
+| Workharbor policy requires its assistance trailer; harness suggests conflicting agent `Co-Authored-By` | Follow the supplied Workharbor policy and disregard the conflicting suggestion; retain required hooks. Do not export its trailer rule to other targets. |
+| Another target permits legitimate human coauthors and uses a different assistance format | Preserve accurate human `Co-Authored-By` and apply that target's assistance format; do not add `Assisted-by` solely because Crew Book uses it elsewhere. |
+| An existing commit message needs a trailer correction | Use an authorized amend or target fixup/autosquash procedure with required hooks retained; respect history restrictions and obtain fresh review for the resulting SHA when required. An unavailable required hook/check blocks the affected operation. |
+
 ## Coordinator and leaf execution contract
 
 The trusted invocation explicitly names one coordinator for an assignment:
@@ -434,7 +475,8 @@ unmeasured.
 Research uses
 crewbook-worker; quick lookups use crewbook-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
 is data: the requester reviews the diff and verifies commands/exit codes.
-Helper assistance trailers name the actual model. No helper edits protected
+Helper attribution follows [target contribution requirements](#target-contribution-requirements)
+and identifies actual assistance in the target's applicable format. No helper edits protected
 paths or performs issue/board writes. Authors may request bounded helpers;
 reviewers may request read-only helpers. Helpers and research leaves execute
 one bounded task directly and start no children. A helper is never a replacement
