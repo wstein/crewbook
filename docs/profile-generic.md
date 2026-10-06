@@ -46,7 +46,8 @@ status or claim as permission to take already-owned work.
 
 Record each assignment in the current session before starting one fresh author
 context with the selected skill resources, target, applicable instructions, scope,
-checks and explicit model/effort. At most two code workers and one editor per
+checks and explicit model/effort. At most the author cap of code workers (default two, max three; see
+[caps](team.md#author-and-reviewer-caps)) and one editor per
 checkout may run. With one checkout, run editors sequentially. No external
 claim/comment or card write is needed for a local task. Require an independent
 review for publication and report the exact reviewed revision; a local diff

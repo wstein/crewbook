@@ -61,7 +61,8 @@ codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_th
 Keep the single quotes so the shell passes `$crewbook` literally. Eight is the
 recommended **subagent capacity**, excluding desk; it is a ceiling, not a
 request to start eight agents. Crew Book permits up to two authors and two
-independent reviewers within the host's actual capacity. Desk (and a split-mode
+independent reviewers by default (configurable to at most three each, see
+[caps](docs/team.md#author-and-reviewer-caps)) within the host's actual capacity. Desk (and a split-mode
 dispatcher) use `gpt-6.1-sol` with low reasoning effort in Codex.
 
 The requested role mappings are Sonnet → `gpt-6.1-sol`/low,

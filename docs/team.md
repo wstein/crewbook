@@ -259,7 +259,8 @@ new work. Preserve each result separately, validate assignment identity, owned
 scope, checks and exact revision, then reconcile registry, checkout and configured
 cards. Drain existing In review work too. Queue every review-ready author result
 (an immutable commit or a frozen local diff with an identified snapshot) for
-fresh independent scoped review as soon as one of two review slots is free.
+fresh independent scoped review as soon as a review slot is free (default two, up to the
+[configured cap](#author-and-reviewer-caps)).
 A generic unlanded result can receive content review; it cannot acquire a
 landing-dependent In review or Ready to push status. Do not wait for unrelated
 CI, authors or the next design round. A genuine validation dependency names
@@ -367,8 +368,8 @@ Already-routed eligible work
 starts without waiting for that round. Apply current user priority overrides;
 a milestone gate requires actual independent readiness evidence, never a mocked
 foundation. Historical source-worker allocations and one-reviewer limits do
-not override the current ceiling of two authors and two independent reviewers
-within eight child slots, one editor per checkout and isolated disjoint scopes.
+not override the current author and reviewer caps (default two each, see
+[caps](#author-and-reviewer-caps)) within eight child slots, one editor per checkout and isolated disjoint scopes.
 
 The designated coordinator (merged desk or split dispatcher) keeps the coordinating turn active while authorized workers,
 required reviews or actionable handbacks remain outstanding. Consume results,
@@ -602,7 +603,8 @@ one bounded task directly and start no children. A helper is never a replacement
 issue author or independent reviewer, and never inherits claim/commit/landing
 ownership. Only the designated coordinator starts issue/review workers.
 
-At most one editor runs per worktree, and at most two code workers run at once.
+At most one editor runs per worktree, and at most the author cap
+([default two, max three](#author-and-reviewer-caps)) of code workers run at once.
 A second lane worktree needs explicit project approval and disjoint file scopes,
 including generated/dependency/policy files. Parents do not edit during editing
 subagents. Independent read-only lookups may run in parallel.
@@ -623,8 +625,8 @@ leaves capacity for bounded helpers without crowding out coordination/review.
 | Role | Subagent slots |
 | --- | --- |
 | Persistent dispatch (split mode only) | 1 in split, 0 in merged |
-| Authors | Up to 2 |
-| Independent reviewers | Up to 2 |
+| Authors | Up to 2 (max 3 if configured, see below) |
+| Independent reviewers | Up to 2 (max 3 if configured, see below) |
 | Design batch | Up to 1 |
 | Optional bounded helpers | Up to 2 |
 | Recommended capacity | 8 |
@@ -635,8 +637,8 @@ continuations. Start new work in fresh contexts under the lifetime table;
 release only through an available host capability with confirmed outcome. It does
 not fill all slots merely because they exist. Client thread capacity and code
 author limits are separate: eight slots do not authorize extra editors. Keep
-at most two concurrent code authors, one editor per checkout, disjoint editing
-scopes and independent review. Design runs only under its existing scheduling
+at most the author cap of concurrent code authors, one editor per checkout,
+disjoint editing scopes and independent review. Design runs only under its existing scheduling
 and ownership rules. If capacity is lower, sequence work and preserve the
 coordinator/review path rather than duplicate claims or starts.
 
@@ -660,6 +662,32 @@ Agent-tool limit counts running subagents and has bypasses. Neither a list of
 retained handles nor a nesting-depth setting establishes free capacity.
 These client settings remain **unverified** for Crew Book runtime enforcement;
 sequence work according to the actual host's admission result.
+
+### Author and reviewer caps
+
+The default cap is **2** for authors and **2** for independent reviewers. Each
+may be configured up to a maximum of **3**; nothing defaults above 2.
+
+- Raising either cap is consequential: it needs an explicit human answer, is
+  never defaulted, and is logged as an `H<n>` entry in the
+  [decision log](project-config.md#decision-log) through
+  [session configuration](project-config.md#session-configuration). A value
+  above 3 is clamped to 3; a lowered cap is a tightening and never goes below 1. The cap lasts
+  for the session; the entry is evidence, never authorization.
+- A raised cap applies only while the host's actual capacity is verified
+  (observed or read back, never assumed or obtained by releasing live agents).
+  If capacity is lower, sequence work as above.
+- In split mode, dispatch stays at the default 2 unless desk passes the raised
+  cap explicitly in its assignment.
+- One editor per worktree is unchanged and cannot be raised.
+- A third author additionally needs a verified clean IDLE worktree, disjoint
+  file scopes across all running authors (no two on the same package,
+  Makefile area or generated/policy file) and actual capacity for it.
+- Independence is unchanged: every reviewer is fresh and independent of the
+  author, and each item gets its own review of the exact SHA. More reviewers
+  never substitute for that review.
+- Platform, host instructions and `AGENTS.md` still win and may set a lower
+  ceiling.
 
 ## Lifecycle example and walkthrough check
 

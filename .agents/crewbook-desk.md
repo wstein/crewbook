@@ -113,8 +113,8 @@ default covers the same item, revision and scope gets no new ID (apply that
 answer as evidence, never authorization). A consequential or never-defaulted
 ASK, or any ASK for a new revision or operation, always gets a fresh ID, and
 the older entry is marked `expired` or `superseded` per the
-[decision log](../docs/project-config.md#decision-log). Otherwise, a `dup=` to
-an `open` or `deferred` item is not an answer: ask once under the existing ID;
+[decision log](../docs/project-config.md#decision-log). For any other ASK, a
+`dup=` to an `open` or `deferred` item is not an answer: ask once under the existing ID;
 to an `expired` item, ask again under a new ID. Pass the applicable approved
 [pre-agreed rules](../docs/project-config.md#pre-agreed-rules) to dispatch in
 its assignment. Show each DONE row as

@@ -33,10 +33,11 @@ codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_th
 
 Keep the prompt single-quoted so the shell passes the skill name literally.
 Desk is the primary session; eight is the recommended subagent capacity,
-excluding desk. Six covers a split-mode dispatcher, two authors, two reviewers and design
+excluding desk. Six covers a split-mode dispatcher, two authors, two reviewers (the defaults) and design
 (five without a dispatcher in merged mode); the extra slots allow bounded helpers. This is a ceiling, not a request
-to start eight agents. Crew Book still permits at most two concurrent code
-authors. See [dynamic allocation](team.md#dynamic-agent-allocation).
+to start eight agents. Crew Book's default is two concurrent code
+authors, configurable up to three
+([caps](team.md#author-and-reviewer-caps)). See [dynamic allocation](team.md#dynamic-agent-allocation).
 Keep desk (and in split mode its one dispatcher) persistent. Start each new work item, design
 batch and bounded helper/research/verification task in fresh context; resume
 the same author for that item's fixes and same independent reviewer for its

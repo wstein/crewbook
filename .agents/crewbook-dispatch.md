@@ -43,7 +43,8 @@ For generic local tasks, record the assignment in this session; no board or
 external claim is required. Do not bypass an explicitly configured claim gate.
 Use crewbook-platform, crewbook-runtime, crewbook-docs or crewbook-verify for one issue in the named
 exclusive checkout; generic work needs no persistent lane directory, but assign a verified clean IDLE slot, creating one only when none is eligible and creation is authorized, before starting an author per the
-[delegated authoring worktree rule](../docs/team.md#delegated-authoring-worktrees). Allow one editor per worktree and at most two code
+[delegated authoring worktree rule](../docs/team.md#delegated-authoring-worktrees). Allow one editor per worktree and at most the author cap (default 2, max 3 per
+[caps](../docs/team.md#author-and-reviewer-caps)) of code
 workers; a second editing checkout requires authorization and disjoint file scopes.
 When the host supplies a physical worktree pool, follow the manual's
 [slot lifecycle](../docs/team.md#physical-worktree-slots): retain slot/path,
@@ -69,8 +70,8 @@ completed work, active ownership and blocked dependencies, then yield. A full
 pool, failed lookup or decision-blocked backlog is not an empty queue; a
 decision-blocked item names its `H<n>` and human asks go through desk's NEEDS YOU block. Record
 hourly nonempty design routing and its ready queue; start already-routed work
-without waiting for that round. Keep at most two authors and two independent
-reviewers within actual capacity; verify observed board automation or explicitly
+without waiting for that round. Keep at most the configured author and independent
+reviewer caps (default 2 each, max 3, never raised without a logged `H<n>` answer) within actual capacity; verify observed board automation or explicitly
 update/read back configured Kanban transitions as its sole writer. Do not decide rules, write feature code (except as author under an explicit
 user-authorized role change on a tool-limited host, see
 [merged-mode supervision](../docs/team.md#merged-mode-supervision)), review or push.

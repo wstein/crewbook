@@ -246,8 +246,8 @@ unset only, never with a value. Caps are reported with a link to
 
 **`set`** changes one session value and records it as an `H<n>` entry in the
 [decision log](#decision-log). Desk is that log's sole writer and allocates
-the ID, so `set` runs only under desk; in any other session it is refused and
-routed to desk. Without a kept log the entry is shown this session only, and
+the ID, so `set` runs only under desk; in any other session it is refused, and
+that session tells the user to run it under desk (it does not adopt desk). Without a kept log the entry is shown this session only, and
 desk never reuses an ID. `set` creates no other file, changes no registry key
 (the registry grammar is unchanged), edits no `settings.json` or
 `config.toml`, writes no secret or environment value, ships no executable and
@@ -264,10 +264,13 @@ evidence, never authorization.
   only to a supervisor-supplied path; no defaulted `set` moves these shared,
   safety-checked files.
 
-Session configuration can only tighten limits or choose among approved
-options. It cannot raise a cap or relax a rule without the consequential
-answer, and the one-editor-per-worktree limit cannot be raised through it at
-all. Precedence, highest first: platform; then host instructions, `AGENTS.md`
+Without a consequential answer, session configuration can only tighten limits
+or choose among approved options. A cap may be raised only with that answer,
+within the maximum of 3 stated in
+[caps](team.md#author-and-reviewer-caps); no answer relaxes another rule, and
+the one-editor-per-worktree limit cannot be raised through it at all. A
+tightening `set` (for example lowering a cap) is routine, may default and
+is still logged as an `H<n>` entry. Precedence, highest first: platform; then host instructions, `AGENTS.md`
 and user authorization per the host's hierarchy
 ([authority](policy-composition.md#authority-and-prerequisites)); then session
 configuration; then Crew Book defaults. Session configuration sits below all
