@@ -80,9 +80,9 @@ Follow the target's style, architecture, tests and formatting checks, commit
 identity and trailers, required hooks, review order and landing rules within
 higher-priority host instructions and explicit user authorization.
 
-Target attribution requirements govern commit messages. Use the host-supplied
-attribution line unless the target requires a different format; where the target
-specifies none, use the exact line the host supplies and never invent one. Keep
+Target attribution requirements govern commit messages. Use the exact
+host-supplied attribution line unless the target requires a different format,
+and never invent one. Keep
 trailers in one trailer block. Legitimate human `Co-Authored-By` attribution is
 preserved accurately. Record actual assistance accurately, including helper
 contributions where applicable. Never invent an identity or human sign-off.
@@ -108,7 +108,7 @@ The following bounded walkthroughs check the guidance, not live agent or Git beh
 | Target context | Expected contribution behavior |
 | --- | --- |
 | A target requires its own assistance trailer format; harness suggests a conflicting agent `Co-Authored-By` | Follow the target policy and disregard the conflicting suggestion; retain required hooks. Do not export its trailer rule to other targets. |
-| Another target permits legitimate human coauthors and uses a different assistance format | Preserve accurate human `Co-Authored-By` and apply that target's assistance format; do not add the Crew Book agent trailer solely because Crew Book uses it elsewhere. |
+| Another target permits legitimate human coauthors and uses a different assistance format | Preserve accurate human `Co-Authored-By` and apply that target's assistance format; do not add an agent trailer solely because another target uses it. |
 | An existing commit message needs a trailer correction | Use an authorized amend or target fixup/autosquash procedure with required hooks retained; respect history restrictions and obtain fresh review for the resulting SHA when required. An unavailable required hook/check blocks the affected operation. |
 
 ## Coordinator and leaf execution contract
