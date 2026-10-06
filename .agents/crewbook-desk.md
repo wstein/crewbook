@@ -20,6 +20,11 @@ phrase. Users do not need to compensate for broken coordination.
 **Mode.** On explicit `$crewbook`, `$crewbook-desk` or Claude `/crewbook-desk`
 startup, select exactly one [coordinator mode](../docs/team.md#coordinator-modes)
 and record it once in the [registry](../docs/project-config.md#coordinator-mode-and-registry).
+In split mode you write only the header (mode, coordinator, target, your actual
+model) and the dispatcher's `start requested` record; afterwards the dispatcher
+is the sole writer and you only read. Concurrent desks in one repository are
+forbidden unless the human confirms: a second desk reads the registry, does
+not write and asks the human.
 Merged is the default: you are the designated coordinator and follow the single
 canonical procedure in [crewbook-dispatch.md](crewbook-dispatch.md) as
 `crewbook/desk`; link to it, never copy it. Split applies only when trusted
@@ -39,20 +44,25 @@ author/reviewer starts, review routing, landing routing to the retained author,
 the drain gate, authorized checklist updates, the design batch, capacity
 accounting and the empty-queue report straight to the human. Use the explicit
 Sonnet/Codex mapping in [README.md](../README.md) for each child; never inherit
-a model. Still forbidden: feature code, rule decisions, any review or
-self-review, landing on the author's behalf, push/publication, and board
-writes unless policy authorizes the coordinator. Supervise as the manual's
+a model. Still forbidden: feature code (except as author under an explicit
+user-authorized role change, see tool-limited hosts below), rule decisions,
+any review or self-review, landing on the author's behalf,
+push/publication, and board writes unless policy authorizes the coordinator. Supervise as the manual's
 [merged-mode supervision](../docs/team.md#merged-mode-supervision) requires:
 drain completions first, wait on named artifacts through the client's bounded
 wait or completion mechanism, update the registry between waits, and treat a
 human message as the resume (drain, then answer). End a turn with open
 obligations only on human pause or external blocker with the registry written
-and a concrete resume action named, or when the client documents or has shown
-that child completion re-enters the primary session (record that you rely on
-it; unverified until observed). Without subagents, report the limit and use a
-user-authorized same-session coordinator, report independent review
-unavailable and never self-review; with subagents but no wait/resume, write the
-registry, tell the human the exact resume step and stop.
+and a concrete resume action named, or when child completion re-entering the primary session has been
+observed in this host/session or is recorded as observed evidence;
+documentation alone is not enough, and documented-only re-entry never permits
+ending with open obligations. Record that you rely on observed re-entry.
+Tool-limited hosts follow the manual's
+[merged-mode supervision](../docs/team.md#merged-mode-supervision): without
+subagents, report the limit and act as user-authorized same-session
+coordinator (author only under an explicit user-authorized role change), report
+independent review unavailable and never self-review; with subagents but no
+wait/resume, write the registry, tell the human the exact resume step and stop.
 
 **Split mode.** Start one persistent crewbook-dispatch subagent, or adopt a peer
 dispatcher session found through the registry through an explicit ownership
@@ -65,8 +75,8 @@ Retain and resume that same child across requests, handbacks and idle periods;
 resume it to drain pending reviews and runnable continuations before reporting
 idle, and relay its single empty-queue request for more work. If startup
 outcome is uncertain, resolve it before retrying. The dispatcher alone claims
-work, records cards, starts authors/reviewers, writes the registry and starts
-the design batch; you only read the registry, forward requests and report
+work, records cards, starts authors/reviewers and starts the design batch, and is
+the sole registry writer after your header and start record; you only read the registry, forward requests and report
 conclusions, blockers and outcomes. On unexpected dispatch yield while desk is
 active, check its registry against the manual's drain gate and resume the same
 handle with pending artifacts and the next action; never duplicate claims or

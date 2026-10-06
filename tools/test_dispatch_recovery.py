@@ -238,12 +238,45 @@ def start_dispatcher(state, mode):
 def lifecycle_trace(mode):
     """Count starts for desk -> author -> review; merged has no dispatcher."""
     state = fixture()
+    state['tasks'] = {'generic': state['tasks']['generic']}
+    state['threads'] = ['author-thread']  # the one author start by the coordinator
     starters = {'crewbook/desk'}
     if mode == 'split':
         start_dispatcher(state, mode)
         starters.add('crewbook/dispatch')
+    state, _ = replay(state, [dict(id='done', kind='handback', task='generic',
+                                   owner='author', revision='a' * 40)])
+    task = state['tasks']['generic']
     return dict(dispatcher_starts=state.get('dispatcher_starts', 0),
-                author_starts=1, review_starts=1, starters=starters)
+                author_starts=len(state['threads']),
+                review_starts=task.get('review_starts', 0),
+                phase=task['phase'], starters=starters)
+
+
+def board_operations(policy, mode):
+    """A configured but unavailable gate selects split and blocks board writes."""
+    configured = bool(policy.get('board_destination') and policy.get('status_mapping')
+                      and policy.get('authorized_writer'))
+    if not configured:
+        return 'none'
+    return 'available' if policy.get('gate_available', True) else 'blocked'
+
+
+def registry_writer(mode, header_written, actor):
+    """Split: desk writes only the header/start record, then the dispatcher alone."""
+    if mode == 'merged':
+        return 'desk' if actor == 'desk' else None
+    if actor == 'desk':
+        return None if header_written else 'desk'
+    return 'dispatcher' if actor == 'dispatcher' else None
+
+
+def second_desk_action(reg, session):
+    """A second desk reads an active record from another session, never writes."""
+    foreign = [k for k, f in reg['tasks'].items()
+               if f.get('handle_session') != session
+               and f.get('phase') not in ('done', 'blocked')]
+    return ('read_only', 'ask_human') if foreign else ('write', None)
 
 
 def slot_count(mode, authors, reviewers, design, helpers):
@@ -254,13 +287,21 @@ REGISTRY_FIELDS = ('owner', 'handle', 'handle_session', 'phase', 'evidence',
                    'landing_required', 'landing_authorized', 'next_awaited')
 
 
-def registry_dump(state, mode, session, updated):
+FORBIDDEN_FIELDS = ('token', 'password', 'credential', 'secret', 'body',
+                    'transcript', 'env')
+
+
+def registry_dump(state, mode, session, updated, target='target'):
     """Keyed plain text; handles are valid only in their creating session."""
     lines = ['crewbook-registry: 1', 'mode: ' + mode,
              'coordinator: ' + ('crewbook/desk' if mode == 'merged'
                                 else 'crewbook/dispatch'),
-             'updated: ' + updated, '']
+             'target: ' + target, 'updated: ' + updated, '']
     for key, task in state['tasks'].items():
+        for field, value in task.items():
+            if (any(f in field.lower() for f in FORBIDDEN_FIELDS)
+                    or (isinstance(value, str) and value.startswith('ghp_'))):
+                raise ValueError('refusing to serialize ' + field)
         lines.append('## ' + key)
         values = dict(owner=task['owner'], handle=task['thread'],
                       handle_session=session, phase=task['phase'],
@@ -314,7 +355,8 @@ def merged_desk_turn(state, handles, wait_available, completion_reenters=False):
     """Desk as coordinator: never ends with obligations without a registry."""
     action, awaited = parent_continuation(state, handles, wait_available)
     if action == 'handoff':
-        if completion_reenters:
+        # Only observed re-entry counts; documentation alone does not.
+        if completion_reenters == 'observed':
             return ('end_relying_on_reentry', awaited, 'write_registry')
         return ('handoff', awaited, 'write_registry')
     return (action, awaited, None)
@@ -761,6 +803,14 @@ class CoordinatorModes(unittest.TestCase):
         self.assertEqual(select_mode(mapped), 'split')
         # A configured but unavailable gate still selects split.
         self.assertEqual(select_mode(dict(mapped, gate_available=False)), 'split')
+        self.assertEqual(board_operations(dict(mapped, gate_available=False),
+                                          'split'), 'blocked')
+        self.assertEqual(board_operations(mapped, 'split'), 'available')
+        self.assertEqual(board_operations(self.policy(board_mode_none=True),
+                                          'merged'), 'none')
+        # Non-gates never change a gated selection.
+        self.assertEqual(select_mode(dict(mapped, git_remote=True,
+                                          issue_number=True)), 'split')
         self.assertEqual(select_mode(self.policy(external_claim_required=True)),
                          'split')
         # Destination without mapping or authorized writer is not a gate.
@@ -782,7 +832,9 @@ class CoordinatorModes(unittest.TestCase):
     def test_merged_lifecycle_has_zero_dispatcher_starts(self):
         trace = lifecycle_trace('merged')
         self.assertEqual(trace['dispatcher_starts'], 0)
+        # Counts derive from replaying handback/review events, not constants.
         self.assertEqual((trace['author_starts'], trace['review_starts']), (1, 1))
+        self.assertEqual(trace['phase'], 'in_review')
         self.assertEqual(trace['starters'], {'crewbook/desk'})
         self.assertEqual(lifecycle_trace('split')['dispatcher_starts'], 1)
         self.assertEqual(lifecycle_trace('split')['starters'],
@@ -799,12 +851,24 @@ class CoordinatorModes(unittest.TestCase):
         state['tasks']['generic'].update(landing_required=True,
                                          landing_authorized=True)
         text = registry_dump(state, mode='merged', session='s1',
-                             updated='2026-01-01T00:00:00Z')
+                             updated='2026-01-01T00:00:00Z', target='repo')
         self.assertTrue(text.startswith('crewbook-registry: 1\n'))
         self.assertTrue(text.rstrip().splitlines()[-1].startswith('Resume:'))
-        self.assertNotIn('token', text.lower())
+        self.assertIn('target: repo', text)
+        for forbidden in ('token', 'password', 'credential', 'body'):
+            dirty = copy.deepcopy(state)
+            dirty['tasks']['generic'][forbidden] = 'x'
+            with self.assertRaises(ValueError):
+                registry_dump(dirty, mode='merged', session='s1',
+                              updated='2026-01-01T00:00:00Z', target='repo')
+        dirty = copy.deepcopy(state)
+        dirty['tasks']['generic']['evidence'] = 'ghp_' + 'a' * 20
+        with self.assertRaises(ValueError):
+            registry_dump(dirty, mode='merged', session='s1',
+                          updated='2026-01-01T00:00:00Z', target='repo')
         same = registry_load(text, session='s1')
         self.assertEqual(same['mode'], 'merged')
+        self.assertEqual(same['target'], 'repo')
         self.assertEqual(drain_gate(registry_state(same, state))[1],
                          drain_gate(state)[1])
         self.assertEqual(registry_resume(same, 's1'),
@@ -816,6 +880,29 @@ class CoordinatorModes(unittest.TestCase):
                                    ('resolve_owner', 'managed')])
         self.assertFalse(any(a[0] == 'fresh_start' for a in actions))
 
+    def test_split_registry_has_sole_writer_after_start(self):
+        state, _ = replay(fixture(), [])
+        stamp = '2026-01-01T00:00:00Z'
+        # Desk writes the header and the dispatcher start record, then only reads.
+        header = registry_dump(dict(state, tasks={}), 'split', 's1', stamp, 'repo')
+        self.assertEqual(registry_writer('split', header_written=False,
+                                         actor='desk'), 'desk')
+        self.assertEqual(registry_writer('split', header_written=True,
+                                         actor='desk'), None)
+        self.assertEqual(registry_writer('split', header_written=True,
+                                         actor='dispatcher'), 'dispatcher')
+        self.assertEqual(registry_writer('merged', header_written=True,
+                                         actor='desk'), 'desk')
+        self.assertIn('mode: split', header)
+
+    def test_concurrent_second_desk_does_not_write(self):
+        state, _ = replay(fixture(), [])
+        text = registry_dump(state, 'merged', 's1', '2026-01-01T00:00:00Z', 'repo')
+        self.assertEqual(second_desk_action(registry_load(text, 's2'), 's2'),
+                         ('read_only', 'ask_human'))
+        self.assertEqual(second_desk_action(dict(tasks={}, session='s2'), 's2'),
+                         ('write', None))
+
     def test_merged_desk_without_wait_tool_writes_registry_and_hands_off(self):
         state, _ = replay(fixture(), [])
         handles = {'generic': 'author-thread', 'managed': 'other-thread'}
@@ -825,9 +912,12 @@ class CoordinatorModes(unittest.TestCase):
                                                  wait_available=False)
         self.assertEqual((action, side), ('handoff', 'write_registry'))
         self.assertTrue(awaited)
-        # Verified re-entry lets the turn end, recorded as relying on it.
+        # Documented-only re-entry never permits ending with open obligations.
         action, _, side = merged_desk_turn(state, handles, wait_available=False,
-                                           completion_reenters=True)
+                                           completion_reenters='documented')
+        self.assertEqual((action, side), ('handoff', 'write_registry'))
+        action, _, side = merged_desk_turn(state, handles, wait_available=False,
+                                           completion_reenters='observed')
         self.assertEqual((action, side), ('end_relying_on_reentry',
                                           'write_registry'))
         # Safety net is split-only.
