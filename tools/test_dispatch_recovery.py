@@ -203,12 +203,121 @@ def parent_continuation(state, handles, wait_available=True):
     return ('process' if outcome == 'active' else outcome, obligations)
 
 
-def desk_safety_net(state, dispatcher, unexpected_yield, resume_available=True):
+def desk_safety_net(state, dispatcher, unexpected_yield, resume_available=True,
+                    mode='split'):
+    """Desk's dispatcher-resume safety net exists only in split mode."""
+    if mode != 'split':
+        return ('not_applicable', None, [])
     outcome, obligations = drain_gate(state)
     if unexpected_yield and outcome == 'active':
         return ('resume_same' if dispatcher and resume_available else 'handoff',
                 dispatcher, obligations)
     return (outcome, dispatcher, obligations)
+
+
+def select_mode(policy, override=None):
+    """Merged by default; split only for a usable gate configuration."""
+    writer = policy.get('authorized_writer')
+    gate = bool((policy.get('board_destination') and policy.get('status_mapping')
+                 and writer) or policy.get('external_claim_required'))
+    if override == 'separate_dispatcher':
+        return 'split'
+    if override == 'coordinate_yourself':
+        return 'conflict' if gate and writer == 'dispatcher' else 'merged'
+    return 'split' if gate else 'merged'
+
+
+def start_dispatcher(state, mode):
+    if mode != 'split':
+        raise ValueError('dispatcher start is split-only')
+    state.setdefault('dispatcher_starts', 0)
+    state['dispatcher_starts'] += 1
+    return state
+
+
+def lifecycle_trace(mode):
+    """Count starts for desk -> author -> review; merged has no dispatcher."""
+    state = fixture()
+    starters = {'crewbook/desk'}
+    if mode == 'split':
+        start_dispatcher(state, mode)
+        starters.add('crewbook/dispatch')
+    return dict(dispatcher_starts=state.get('dispatcher_starts', 0),
+                author_starts=1, review_starts=1, starters=starters)
+
+
+def slot_count(mode, authors, reviewers, design, helpers):
+    return authors + reviewers + design + helpers + (1 if mode == 'split' else 0)
+
+
+REGISTRY_FIELDS = ('owner', 'handle', 'handle_session', 'phase', 'evidence',
+                   'landing_required', 'landing_authorized', 'next_awaited')
+
+
+def registry_dump(state, mode, session, updated):
+    """Keyed plain text; handles are valid only in their creating session."""
+    lines = ['crewbook-registry: 1', 'mode: ' + mode,
+             'coordinator: ' + ('crewbook/desk' if mode == 'merged'
+                                else 'crewbook/dispatch'),
+             'updated: ' + updated, '']
+    for key, task in state['tasks'].items():
+        lines.append('## ' + key)
+        values = dict(owner=task['owner'], handle=task['thread'],
+                      handle_session=session, phase=task['phase'],
+                      evidence=task.get('evidence') or '',
+                      landing_required=bool(task.get('landing_required')),
+                      landing_authorized=bool(task.get('landing_authorized')),
+                      next_awaited='author_handback' if task['phase'] == 'running'
+                      else task['phase'])
+        lines.extend('{}: {}'.format(f, values[f]) for f in REGISTRY_FIELDS)
+        lines.append('')
+    lines.append('Resume: drain completions, then await named artifacts.')
+    return '\n'.join(lines) + '\n'
+
+
+def registry_load(text, session):
+    reg = dict(tasks={}, session=session)
+    current = None
+    for line in text.splitlines():
+        if line.startswith('## '):
+            current = reg['tasks'].setdefault(line[3:], {})
+        elif ': ' in line and not line.startswith('Resume:'):
+            name, value = line.split(': ', 1)
+            (current if current is not None else reg)[name] = value
+    return reg
+
+
+def registry_state(reg, base):
+    state = copy.deepcopy(base)
+    for key, fields in reg['tasks'].items():
+        task = state['tasks'][key]
+        task['phase'] = fields['phase']
+        task['landing_required'] = fields['landing_required'] == 'True'
+        task['landing_authorized'] = fields['landing_authorized'] == 'True'
+    return state
+
+
+def registry_resume(reg, session):
+    """Stale handles resolve ownership; they never trigger a fresh start."""
+    actions = []
+    for key, fields in reg['tasks'].items():
+        if fields['phase'] in ('done', 'blocked'):
+            continue
+        if fields['handle_session'] == session:
+            actions.append(('await', key, fields['handle']))
+        else:
+            actions.append(('resolve_owner', key))
+    return actions
+
+
+def merged_desk_turn(state, handles, wait_available, completion_reenters=False):
+    """Desk as coordinator: never ends with obligations without a registry."""
+    action, awaited = parent_continuation(state, handles, wait_available)
+    if action == 'handoff':
+        if completion_reenters:
+            return ('end_relying_on_reentry', awaited, 'write_registry')
+        return ('handoff', awaited, 'write_registry')
+    return (action, awaited, None)
 
 
 def user_steering(state, ordered_tasks):
@@ -251,7 +360,7 @@ class RecoveryReplay(unittest.TestCase):
         self.assertFalse(state['tasks']['generic']['landed'])
         self.assertEqual(parent_continuation(state, {'generic': 'author-thread'}),
                          ('await', [('generic', 'author-thread', 'landing_result')]))
-        self.assertEqual(desk_safety_net(state, 'dispatcher', True)[0], 'resume_same')
+        self.assertEqual(desk_safety_net(state, 'dispatcher', True, mode='split')[0], 'resume_same')
         repeated, actions = replay(state, [])
         self.assertEqual(repeated, state)
         self.assertEqual(actions, [])
@@ -544,7 +653,7 @@ class RecoveryReplay(unittest.TestCase):
         self.assertEqual(obligations, [('blocked', 'external approval',
                                        'owner requests approved adapter')])
         self.assertEqual(state['tasks']['blocked']['owner'], 'retained-owner')
-        self.assertEqual(desk_safety_net(state, 'same-dispatch', True)[0], 'blocked')
+        self.assertEqual(desk_safety_net(state, 'same-dispatch', True, mode='split')[0], 'blocked')
         del state['tasks']['blocked']['next_action']
         self.assertEqual(drain_gate(state)[0], 'active')
         state['tasks']['blocked']['phase'] = 'unknown'
@@ -575,7 +684,7 @@ class RecoveryReplay(unittest.TestCase):
     def test_child_after_would_yield_and_desk_resumes_same_handle(self):
         state = fixture()
         dispatcher = 'retained-dispatch'
-        action, handle, obligations = desk_safety_net(state, dispatcher, True)
+        action, handle, obligations = desk_safety_net(state, dispatcher, True, mode='split')
         self.assertEqual((action, handle), ('resume_same', dispatcher))
         self.assertTrue(obligations)
         resumed, actions = replay(state, [self.handback()])
@@ -583,7 +692,7 @@ class RecoveryReplay(unittest.TestCase):
         self.assertEqual(len([a for a in actions if a[0] == 'review']), 1)
         _, repeated = replay(resumed, [self.handback()])
         self.assertEqual(repeated, [])
-        self.assertEqual(desk_safety_net(resumed, dispatcher, True, False)[0],
+        self.assertEqual(desk_safety_net(resumed, dispatcher, True, False, 'split')[0],
                          'handoff')
         self.assertEqual(state['tasks']['generic']['phase'], 'running')
 
@@ -633,6 +742,97 @@ class RecoveryReplay(unittest.TestCase):
         self.assertEqual(actions, [('request_work',)])
         _, actions = replay(result, [])
         self.assertEqual(actions, [])
+
+class CoordinatorModes(unittest.TestCase):
+    """Synthetic model of merged/split mode selection and registry handoff."""
+
+    def policy(self, **gate):
+        return dict(gate)
+
+    def test_mode_selection_gates(self):
+        self.assertEqual(select_mode(self.policy()), 'merged')
+        # Not gates: remote, issue number, existing forge/project, board none,
+        # authorization text naming no destination.
+        for ignored in ('git_remote', 'issue_number', 'forge_exists',
+                        'board_mode_none', 'authorization_names_no_destination'):
+            self.assertEqual(select_mode(self.policy(**{ignored: True})), 'merged')
+        mapped = self.policy(board_destination=True, status_mapping=True,
+                             authorized_writer='dispatcher')
+        self.assertEqual(select_mode(mapped), 'split')
+        # A configured but unavailable gate still selects split.
+        self.assertEqual(select_mode(dict(mapped, gate_available=False)), 'split')
+        self.assertEqual(select_mode(self.policy(external_claim_required=True)),
+                         'split')
+        # Destination without mapping or authorized writer is not a gate.
+        self.assertEqual(select_mode(self.policy(board_destination=True)), 'merged')
+
+    def test_user_override_both_ways(self):
+        mapped = self.policy(board_destination=True, status_mapping=True,
+                             authorized_writer='dispatcher')
+        self.assertEqual(select_mode(self.policy(), override='separate_dispatcher'),
+                         'split')
+        self.assertEqual(select_mode(self.policy(), override='coordinate_yourself'),
+                         'merged')
+        self.assertEqual(select_mode(dict(mapped, authorized_writer='coordinator'),
+                                     override='coordinate_yourself'), 'merged')
+        # Policy's authorized card writer is specifically the dispatcher.
+        self.assertEqual(select_mode(mapped, override='coordinate_yourself'),
+                         'conflict')
+
+    def test_merged_lifecycle_has_zero_dispatcher_starts(self):
+        trace = lifecycle_trace('merged')
+        self.assertEqual(trace['dispatcher_starts'], 0)
+        self.assertEqual((trace['author_starts'], trace['review_starts']), (1, 1))
+        self.assertEqual(trace['starters'], {'crewbook/desk'})
+        self.assertEqual(lifecycle_trace('split')['dispatcher_starts'], 1)
+        self.assertEqual(lifecycle_trace('split')['starters'],
+                         {'crewbook/desk', 'crewbook/dispatch'})
+        with self.assertRaises(ValueError):
+            start_dispatcher(fixture(), 'merged')
+        self.assertEqual(slot_count('merged', authors=2, reviewers=2, design=1,
+                                    helpers=2), 7)
+        self.assertEqual(slot_count('split', authors=2, reviewers=2, design=1,
+                                    helpers=2), 8)
+
+    def test_registry_round_trip_and_stale_handles(self):
+        state, _ = replay(fixture(), [])
+        state['tasks']['generic'].update(landing_required=True,
+                                         landing_authorized=True)
+        text = registry_dump(state, mode='merged', session='s1',
+                             updated='2026-01-01T00:00:00Z')
+        self.assertTrue(text.startswith('crewbook-registry: 1\n'))
+        self.assertTrue(text.rstrip().splitlines()[-1].startswith('Resume:'))
+        self.assertNotIn('token', text.lower())
+        same = registry_load(text, session='s1')
+        self.assertEqual(same['mode'], 'merged')
+        self.assertEqual(drain_gate(registry_state(same, state))[1],
+                         drain_gate(state)[1])
+        self.assertEqual(registry_resume(same, 's1'),
+                         [('await', 'generic', 'author-thread'),
+                          ('await', 'managed', 'other-thread')])
+        # A fresh session never reuses handles; it resolves ownership first.
+        actions = registry_resume(registry_load(text, session='s2'), 's2')
+        self.assertEqual(actions, [('resolve_owner', 'generic'),
+                                   ('resolve_owner', 'managed')])
+        self.assertFalse(any(a[0] == 'fresh_start' for a in actions))
+
+    def test_merged_desk_without_wait_tool_writes_registry_and_hands_off(self):
+        state, _ = replay(fixture(), [])
+        handles = {'generic': 'author-thread', 'managed': 'other-thread'}
+        action, awaited, side = merged_desk_turn(state, handles, wait_available=True)
+        self.assertEqual((action, side), ('await', None))
+        action, awaited, side = merged_desk_turn(state, handles,
+                                                 wait_available=False)
+        self.assertEqual((action, side), ('handoff', 'write_registry'))
+        self.assertTrue(awaited)
+        # Verified re-entry lets the turn end, recorded as relying on it.
+        action, _, side = merged_desk_turn(state, handles, wait_available=False,
+                                           completion_reenters=True)
+        self.assertEqual((action, side), ('end_relying_on_reentry',
+                                          'write_registry'))
+        # Safety net is split-only.
+        self.assertEqual(desk_safety_net(state, 'd', True, mode='merged')[0],
+                         'not_applicable')
 
 
 if __name__ == '__main__':

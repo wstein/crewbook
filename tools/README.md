@@ -71,6 +71,11 @@ once-per-transition empty requests. Explicit required/authorized landing replays
 retain the obligation after clean exact review without a seeded integration queue,
 route the same author once, await validated owner/revision/ref/success evidence,
 reject stale or uncertain results, and preserve content-review-only completion.
+Coordinator-mode replays cover mode selection (a configured or unavailable
+gate selects split, none selects merged, user override both ways), merged
+lifecycle counts with zero dispatcher starts, keyed registry round trips with
+stale-handle ownership resolution, and a merged desk without a wait tool handing
+off; the desk dispatcher-resume safety net is split-only in the model.
 These synthetic cases do not establish native landing or parent supervision.
 They are a maintenance reference model,
 not runtime enforcement or tests that an agent follows prompt text. Timing and
