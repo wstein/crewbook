@@ -19,8 +19,8 @@ profile adopts its matching role identity, including `crewbook/platform`,
 
 | Role | Responsibility | Boundary |
 | --- | --- | --- |
-| [crewbook-desk](../.agents/crewbook-desk.md) | Human contact; start/reuse one persistent dispatcher and route requests | No duplicate claims/worker starts, code or rule decisions |
-| [crewbook-dispatch](../.agents/crewbook-dispatch.md) | Coordinate ranked work, own claims/cards and start pinned workers/reviews | No rules, code or self-review |
+| [crewbook-desk](../.agents/crewbook-desk.md) | Human contact and, by default, the designated coordinator (merged mode); in split mode starts or adopts one persistent dispatcher and routes requests | No code, rule decisions, review or landing; in split mode no duplicate claims/worker starts |
+| [crewbook-dispatch](../.agents/crewbook-dispatch.md) | The one canonical coordinator procedure; run by desk as `crewbook/desk` in merged mode, or by a persistent dispatcher in split mode or direct invocation | No rules, code or self-review |
 | [crewbook-design](../.agents/crewbook-design.md) | Configured decisions, rules, threat model and priority | One owner; consequential decisions go to human |
 | [crewbook-code](../.agents/crewbook-code.md) | Implementation in configured crewbook-platform/crewbook-runtime areas | No owned-rule edits |
 | [crewbook-docs](../.agents/crewbook-docs.md) | User-facing documentation | Rules remain with design owner |
@@ -57,7 +57,9 @@ switch branches in a shared checkout. Hook installation is
 a host-project procedure, not a package operation.
 
 The invoking session is the human contact and designated crewbook-dispatch when
-the user starts dispatch. A separate crewbook-desk session is optional. Follow
+the user starts dispatch directly. A separate crewbook-desk session is optional;
+a desk session is itself the designated coordinator unless
+[split mode](#coordinator-modes) applies. Follow
 configured priorities and ownership, claim before starting, skip closed or
 already-owned work. An assignment limited to local edits does not authorize
 claiming a board card. A project with board mode none uses issue records and
@@ -108,13 +110,14 @@ The following bounded walkthroughs check the guidance, not live agent or Git beh
 ## Coordinator and leaf execution contract
 
 The trusted invocation explicitly names one coordinator for an assignment:
-crewbook-dispatch, or a designated session coordinator using its routing procedure.
-Explicit `$crewbook`, `$crewbook-desk` or Claude `/crewbook-desk` adopts desk and
-automatically starts or reuses one persistent crewbook-dispatch
-subagent with an explicit model/effort and recorded handle. Desk routes to that
-owner and resumes it for follow-up work; it starts issue workers only when
-explicitly replacing dispatch as session coordinator. Never run both for the same
-assignment. Merely loading crewbook-code, crewbook-docs, crewbook-verify, crewbook-design or crewbook-review
+crewbook-dispatch, or a designated session coordinator using its procedure.
+Explicit `$crewbook`, `$crewbook-desk` or Claude `/crewbook-desk` adopts desk,
+which is the designated coordinator by default (merged mode) and follows the
+single canonical procedure in [crewbook-dispatch](../.agents/crewbook-dispatch.md)
+as `crewbook/desk`. Only in split mode does desk start or adopt one persistent
+crewbook-dispatch subagent with an explicit model/effort and recorded handle,
+route to that owner and resume it for follow-up work. Never run both
+coordinators for the same assignment; see [coordinator modes](#coordinator-modes). Merely loading crewbook-code, crewbook-docs, crewbook-verify, crewbook-design or crewbook-review
 does not designate a coordinator. Their public profiles and direct commands
 execute as leaves; already-started authors/reviewers perform their assignment
 directly and never delegate that same issue/review again. A directly assigned
@@ -168,23 +171,63 @@ require reviewed fast-forwards; authorized non-linear targets require checks
 and independent review of the final integration/conflict-resolution result.
 Topic approval alone does not clear a merge result.
 
-## Persistent desk and dispatch
+## Coordinator modes
 
 Start desk once as the human contact with explicit `$crewbook` or the
-dedicated `$crewbook-desk` skill in Codex; Claude uses `/crewbook-desk`. It starts a pinned dispatcher once and
-retains its handle. The dispatcher keeps separate repository assignments and
-starts bounded authors/reviewers in fresh contexts. Desk routes user requests
-and handbacks through that same dispatcher, resuming it when idle. An empty
-queue yields without GitHub polling. The client supplies subagent/resume tools;
-these prompts cannot create a background daemon or survive a parent ending.
-If those tools are unavailable, report the limit. Restart only after old
-ownership is resolved, with a concise handoff instead of overlapping starts.
+dedicated `$crewbook-desk` skill in Codex; Claude uses `/crewbook-desk`. Desk
+selects exactly one mode and records it once at startup in the
+[registry](project-config.md#coordinator-mode-and-registry). Switching
+mid-session needs the existing explicit ownership handoff. The client supplies
+subagent/resume/wait tools; these prompts cannot create a background daemon or
+survive a parent ending.
 
-A lifecycle trace is: desk start → dispatcher start → author start → author
-handback → reviewer start → review handback → desk report. A later request
-resumes the same dispatcher. Count one dispatcher start; desk creates no
-second issue claim or author/reviewer start. Applicable host permissions and
-publication gates remain in force throughout.
+**Merged mode (default).** Desk is the designated coordinator and follows
+[crewbook-dispatch](../.agents/crewbook-dispatch.md) as `crewbook/desk`; no
+dispatcher is started. Desk owns the registry, session assignments and claims,
+author/reviewer starts, review routing, landing routing to the retained author,
+the drain gate, authorized checklist updates, the design batch, capacity
+accounting and the empty-queue report straight to the human. Desk still writes
+no feature code, makes no rule decision, performs no review or self-review,
+never lands on the author's behalf, never pushes or publishes, and writes board
+cards only when policy authorizes the coordinator.
+
+**Split mode.** Desk starts or adopts one persistent dispatcher (a peer
+dispatcher session found through the registry may be adopted instead of
+auto-starting a subagent), retains its handle and routes requests and handbacks
+through it, resuming it when idle. The dispatcher is the coordinator and
+registry writer; desk only reads the registry and reports to the human.
+
+Split mode applies only when trusted project policy or supervisor
+configuration (a) names a board destination with a status mapping and an
+authorized writer/adapter, or (b) requires an external claim procedure before a
+worker starts. A gate that is configured but unavailable still selects split;
+board operations then block as stated above. These are **not** gates: a Git
+remote, an issue number in the request, a forge or project that merely exists,
+board mode none, or authorization text naming no destination. The user may
+override both ways: "use a separate dispatcher" selects split; "coordinate
+yourself" selects merged, unless policy's authorized card writer is
+specifically the dispatcher, in which case desk reports the conflict instead.
+If subagents or resume are missing, report the limit and use a user-authorized
+same-session coordinator rather than pretending a dispatcher started.
+Restart or replace an owner only after old ownership is resolved, with a
+concise handoff instead of overlapping starts.
+
+Only the designated coordinator (merged desk or split dispatcher) starts the
+pinned design batch; in split mode desk never starts it; a human-opened design
+session owns the role when open.
+
+Merged trace: desk start → author start → author handback → reviewer start →
+review handback → desk report, with zero dispatcher starts. Split trace: desk
+start → dispatcher start → author start → author handback → reviewer start →
+review handback → desk report; a later request resumes the same dispatcher and
+counts one dispatcher start. In either mode desk creates no second claim or
+author/reviewer start. Applicable host permissions and publication gates remain
+in force throughout.
+
+Identity: merged mode keeps `crewbook/desk`; `crewbook/dispatch` is used only
+for a split dispatcher or a direct `/crewbook-dispatch` invocation. The
+coordinator writes no commits, so commit trailers are unaffected; review notes
+use the reviewer's project-configurable identity.
 
 ## Dispatch supervision and recovery
 
@@ -200,7 +243,9 @@ CI, authors or the next design round. A genuine validation dependency names
 its missing artifact and holds only the dependent operation. Record scoped
 content review separately from final integration validation.
 
-Keep a compact registry per repository/task: coordinator, issue/local task,
+Keep a compact registry per repository/task, durably in the
+[coordinator registry file](project-config.md#coordinator-mode-and-registry)
+when writable: mode, coordinator, issue/local task,
 role, agent/thread handle, physical slot/path, branch, slot owner/state, base
 and result revision, allowed files (including inventory),
 actual model/effort and authorized substitutions, phase, exact revision/snapshot,
@@ -242,7 +287,7 @@ Honor explicit human model substitutions; a legacy Opus/Sonnet label or tool
 branding cannot override the actual approved model/effort. Missing independent
 review and real findings still block readiness.
 
-For an explicitly configured Kanban, dispatch alone maintains cards on confirmed
+For an explicitly configured Kanban, the designated coordinator alone maintains cards on confirmed
 worker/review transitions. Discover existing item, field and status mappings,
 verify whether configured automation actually produced the required result,
 and otherwise perform the explicit authorized update and read back its result.
@@ -297,7 +342,7 @@ foundation. Historical source-worker allocations and one-reviewer limits do
 not override the current ceiling of two authors and two independent reviewers
 within eight child slots, one editor per checkout and isolated disjoint scopes.
 
-Desk and dispatch keep the coordinating turn active while authorized workers,
+The designated coordinator (merged desk or split dispatcher) keeps the coordinating turn active while authorized workers,
 required reviews or actionable handbacks remain outstanding. Consume results,
 route findings, resume existing handles and await the next named artifact with
 supported bounded tools. Do not report idle or end merely because a child is
@@ -306,8 +351,9 @@ End only when the queue is resolved, the human explicitly pauses, a concrete
 external blocker prevents continuation, or ownership is explicitly handed off
 with retained handles and the next resume action. If wait/resume tools are
 unavailable, report that concrete limit and hand off; never imply background
-supervision. Desk awaits dispatcher handbacks through the existing handle;
-dispatch awaits its owned worker/reviewer artifacts. This lifecycle rule applies
+supervision. In split mode desk awaits dispatcher handbacks through the existing
+handle and dispatch awaits its owned worker/reviewer artifacts; in merged mode
+desk awaits those artifacts directly. This lifecycle rule applies
 to recovery under [tool preflight](tool-preflight.md), without a second scheduler.
 
 After draining completions/reviews and selecting eligible continuations, wait
@@ -322,6 +368,23 @@ handed off; a concrete external dependency or human pause also permits stopping.
 exact evidence, design timing and the next runnable action in a resume note,
 and notify the existing desk. No daemon, forge-triggered runner, live inference
 or unattended timer is supplied or authorized by this procedure.
+
+### Merged-mode supervision
+
+When desk is the coordinator, each resume drains all completions first, then
+waits on named artifacts through the client's supported bounded wait or
+completion mechanism, with no forge polling and no busy loop, and updates the
+registry between waits. A human message is the resume: drain first, then answer.
+Desk may end a turn with open obligations only on a human pause or an external
+blocker (registry written, concrete resume action named), or when the client
+documents or has shown that child completion re-enters the primary session;
+record that the turn relies on it, which stays unverified until observed. Never
+imply a background scheduler.
+
+Tool-limited hosts: with no subagents, use a user-authorized same-session
+coordinator or author, report independent review unavailable and never
+self-review. With subagents but no wait or resume capability, write the
+registry, tell the human the exact resume step and stop.
 
 ### Completion gate and desk safety net
 
@@ -365,7 +428,7 @@ use supported bounded waits for named artifacts and repeat while authorized.
 Incorporate user steering into the registry and ready queue without losing
 existing claims, required reviews or the same dispatcher handle.
 
-While desk remains active, an unexpected dispatcher yield triggers a check of
+In split mode only, while desk remains active, an unexpected dispatcher yield triggers a check of
 its continuation registry and available handbacks. If the drain gate fails,
 desk resumes that same dispatcher with the recorded next action and evidence;
 it does not create replacement claims/authors/reviewers. If ownership, handle or
@@ -480,7 +543,7 @@ prior transcript. Context reuse follows assignment identity:
 
 | Role | Context lifetime |
 | --- | --- |
-| Desk and its one dispatcher | Persistent across requests; resume the same dispatcher handle |
+| Desk (merged coordinator) or desk and its one split dispatcher | Persistent across requests; in split mode resume the same dispatcher handle |
 | Design | Fresh context for each decision batch; save decisions and a resume note before ending |
 | Author | Fresh context for each new work item; reuse the same author for that item's fixes and continuations |
 | Independent reviewer | Fresh context for each new work item, independent of its author/design decisions; reuse the same reviewer for corrections to that item's findings, checking each exact new revision |
@@ -513,27 +576,28 @@ including generated/dependency/policy files. Parents do not edit during editing
 subagents. Independent read-only lookups may run in parallel.
 
 Design runs in short batches, writes decisions and a resume note, then ends.
-Only crewbook-dispatch starts the pinned design subagent, at most once an hour unless
-a highest-priority issue is blocked; a human design session owns the role when
-already open. Do not hand running agents to a new session or ask the human to
+Only the designated coordinator (merged desk or split dispatcher) starts the pinned
+design subagent, at most once an hour unless a highest-priority issue is blocked;
+in split mode desk never starts it, and a human-opened design session owns the
+role when open. Do not hand running agents to a new session or ask the human to
 clear context. An idle lane reports an empty queue once and waits.
 
 ## Dynamic agent allocation
 
 Recommend **eight subagent slots** for Codex. Desk is the primary session and
-is excluded from this count. Six supports the normal role allocation; eight
+is excluded from this count. The dispatch slot exists only in split mode. Six supports the normal role allocation; eight
 leaves capacity for bounded helpers without crowding out coordination/review.
 
 | Role | Subagent slots |
 | --- | --- |
-| Persistent dispatch | 1 |
+| Persistent dispatch (split mode only) | 1 in split, 0 in merged |
 | Authors | Up to 2 |
 | Independent reviewers | Up to 2 |
 | Design batch | Up to 1 |
 | Optional bounded helpers | Up to 2 |
 | Recommended capacity | 8 |
 
-Dispatch allocates agents only for eligible work, retains its own handle and
+The coordinator allocates agents only for eligible work, retains its own handle (split) and
 preserves completed workers' handbacks and handles for same-assignment
 continuations. Start new work in fresh contexts under the lifetime table;
 release only through an available host capability with confirmed outcome. It does
@@ -551,7 +615,7 @@ codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_th
 ```
 
 The single quotes preserve the literal skill invocation. Desk uses Sol/low;
-it starts or resumes dispatch with the same explicit model/effort. Authors,
+in split mode it starts or resumes dispatch with the same explicit model/effort. Authors,
 reviewers, design and helpers retain their role-specific mappings in
 [README.md](../README.md). Generic and managed profiles use the same allocation
 logic, subject to the actual host's capabilities and limits.
@@ -577,7 +641,7 @@ optional and landing/publication remain unavailable unless authorized.
 
 | Event | Actor and action | Issue starts | Review starts |
 | --- | --- | --- | --- |
-| Assignment | C records the sole claim/In progress and starts A | 1 | 0 |
+| Assignment | C records the sole claim/In progress and starts A (merged: C is desk and no dispatcher is started; split: C is the dispatcher, one prior dispatcher start) | 1 | 0 |
 | Implementation | A executes directly; optionally asks crewbook-helper for a named lookup, receives its result and verifies it | 1 | 0 |
 | Candidate | A runs checks and commits; reports immutable SHA S and criteria to C | 1 | 0 |
 | Review assignment | C starts R in separate context on S; records only a target-permitted review status | 1 | 1 |
@@ -586,7 +650,7 @@ optional and landing/publication remain unavailable unless authorized.
 | Handoff | C records Ready to push only after clean exact review and confirmed required integration/checks; human owns push | 1 | 1 |
 
 Walk through actions, not repeated wording: count only C's two worker-start
-events; neither following A's role/profile/command nor following R's
+events (zero dispatcher starts in merged mode; reject a dispatcher start there); neither following A's role/profile/command nor following R's
 role/profile/command produces another start. Helper lookup/return changes
 neither count and owns no claim, commit, landing or review approval. Removing
 the helper leaves exactly the same issue/review lifecycle. A resume at either

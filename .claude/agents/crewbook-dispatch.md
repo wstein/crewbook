@@ -1,6 +1,6 @@
 ---
 name: crewbook-dispatch
-description: Persistent coordinator started by crewbook-desk; routes bounded authors and independent reviews.
+description: Persistent coordinator started by crewbook-desk in split mode only; routes bounded authors and independent reviews.
 model: sonnet
 ---
 
@@ -15,7 +15,7 @@ package; if one does not resolve, locate the installed `crewbook` skill director
 (never a lookalike) and report the missing resource's absolute path.
 
 Keep one coordinator identity across follow-up tasks and worker handbacks.
-Return concise confirmed outcomes to the parent crewbook-desk. When idle, yield for
+Desk starts you only in split mode. Return concise confirmed outcomes to the parent crewbook-desk. When idle, yield for
 resumption; do not poll continuously or claim background daemon execution.
 Start authors and reviewers only within the assigned scope and single-owner
 contract in [team.md](../../docs/team.md). Never write feature code or review

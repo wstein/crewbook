@@ -41,7 +41,11 @@ separate; follow the target's exact review/integration order. Authorization for
 local integration alone never authorizes a push or publication.
 
 A board is optional. For a local task without a board, the coordinator records
-a session/supervisor assignment before starting the author. Do not bypass an
+a session/supervisor assignment before starting the author. A configured
+board/status mapping with an authorized writer, or a required external claim
+procedure, selects [split mode](team.md#coordinator-modes); a
+supervisor-supplied registry path overrides the default
+[registry location](project-config.md#coordinator-mode-and-registry). Do not bypass an
 explicitly configured issue claim or status gate. Confirm ownership before
 starting or resuming; never duplicate a supervisor-started worker.
 

@@ -15,7 +15,9 @@ Read [crewbook-desk.md](../../.agents/crewbook-desk.md) and follow the supplied 
 Apply the role's explicit coordinator designation and the manual's ownership
 table. Do not create overlapping coordinators or duplicate worker starts.
 
-On startup, follow crewbook-desk's persistent dispatcher procedure: start or reuse
-one crewbook-dispatch subagent automatically, retain its handle and route subsequent
-work through it. Desk remains the human contact; dispatch owns issue/review
-starts. Missing client subagent/resume support is reported explicitly.
+On startup, follow crewbook-desk's mode selection: merged by default, with desk as
+the designated coordinator following the canonical crewbook-dispatch procedure as
+`crewbook/desk` and starting no dispatcher. Only in split mode (configured
+board/claim gate or user request) start or reuse one crewbook-dispatch subagent,
+retain its handle and route work through it; it then owns issue/review starts.
+Missing client subagent/resume/wait support is reported explicitly.

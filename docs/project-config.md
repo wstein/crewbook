@@ -14,8 +14,9 @@ supply configuration incrementally. Read AGENTS.md when present; its absence
 is not a blocker. No container, launcher, project board, persistent lane layout,
 reference host or full configuration record is required to start dispatch.
 A direct dispatch invocation makes the invoking session coordinator. A desk
-invocation starts/reuses one persistent dispatcher as coordinator while desk
-remains the human contact. Defaults and
+invocation makes desk the coordinator by default (merged mode); only a
+configured board/claim gate, or a user request, selects split mode with one
+persistent dispatcher (see [coordinator mode](#coordinator-mode-and-registry)). Defaults and
 operation-specific inputs are in the [generic profile](profile-generic.md).
 Inspect repository metadata and conventions before asking for facts that can
 be resolved locally. Ask for unresolved destinations or ownership only before
@@ -26,6 +27,46 @@ The applicable project policy may name the review-note identity that
 [crewbook-review](../.agents/crewbook-review.md) reports as `Reviewed by <identity> at <sha>`
 (for example `wh/review`). Without such a name the default is `crewbook/review`;
 the role, independence and evidence requirements do not change.
+
+## Coordinator mode and registry
+
+Desk selects its mode once at startup, using trusted project policy or
+supervisor configuration and any user override, as defined in the
+[team manual](team.md#coordinator-modes). **Merged** is the default; **split**
+applies only when policy or the supervisor names a board destination with a
+status mapping and an authorized writer/adapter, or requires an external claim
+procedure before a worker starts (a configured but unavailable gate still
+selects split). A Git remote, an issue number, an existing forge or project,
+board mode none or authorization text naming no destination are not gates.
+
+Desk records the mode, coordinator identity, target and actual model once in a
+durable registry/handoff file at `<git-common-dir>/crewbook/registry.md`, where
+the directory comes from `git rev-parse --git-common-dir`. Worktrees of one
+repository share it, and Git never commits it. A supervisor-supplied path wins.
+With no Git directory or denied writes the registry is session-only and desk
+says so.
+
+The file is plain, client-neutral keyed Markdown. A versioned header
+(`crewbook-registry: 1`, `mode`, `coordinator`, `target`, UTC `updated`) is
+followed by one keyed block per assignment with the registry fields from the
+[supervision cycle](team.md#dispatch-supervision-and-recovery),
+`landing_required`/`landing_authorized`, `state`, the next awaited artifact and
+the next resume action. Client handles are marked valid only in the session
+that created them. A one-line `Resume:` summary closes the file.
+
+Write ahead of a claim or start (`start requested`) and update on the confirmed
+outcome; an uncertain outcome stays uncertain. Before writing, check that the
+path is absent or a regular non-symlink file and that its parent is not a
+symlink; use owner-only permissions where supported. Never write credentials,
+environment values, tokens, issue or review bodies or transcripts, and never
+post the file; any public excerpt goes through the existing scan and redaction.
+
+A fresh desk reads the file as a handoff record. A record still marked active
+from another session is never adopted silently: desk checks worktrees,
+branches and claims, then asks the human one question. In split mode the
+dispatcher writes and desk only reads. No daemon, timer or cleanup job exists.
+For the Claude desk launch, record the actual model in the registry
+([launch](installation.md#client-capacity-settings)).
 
 ## Managed container configuration
 
@@ -43,7 +84,7 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 | Operation | Required input |
 | --- | --- |
 | Local edit/check | Target, authorized task, applicable instructions and relevant available checks |
-| Dispatch local task | Coordinator, bounded assignment, author, explicit model/effort and, for a delegated author, an assigned dedicated worktree ([rule](team.md#delegated-authoring-worktrees)) |
+| Dispatch local task | Coordinator (merged desk or split dispatcher), bounded assignment, author, explicit model/effort and, for a delegated author, an assigned dedicated worktree ([rule](team.md#delegated-authoring-worktrees)) |
 | Read/write issue | Confirmed repository/issue endpoint, available authorized forge tool; writes within user scope |
 | Board operation | Explicit destination, field/status mapping, authorized adapter and any required approval |
 | Concurrent editing | Assigned separate checkouts and disjoint file scopes |

@@ -40,11 +40,13 @@ To start the coordinated workflow explicitly, enter:
 $crewbook
 ```
 
-This starts **crewbook/desk**: desk stays your point of contact and starts or
-reuses one persistent dispatcher to organize assignments and reviews. Add your
+This starts **crewbook/desk**: desk stays your point of contact and, by default,
+also coordinates assignments and reviews itself (merged mode). Only when your
+project configures a board or claim gate, or you ask for a separate dispatcher,
+desk starts or reuses one persistent dispatcher (split mode). Add your
 task to the same message, or give it next. A bare invocation starts desk; it is
 not a load-only command. Startup requires the client's subagent and resume
-support, and reports any actual tool limits. It does not create a background daemon.
+support, and reports the selected mode and any actual tool limits. It does not create a background daemon.
 
 ## Start Codex with desk
 
@@ -57,8 +59,8 @@ codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_th
 Keep the single quotes so the shell passes `$crewbook` literally. Eight is the
 recommended **subagent capacity**, excluding desk; it is a ceiling, not a
 request to start eight agents. Crew Book permits up to two authors and two
-independent reviewers within the host's actual capacity. Desk and dispatch use
-`gpt-6.1-sol` with low reasoning effort in Codex.
+independent reviewers within the host's actual capacity. Desk (and a split-mode
+dispatcher) use `gpt-6.1-sol` with low reasoning effort in Codex.
 
 The requested role mappings are Sonnet → `gpt-6.1-sol`/low,
 Opus → `gpt-6.1-sol`/medium and Haiku → `gpt-6-luna`/medium.
@@ -70,7 +72,7 @@ These settings and static package checks do not establish native runtime behavio
 ## Clients
 
 - **Codex:** use `$crewbook`; `$crewbook-desk` is an optional separately installed
-  alias. Desk/dispatch delegation has been observed in a Codex session;
+  alias. Desk/dispatch delegation (the former default, now split mode) has been observed in a Codex session;
   installed native startup and managed execution remain unverified.
 - **Claude Code:** `/crewbook-desk` and role wrappers are packaged, but the client
   must register/load them. Native loading and external-mount discovery remain

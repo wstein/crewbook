@@ -20,7 +20,7 @@ Keep one installation under the canonical `crewbook` name.
 Restart Codex or open a new session to refresh discovery. `agents/openai.yaml`
 enables implicit invocation: ordinary repository requests can select Crew Book
 automatically without switching roles. Explicit `$crewbook` starts desk
-and its persistent dispatcher; it is not a load-only command. The host's
+as the coordinator (a persistent dispatcher only in split mode); it is not a load-only command. The host's
 loaded skill uses relative links; no launcher or environment variable is
 necessary. Routine coding, review, docs and verification use existing project
 instructions without full team setup. Explicitly selected roles load immediately; assigned leaves stay leaves.
@@ -34,11 +34,11 @@ codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_th
 
 Keep the prompt single-quoted so the shell passes the skill name literally.
 Desk is the primary session; eight is the recommended subagent capacity,
-excluding desk. Six covers dispatch, two authors, two reviewers and design;
-the extra two slots allow bounded helpers. This is a ceiling, not a request
+excluding desk. Six covers a split-mode dispatcher, two authors, two reviewers and design
+(five without a dispatcher in merged mode); the extra slots allow bounded helpers. This is a ceiling, not a request
 to start eight agents. Crew Book still permits at most two concurrent code
 authors. See [dynamic allocation](team.md#dynamic-agent-allocation).
-Keep desk and its one dispatcher persistent. Start each new work item, design
+Keep desk (and in split mode its one dispatcher) persistent. Start each new work item, design
 batch and bounded helper/research/verification task in fresh context; resume
 the same author for that item's fixes and same independent reviewer for its
 finding corrections on each exact revision. Save compact durable records,
@@ -76,13 +76,20 @@ For Claude Code v2.1.217 or later, after registering the packaged commands and
 profiles, start from the target repository with:
 
 ```sh
-CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=8 CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=3 claude '/crewbook-desk'
+CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=8 CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=2 claude --model sonnet '/crewbook-desk'
 ```
+
+Use depth 3 instead when split mode adds a dispatcher. `--model sonnet` pins the
+desk session to Sonnet; desk records the actual model in its registry. Whether
+command frontmatter can pin a model is **unverified**. The Codex launch above
+keeps `gpt-6.1-sol` with low reasoning effort.
 
 For a persistent shell default, export those same two variables in the shell's
 startup configuration before opening a new client. Keep the packaged explicit
-model pins and tool fields. Depth three accommodates desk → dispatch → author
-→ bounded helper; depth controls nesting, independently of concurrency.
+model pins and tool fields. Per the existing guidance, depth two accommodates merged
+desk → author → bounded helper and depth three split desk → dispatch → author
+→ bounded helper; these depths are not measured. Depth controls nesting,
+independently of concurrency.
 The [Claude concurrency documentation](https://code.claude.com/docs/en/sub-agents#concurrent-subagent-limit)
 describes a positive-integer running Agent-tool limit (default 20). `/subtask`,
 resumes of finished agents and sessions with `ultracode` active bypass that limit;
@@ -183,7 +190,7 @@ Claude Code, Codex and Antigravity (`agy`) should follow the same canonical
 capabilities and authorized target policy. This is the desired behavior
 contract, not a claim that all three clients currently support it:
 
-- Keep desk and its one dispatcher persistent; use fresh contexts for new
+- Keep desk (and in split mode its one dispatcher) persistent; use fresh contexts for new
   work items, design batches and bounded helper/research/verification tasks.
   Continue the same assignment with its author and independent reviewer.
 - Give the designated coordinator sole claim/card and issue/review-start
@@ -249,17 +256,18 @@ establish no native enforcement, paid-run result or managed runtime promise.
 
 Explicit `$crewbook` (Codex) or `/crewbook-desk` (Claude Code) enters
 `crewbook/desk` through the canonical crewbook-desk workflow
-and automatically starts or reuses one pinned crewbook-dispatch
-subagent. Desk stays the human contact and routes later work through the same
-handle; dispatch owns claims and worker/review starts. The dispatch child is
-pinned to Sonnet for Claude and `gpt-6.1-sol` with low reasoning effort for Codex. Idle dispatch yields and
-is resumed by desk. This requires client subagent/resume support and does not
-create a background daemon. See the [team manual](team.md).
+as the designated coordinator (merged mode, default) and starts no dispatcher.
+Only a configured board/claim gate or a user request selects
+[split mode](team.md#coordinator-modes): desk then starts or adopts one pinned
+crewbook-dispatch subagent, routes later work through the same handle, and
+dispatch owns claims and worker/review starts. A split dispatch child is
+pinned to Sonnet for Claude and `gpt-6.1-sol` with low reasoning effort for Codex; idle
+dispatch yields and is resumed by desk. This requires client subagent/resume
+support and does not create a background daemon. See the [team manual](team.md).
 
 Public issue/review profiles and direct role commands execute as leaves, never
-re-delegating their assignment. Only crewbook-dispatch or an explicitly designated
-session coordinator starts those workers; crewbook-desk routes unless designated in
-its place. The manual defines single ownership and a counted lifecycle example.
+re-delegating their assignment. Only the designated coordinator (merged desk, split crewbook-dispatch or an explicitly designated
+session coordinator) starts those workers; in split mode crewbook-desk routes. The manual defines single ownership and a counted lifecycle example.
 
 The [target Git history guidance](git-history.md) resolves linear and
 authorized non-linear integration from target instructions and session choices,

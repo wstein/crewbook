@@ -27,14 +27,16 @@ Never borrow workharbor endpoints, credentials, hooks or lane paths.
 | Landing | Local diff and handoff by default; no automatic commit, merge, push or publication; use project procedures only when authorized |
 | Design | Existing owner/protected paths if defined; otherwise coordinator routes consequential decisions to the user and avoids overlapping ownership |
 | Reference host | None needed for local work; external measurements require an explicitly authorized setup |
-| Lifecycle | Invoking dispatch session is coordinator; named author/reviewer assignments with explicit model/effort follow the team manual |
+| Lifecycle | Invoking dispatch or desk session is coordinator (desk merged by default); named author/reviewer assignments with explicit model/effort follow the team manual |
 | Capabilities | Tools available in the current session; require authentication and permission only for operations that use them |
 
 ## Dispatch without a supervisor
 
 A request to start dispatch designates the current session as coordinator.
-Invoking crewbook-desk instead automatically starts/reuses one persistent dispatch
-subagent; desk is the human contact and that subagent is the coordinator.
+Invoking crewbook-desk instead makes desk the human contact and coordinator
+(merged mode); it starts/reuses one persistent dispatch subagent only in split
+mode, when policy configures a claim/board gate or the user asks for one (see
+[coordinator modes](team.md#coordinator-modes)). A local task needs neither.
 Check current assignments and issue claims using available session/forge evidence;
 do not require a separate desk session. Use the invoking session for human
 communication. Route user tasks directly when no issue queue is configured.

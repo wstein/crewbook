@@ -9,8 +9,8 @@ For a local task, replace “#N” with its description; no issue, board or
 `AGENTS.md` is required. The templates apply to both
 [generic native sessions](profile-generic.md) and
 [managed containers](profile-workharbor.md). Explicit `$crewbook` or `$crewbook-desk`
-in Codex, or `/crewbook-desk` in Claude, starts or reuses dispatch automatically
-when the client supports it. No root variable or separate dispatch start
+in Codex, or `/crewbook-desk` in Claude, starts desk as the coordinator (merged mode) and, only in split mode,
+starts or reuses dispatch when the client supports it. No root variable or separate dispatch start
 is needed; ordinary task requests require no command syntax.
 
 Use the [concise reporting contract](team.md#precise-issues-handovers-and-review-reports)

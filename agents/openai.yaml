@@ -1,6 +1,6 @@
 interface:
   display_name: "Crew Book"
   short_description: "Desk, dispatch, and repository workflows"
-  default_prompt: "Use $crewbook to start desk and its persistent dispatcher."
+  default_prompt: "Use $crewbook to start desk as the coordinator (a persistent dispatcher only in split mode)."
 policy:
   allow_implicit_invocation: true

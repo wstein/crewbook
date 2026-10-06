@@ -1,6 +1,6 @@
 ---
 name: crewbook
-description: Start Crew Book desk and its persistent dispatcher when explicitly invoked; otherwise apply repository coding, review, documentation and verification guidance.
+description: Start Crew Book desk as the coordinator (with a persistent dispatcher only in split mode) when explicitly invoked; otherwise apply repository coding, review, documentation and verification guidance.
 ---
 
 # Crew Book
@@ -14,17 +14,21 @@ local work needs no launcher, named profile, board, or team setup.
 When the user invokes `$crewbook`, adopt crewbook-desk immediately unless they
 explicitly select another Crew Book role or ask only to inspect the skill.
 Read [.agents/crewbook-desk.md](.agents/crewbook-desk.md) and its necessary references,
-then start or reuse its one persistent dispatcher using available subagent
-tools. Pin the dispatch child to Sonnet in Claude, or `gpt-6.1-sol` with
-low reasoning effort in Codex; set these explicitly when starting it. Retain
-the same child handle across requests and resume it when idle. A bare invocation is a desk startup request, not a request to load
+then select its [coordinator mode](docs/team.md#coordinator-modes). By default
+desk is the coordinator (merged mode) and starts no dispatcher. Only when
+project policy or supervisor configuration names a board destination with a
+status mapping and authorized writer, or requires an external claim procedure,
+or the user asks for a separate dispatcher, start or adopt its one persistent
+dispatcher (split mode) using available subagent tools. Pin that dispatch child
+to Sonnet in Claude, or `gpt-6.1-sol` with low reasoning effort in Codex, and
+retain and resume the same child handle. A bare invocation is a desk startup request, not a request to load
 instructions and wait for another activation command. Identify the desk session as
-`crewbook/desk` (the crewbook-desk workflow) and report the dispatcher startup outcome, including actual tool
+`crewbook/desk` (the crewbook-desk workflow) and report the recorded mode and, in split mode, the dispatcher startup outcome, including actual tool
 limits. Do not stop at “loaded”, “ready for your task” or a generic repository
 collaborator identity. Keep desk active across later questions and requests.
 
-If a task accompanies the invocation, route it through desk and the same
-dispatcher. An explicit request for crewbook-code, crewbook-review or another role selects
+If a task accompanies the invocation, route it through desk (and, in split mode, the same
+dispatcher). An explicit request for crewbook-code, crewbook-review or another role selects
 that role directly; already-assigned author/reviewer leaves stay leaves.
 A quoted transcript, mention of the skill or host-supplied skill text alone
 is not a startup request. Implicit selection for ordinary repository work
@@ -87,7 +91,7 @@ These prompts describe configured team workflows, not prerequisites for routine
 work. Only a designated coordinator starts issue workers; assigned leaves execute
 directly. Delegation requires authorization from the user or applicable host
 instructions. Pass links to the selected skill resources and relevant project context to
-any child. Keep desk and its one dispatcher persistent; use fresh contexts for
+any child. Keep desk (and in split mode its one dispatcher) persistent; use fresh contexts for
 new work items, design batches and bounded helper/research/verification tasks.
 Reuse the same author for a work item's fixes and the same independent reviewer
 for corrections to that item's findings on each exact revision. Preserve compact
