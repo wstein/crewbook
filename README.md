@@ -64,9 +64,10 @@ request to start eight agents. Crew Book permits up to two authors and two
 independent reviewers within the host's actual capacity. Desk (and a split-mode
 dispatcher) use `gpt-6.1-sol` with low reasoning effort in Codex.
 
-The requested role mappings from Claude tiers to Codex models are in the
-[client support and model mappings](docs/installation.md#entrypoints-and-support)
-table, with availability limits; see also the
+The requested role mappings are Sonnet → `gpt-6.1-sol`/low,
+Opus → `gpt-6.1-sol`/medium and Haiku → `gpt-6-luna`/medium.
+See [client support and model mappings](docs/installation.md#entrypoints-and-support)
+for the full table and availability limits, and the
 [team manual](docs/team.md#dynamic-agent-allocation) for allocation and context lifetimes.
 These settings and static package checks do not establish native runtime behavior.
 
