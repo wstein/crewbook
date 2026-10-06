@@ -227,8 +227,8 @@ contract, not a claim that all three clients currently support it:
 
 Compatibility requires evidence for the named client and setup. Current Codex
 session observations support only the starts/resumes and ownership outcomes
-actually recorded in [the team evidence](team.md#lifecycle-example-and-walkthrough-check),
-the recorded session observations predate the merged-mode default. Merged mode has no observed trace in any client;
+actually recorded in [the team evidence](team.md#lifecycle-example-and-walkthrough-check).
+The recorded session observations predate the merged-mode default. Merged mode has no observed trace in any client;
 full native discovery and managed compatibility remain untested here. Claude
 native wrapper loading/execution remains untested. Antigravity has no approved
 production entrypoint or role/model/effort binding; its historical measurements

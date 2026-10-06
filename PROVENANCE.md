@@ -107,8 +107,10 @@ The first five post-import commits were rebased to use Werner's verified Git
 author/committer identity. Their file contents and messages were preserved;
 the table names the current local-history IDs. This maintenance rebase is
 separate from the original filter-repo rewrite: the raw import revision,
-selected blobs and extraction commit map were not changed. The 10 later
-commits that a later maintenance rebase re-identified ("remapped") were also rewritten (committer dates around 2026-10-05).
+selected blobs and extraction commit map were not changed. The 10
+commits that a maintenance rebase re-identified ("remapped") were also rewritten;
+this is inferred from committer dates (2026-10-05 07:21-07:22, later than the
+author dates), not independently proven.
 
 The table records transformations observed in local Git history, not a new
 extraction or proof of publication, independent review or live compatibility.
