@@ -62,7 +62,5 @@ Report target checks with their actual execution context and results.
 Package validation does not prove container provisioning, native client loading
 or runtime enforcement. Mark unmeasured managed capabilities unverified.
 
-Resolve history policy from applicable target instructions and explicit
-user/session decisions using [target Git history guidance](git-history.md),
-independently of repository identity or execution profile. Missing or conflicting
-material choices stop integration until resolved; local work may continue.
+History policy resolution and the stop on missing or conflicting choices follow
+[project-config](project-config.md).
