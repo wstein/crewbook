@@ -160,7 +160,7 @@ ownership nor review approval: Ready to push, Done and approvals stay human- or
 review-gated as above, and a coordinator cannot approve. All writes still
 require local policy and authorization.
 
- Board mode none omits card operations; pending board setup
+Board mode none omits card operations; pending board setup
 blocks board operations, not explicitly authorized local edits. Unavailable
 landing yields a local-commit handoff, explicitly unlanded and not ready.
 If fixes change the SHA, invalidate prior readiness; the coordinator routes
@@ -265,9 +265,13 @@ CI, authors or the next design round. A genuine validation dependency names
 its missing artifact and holds only the dependent operation. Record scoped
 content review separately from final integration validation.
 
-Keep a compact registry per repository/task, durably in the
+Keep a compact registry per repository/task. The durable
 [coordinator registry file](project-config.md#coordinator-mode-and-registry)
-when writable: mode, coordinator, issue/local task,
+holds only its header and the task keys listed there; carry the items below that
+have no key (branch, slot/path, base/result revision, allowed files, actual
+model/effort and substitutions, blockers, ready queue, due times) in the
+`evidence` or `next_awaited` values, or keep them session-only or in the
+handoff. The registry covers: mode, coordinator, issue/local task,
 role, agent/thread handle, physical slot/path, branch, slot owner/state, base
 and result revision, allowed files (including inventory),
 actual model/effort and authorized substitutions, phase, exact revision/snapshot,

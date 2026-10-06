@@ -77,7 +77,7 @@ foreign: lines end in LF or CRLF; the header (lines up to the first blank or
 `coordinator`, `target`, `model`, `updated`, each at most once, as `key: value`
 with printable ASCII values (no tabs, no empty value); `## name` task blocks
 hold only those registry field keys, each at most once, with possibly empty
-printable-ASCII values; blocks and the final `Resume:` line are separated by
+printable-ASCII values (an empty value is written `key: ` with the trailing space); blocks and the final `Resume:` line are separated by
 blank lines, and exactly one `Resume:` line with a non-empty printable-ASCII
 value comes last, with nothing after it. For such a damaged file the human's confirmation that the writer session ended
 applies even when the reader is the session it names. In split mode desk writes only the header

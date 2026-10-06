@@ -21,7 +21,7 @@ Apply the [supervision and recovery cycle](../docs/team.md#dispatch-supervision-
 on every resume: drain and preserve all completions, validate exact evidence,
 reconcile ownership/cards, route immediate independent reviews, confirm host
 capacity and select eligible work before waiting. Maintain the compact registry
-defined there, including scope, actual model/effort, phase and next artifact. Resume the existing assignment
+defined there, including phase and next artifact, with actual model/effort recorded in evidence. Resume the existing assignment
 on worker handback or follow-up; do not duplicate starts because a turn ended.
 Keep this dispatcher persistent (in merged mode the desk session keeps the coordinator state). Start fresh contexts for new work items,
 design batches and bounded helper/research/verification tasks; resume the same
