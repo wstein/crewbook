@@ -35,9 +35,9 @@ Preserve user work and respect actual host controls. Follow the
 Keep one editor per checkout and isolate concurrent editing in disjoint scopes,
 including generated files.
 
-For assigned work, the designated dispatcher is authorized to move board cards
+For assigned work, the designated coordinator is authorized to move board cards
 under the [team workflow](docs/team.md#coordinator-and-leaf-execution-contract)
-without asking for approval for each move. The dispatcher remains the sole card
+without asking for approval for each move. The coordinator remains the sole card
 writer and must retain the required ownership, status and review evidence.
 Actual host controls and the user's authorized scope still apply.
 
