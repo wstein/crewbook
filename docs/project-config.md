@@ -69,8 +69,12 @@ from another session is never adopted silently: desk checks worktrees,
 branches and claims, then asks the human one question. A header whose `session`
 differs from the reader's, or that has no `session` line (registries written
 before the marker keep the header `crewbook-registry: 1`), is foreign. There is
-no registry only when the file is absent or blank; any other file without a
-valid header, even task blocks only or unparsable text, is foreign too. For
+no registry only when the file is absent or holds only spaces, tabs and line
+breaks; any other file without a valid header, even task blocks only or
+unparsable text, is foreign too. Header lines are split only on LF or CRLF; any
+other control or line-separator character in the header, or a `crewbook-registry`
+or `session` key not appearing exactly once, makes the header damaged and so
+foreign. For
 such a damaged file the human's confirmation that the writer session ended
 applies even when the reader is the session it names. In split mode desk writes only the header
 and its own `start requested` record, and may update that record's outcome

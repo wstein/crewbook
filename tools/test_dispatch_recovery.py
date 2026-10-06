@@ -1,5 +1,6 @@
 """Offline structured recovery replay, not an agent scheduler or prompt parser."""
 import copy
+import unicodedata
 import unittest
 
 
@@ -276,17 +277,41 @@ def registry_writer(mode, header_written, actor, record='task'):
     return None
 
 
+def registry_header(text):
+    """Header fields, or None when damaged: lines split only on \\n or \\r\\n,
+    any other control or line-separator character is damage, and `crewbook-
+    registry` and `session` must each appear exactly once."""
+    fields = {}
+    seen = {'crewbook-registry': 0, 'session': 0}
+    for line in text.split('\n'):
+        if line.endswith('\r'):
+            line = line[:-1]
+        if line.startswith('## ') or line.startswith('Resume:'):
+            break
+        if any(unicodedata.category(c) in ('Cc', 'Zl', 'Zp') and c != '\t'
+               for c in line):
+            return None
+        if ': ' in line:
+            name, value = line.split(': ', 1)
+            if name in seen:
+                seen[name] += 1
+            fields[name] = value
+    return fields if all(n == 1 for n in seen.values()) else None
+
+
 def second_desk_action(text, session, takeover_confirmed=False):
-    """`text` is the raw registry file (None when absent). Only an absent or
-    blank file is no registry. Otherwise a valid header whose session is the
-    reader's is writable; anything else, including a header from another
-    session, none, or an unparsable file, is foreign: read-only and ask the
-    human. Only the human's confirmation that the previous session ended (a
-    takeover, never mere concurrency) lets the successor rewrite the header."""
-    if text is None or not text.strip():
+    """`text` is the raw registry file (None when absent). Only an absent file or
+    one of only space, tab, CR and LF is no registry. Otherwise a valid,
+    undamaged header with version 1 and the reader's session is writable;
+    anything else, including another session, none, damage or unparsable text,
+    is foreign: read-only and ask the human. Only the human's confirmation that
+    the previous session ended (a takeover, never mere concurrency) lets the
+    successor rewrite the header."""
+    if text is None or not text.strip(' \t\r\n'):
         return ('write', None)
-    reg = registry_load(text)
-    if reg.get('crewbook-registry') == '1' and reg.get('session') == session:
+    header = registry_header(text)
+    if (header is not None and header['crewbook-registry'] == '1'
+            and header['session'] == session):
         return ('write', None)
     if takeover_confirmed:
         return ('write_header', None)
@@ -1003,7 +1028,28 @@ class CoordinatorModes(unittest.TestCase):
                 self.assertEqual(second_desk_action(text, reader,
                                                     takeover_confirmed=True),
                                  ('write_header', None))
-        for text in ('', '  \n\t\n'):
+        # Repeated header keys and odd line separators in the header are damage;
+        # only \n and \r\n split header lines.
+        damaged = ['crewbook-registry: 1\nsession: s1\nsession: s2\n',
+                   'crewbook-registry: 9\ncrewbook-registry: 1\nsession: s2\n',
+                   '\x0b\n', '\x85\n']
+        for sep in ('\x0b', '\r', '\x85', '\u2028', '\u2029', '\x1c'):
+            damaged.append('crewbook-registry: 1\nsession: s1' + sep
+                           + 'session: s2\n')
+            damaged.append('crewbook-registry: 1\nsession: s2\n' + sep + 'x\n')
+            damaged.append('crewbook-registry: 1\nsession: s1\n' + sep + 'x\n')
+        for text in damaged:
+            for reader in ('s1', 's2'):
+                self.assertEqual(second_desk_action(text, reader), read_only,
+                                 repr(text))
+                self.assertEqual(second_desk_action(text, reader,
+                                                    takeover_confirmed=True),
+                                 ('write_header', None), repr(text))
+        # CRLF is a valid line ending.
+        self.assertEqual(second_desk_action(
+            'crewbook-registry: 1\r\nsession: s2\r\n\r\n', 's2'),
+            ('write', None))
+        for text in ('', ' \r\n\t\n'):
             self.assertEqual(second_desk_action(text, 's2'),
                              ('write', None))
         # No registry (absent or empty file): nothing to be foreign to.
