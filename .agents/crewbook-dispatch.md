@@ -31,7 +31,8 @@ handles do not establish capacity; use only supported host release operations
 with confirmed outcomes, and defer fresh starts on confirmed full capacity.
 When idle, report once and yield. In split mode desk resumes the same handle when work
 arrives; never imply autonomous execution after the parent session ends.
-Own the sole claim, all assignment card writes and issue/review starts under
+Own the sole claim, the card writes for work you started or recorded the claim
+for ([card-owner rule](../docs/team.md#card-owner-rule)) and issue/review starts under
 the manual's ownership table; do not duplicate a session coordinator's starts.
 Check available session assignments and issue claims for overlapping ownership.
 A separate crewbook-desk session is optional; the invoking session is the human contact.

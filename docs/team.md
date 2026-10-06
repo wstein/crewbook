@@ -148,9 +148,19 @@ overlapping execution. These are guidance, not a runtime lock or permission gran
 
 A leaf reports claim acknowledgement, completion and criteria through the
 configured issue procedure without creating another ownership claim or moving
-cards. The coordinator alone writes cards for this assignment, including
-review approval on the reviewer's behalf. All writes still require local policy
-and authorization. Board mode none omits card operations; pending board setup
+cards.
+
+<a id="card-owner-rule"></a>
+**Card-owner rule.** The coordinator (dispatch, or desk in merged mode) is the
+sole writer of cards for work it started or recorded the claim for and moves
+them without per-move approval, under a grant the human gives for that dispatch
+session only, never a shared or committed settings allow. Authors and reviewers
+report outcomes to that owner and never write cards. The grant gives neither
+ownership nor review approval: Ready to push, Done and approvals stay human- or
+review-gated as above, and a coordinator cannot approve. All writes still
+require local policy and authorization.
+
+ Board mode none omits card operations; pending board setup
 blocks board operations, not explicitly authorized local edits. Unavailable
 landing yields a local-commit handoff, explicitly unlanded and not ready.
 If fixes change the SHA, invalidate prior readiness; the coordinator routes
@@ -196,8 +206,8 @@ accounting and the empty-queue report straight to the human. Desk still writes
 no feature code (except under the explicit user-authorized role change in
 [merged-mode supervision](#merged-mode-supervision)), makes no rule decision,
 performs no review or self-review, never lands on the author's behalf, never
-pushes or publishes, and writes board cards only when policy authorizes the
-coordinator.
+pushes or publishes, and writes board cards only under the
+[card-owner rule](#card-owner-rule) and when policy authorizes the coordinator.
 
 **Split mode.** Desk starts or adopts one persistent dispatcher (a peer
 dispatcher session found through the registry may be adopted instead of
