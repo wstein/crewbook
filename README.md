@@ -102,6 +102,12 @@ installed outside work repositories. Workharbor production runtime integration
 still awaits a supported binding; the [distribution contract](docs/distribution.md)
 records that boundary. Generic native-session use does not require that integration.
 
+## Contributing
+
+For source changes, issues and pull requests, see the
+[contributor guide](https://github.com/wstein/crewbook/blob/main/CONTRIBUTING.md).
+It links the source checks, review process and private security reporting route.
+
 ## Licence and provenance
 
 This EUPL-1.2 package was imported from

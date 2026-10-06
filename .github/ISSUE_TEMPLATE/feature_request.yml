@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest a focused improvement to Crew Book.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use minimal sanitized examples. Omit credentials, private machine paths and raw sensitive transcripts.
+        For security problems, [report privately](https://github.com/wstein/crewbook/security/advisories/new) instead of opening a public issue.
+  - type: input
+    id: environment
+    attributes:
+      label: Affected client and versions
+      description: Client name/version and Crew Book commit or package version; say if unknown or client-independent.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Who is affected and what are they trying to achieve?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: A concrete example of the desired result and any alternatives considered.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and limitations
+      description: Bounded sanitized examples or public links, relevant constraints and anything unverified. No full transcripts or environment dumps.

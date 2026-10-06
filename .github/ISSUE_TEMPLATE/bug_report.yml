@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a reproducible problem with Crew Book.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use minimal sanitized examples. Omit credentials, private machine paths and raw sensitive transcripts.
+        For security problems, [report privately](https://github.com/wstein/crewbook/security/advisories/new) instead of opening a public issue.
+  - type: input
+    id: environment
+    attributes:
+      label: Affected client and versions
+      description: Client name/version and Crew Book commit or package version; say if unknown.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal steps and relevant setup, with sanitized sample input where useful.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and observed behavior
+      description: Describe what should happen and what actually happens.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and limitations
+      description: Short sanitized excerpts or public links, checks performed, frequency and anything unverified. No full transcripts or environment dumps.
