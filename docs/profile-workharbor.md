@@ -63,4 +63,4 @@ Package validation does not prove container provisioning, native client loading
 or runtime enforcement. Mark unmeasured managed capabilities unverified.
 
 History policy resolution and the stop on missing or conflicting choices follow
-[project-config](project-config.md).
+[project-config](project-config.md#history-policy-resolution).

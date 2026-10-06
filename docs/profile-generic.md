@@ -64,4 +64,4 @@ and continue independent authorized work. Do not turn missing workharbor
 infrastructure into a blocker for generic repository development.
 
 History policy resolution and the stop on missing or conflicting choices follow
-[project-config](project-config.md).
+[project-config](project-config.md#history-policy-resolution).
