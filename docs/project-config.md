@@ -141,10 +141,11 @@ affects: #44 author start
 answer: none
 ```
 
-Expiry needs no timer. An unanswered routine item applies its recommended
-default at the next dependent operation and is marked `defaulted`. A
-consequential item ([rule](team.md#roles-and-boundaries)) has no default and
-blocks only its dependent operation. An item invalidated by a new revision is
+Expiry needs no timer. An unanswered routine item that carries a `[rec]`
+applies its recommended default at the next dependent operation and is marked
+`defaulted`. A routine item without a `[rec]` has no default and, like a
+consequential item ([rule](team.md#roles-and-boundaries)), blocks only its
+dependent operation. An item invalidated by a new revision is
 marked `expired` and asked once more under a new ID; an answered ID is never
 asked again. Standing defaults are a short list of routine classes the human
 approves once: naming, `Refs` target, review scope, soak length, fast-forward
@@ -175,8 +176,9 @@ When one line gives an ID two different answers, all of that ID's tokens are
 ignored and reported; a repeat with the same answer counts once.
 
 <a id="needs-you-example"></a>
-Desk's turn opens like this. Reply with the pasted line (`H7:a`) plus `H8:a` typed by you (the
-consequential item); other valid forms are `H7:?`, `H7:later` and `H5:veto`. The pasted line never answers H8:
+Desk's turn opens like this. Reply with the pasted line (`H7:a`) plus `H8:a`
+typed by you (the consequential item); other valid forms, for example, are
+`H7:?`, `H7:later` and `H5:veto`. The pasted line never answers H8:
 
 ````text
 NEEDS YOU (2 shown; 1 more queued)
@@ -194,9 +196,11 @@ The block ends its item list with one fenced reply line pre-filled with the
 `[rec]` letter (or `y`/`n`) of each routine item shown, never `H<n>:rec`.
 Consequential and never-defaulted items get no token, and neither does a routine
 item without a `[rec]`; one short sentence, placed immediately before the reply
-line, lists them as needing an explicit answer. That sentence stays when the
-reply line is omitted because every item is consequential. With zero items shown
-there is no block and no reply line. The line is a convenience: the human may
+line, lists them as needing an explicit answer. When no shown item gets a token
+(all consequential, all routine without a `[rec]`, or any mix of these), omit
+the reply line and its label but keep the sentence. When every shown item is
+pre-filled, omit the sentence. With zero items shown there is no block and no
+reply line. The line is a convenience: the human may
 edit it, and the ID rules above apply unchanged.
 
 ## Managed container configuration

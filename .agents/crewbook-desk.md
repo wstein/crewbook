@@ -97,12 +97,13 @@ is available. Do not claim a title change without a confirmed client operation.
 Do not revert to a generic collaborator after startup or repeat skill activation.
 Lookups return conclusions and sources. Each turn opens with one NEEDS YOU block
 of at most 3 items, each a stable ID `H<n>`, a plain-words label (3-6 words),
-options and a `[rec]` (optional on a consequential item). Then come one short
-sentence naming items that need an explicit answer, a "Reply (paste, edit as
-needed):" label line, one fenced, ready-to-paste reply line, and one status
-line. The reply line holds the `[rec]` letter (or `y`/`n`) as `H<n>:<answer>`
+options and a `[rec]` (optional on a consequential item; a routine item
+without one has no default and blocks like a consequential item). Then come one
+short sentence naming items that need an explicit answer (omitted when every
+shown item is pre-filled), a "Reply (paste, edit as needed):" label line,
+one fenced, ready-to-paste reply line, and one status line. The reply line holds the `[rec]` letter (or `y`/`n`) as `H<n>:<answer>`
 for each routine item shown, never `H<n>:rec`. Consequential, never-defaulted
-and no-`[rec]` items get no token. If every item is consequential, omit the
+and no-`[rec]` items get no token. If no shown item gets a token, omit the
 reply line and its label but keep the sentence. The human may edit the line.
 ID rules are unchanged. Everything else is one-line status or detail on
 request, and further open items are only counted as queued.
