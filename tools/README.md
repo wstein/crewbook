@@ -84,8 +84,10 @@ stale-handle ownership resolution, and a merged desk without a wait tool handing
 off; the desk dispatcher-resume safety net is split-only in the model. Split
 sole-writer replays check that desk writes the header and its own start record
 (and may update that record's outcome) while the dispatcher alone writes
-everything else, and that a header `session` from another session makes a
-second desk read-only, even after human confirmation.
+everything else, and that a header `session` from another session, or no `session`
+line, makes a second desk read-only even after human confirmation of
+concurrency, and that only a human-confirmed takeover lets a successor rewrite
+the header.
 These synthetic cases do not establish native landing or parent supervision.
 They are a maintenance reference model,
 not runtime enforcement or tests that an agent follows prompt text. Timing and

@@ -276,13 +276,16 @@ def registry_writer(mode, header_written, actor, record='task'):
     return None
 
 
-def second_desk_action(reg, session, confirmed=False):
-    """A header from another session is foreign: a second desk reads and asks,
-    never writes, even after human confirmation."""
-    header = reg.get('session')
-    if header is not None and header != session:
-        return ('read_only', 'ask_human')
-    return ('write', None)
+def second_desk_action(reg, session, takeover_confirmed=False):
+    """A header whose session differs from the reader's, or that has none, is
+    foreign: read-only and ask the human. Only the human's confirmation that the
+    previous session ended (a takeover, never mere concurrency) lets the
+    successor rewrite the header with its own session."""
+    if 'crewbook-registry' not in reg or reg.get('session') == session:
+        return ('write', None)
+    if takeover_confirmed:
+        return ('write_header', None)
+    return ('read_only', 'ask_human')
 
 
 def slot_count(mode, authors, reviewers, design, helpers):
@@ -324,7 +327,7 @@ def registry_dump(state, mode, session, updated, target='target',
     return '\n'.join(lines) + '\n'
 
 
-def registry_load(text, session):
+def registry_load(text):
     reg = dict(tasks={})
     current = None
     for line in text.splitlines():
@@ -875,8 +878,8 @@ class CoordinatorModes(unittest.TestCase):
                              updated='2026-01-01T00:00:00Z', target='repo',
                              model='sonnet')
         self.assertTrue(text.startswith('crewbook-registry: 1\n'))
-        self.assertEqual(registry_load(text, 's1')['model'], 'sonnet')
-        self.assertEqual(registry_load(text, 's2')['session'], 's1')
+        self.assertEqual(registry_load(text)['model'], 'sonnet')
+        self.assertEqual(registry_load(text)['session'], 's1')
         self.assertTrue(text.rstrip().splitlines()[-1].startswith('Resume:'))
         self.assertIn('target: repo', text)
         for forbidden in ('token', 'password', 'credential', 'body'):
@@ -890,7 +893,7 @@ class CoordinatorModes(unittest.TestCase):
         with self.assertRaises(ValueError):
             registry_dump(dirty, mode='merged', session='s1',
                           updated='2026-01-01T00:00:00Z', target='repo')
-        same = registry_load(text, session='s1')
+        same = registry_load(text)
         self.assertEqual(same['mode'], 'merged')
         self.assertEqual(same['target'], 'repo')
         self.assertEqual(drain_gate(registry_state(same, state))[1],
@@ -899,7 +902,7 @@ class CoordinatorModes(unittest.TestCase):
                          [('await', 'generic', 'author-thread'),
                           ('await', 'managed', 'other-thread')])
         # A fresh session never reuses handles; it resolves ownership first.
-        actions = registry_resume(registry_load(text, session='s2'), 's2')
+        actions = registry_resume(registry_load(text), 's2')
         self.assertEqual(actions, [('resolve_owner', 'generic'),
                                    ('resolve_owner', 'managed')])
         self.assertFalse(any(a[0] == 'fresh_start' for a in actions))
@@ -932,24 +935,49 @@ class CoordinatorModes(unittest.TestCase):
         self.assertEqual(registry_writer('split', header_written=True,
                                          actor='dispatcher', record='task'),
                          'dispatcher')
-        model = registry_load(header, 's1')
+        model = registry_load(header)
         self.assertEqual(model['model'], 'target-model')
 
     def test_concurrent_second_desk_does_not_write(self):
         state, _ = replay(fixture(), [])
-        text = registry_dump(state, 'merged', 's1', '2026-01-01T00:00:00Z', 'repo')
-        self.assertEqual(second_desk_action(registry_load(text, 's2'), 's2'),
-                         ('read_only', 'ask_human'))
-        # A header from another session is foreign even with no task blocks,
-        # and stays read-only after human confirmation.
-        header = registry_dump(dict(state, tasks={}), 'merged', 's1',
-                               '2026-01-01T00:00:00Z', 'repo')
-        for confirmed in (False, True):
-            self.assertEqual(second_desk_action(registry_load(header, 's2'),
-                                                's2', confirmed),
-                             ('read_only', 'ask_human'))
-        self.assertEqual(second_desk_action(registry_load(header, 's1'), 's1'),
+        stamp = '2026-01-01T00:00:00Z'
+        active = registry_dump(state, 'merged', 's1', stamp, 'repo')
+        header = registry_dump(dict(state, tasks={}), 'merged', 's1', stamp,
+                               'repo')
+        done = copy.deepcopy(state)
+        for task in done['tasks'].values():
+            task['phase'] = 'done'
+        finished = registry_dump(done, 'merged', 's1', stamp, 'repo')
+        read_only = ('read_only', 'ask_human')
+        # A foreign header is read-only whether active, header-only or finished;
+        # without the human's takeover confirmation nothing grants writes.
+        for text in (active, header, finished):
+            self.assertEqual(second_desk_action(registry_load(text), 's2'),
+                             read_only)
+            self.assertEqual(second_desk_action(registry_load(text), 's2',
+                                                takeover_confirmed=False),
+                             read_only)
+        # Only a human-confirmed takeover (previous session ended) lets a
+        # successor rewrite the header with its own session.
+        for text in (active, header, finished):
+            self.assertEqual(second_desk_action(registry_load(text), 's2',
+                                                takeover_confirmed=True),
+                             ('write_header', None))
+        self.assertEqual(second_desk_action(registry_load(active), 's1'),
                          ('write', None))
+        # A registry without a session line is foreign too (pre-change files).
+        legacy = ''.join(line + '\n' for line in active.splitlines()
+                         if not line.startswith('session: '))
+        legacy_header = ''.join(line + '\n' for line in header.splitlines()
+                                if not line.startswith('session: '))
+        for text in (legacy, legacy_header):
+            reg = registry_load(text)
+            self.assertNotIn('session', reg)
+            self.assertEqual(second_desk_action(reg, 's2'), read_only)
+            self.assertEqual(second_desk_action(reg, 's2',
+                                                takeover_confirmed=True),
+                             ('write_header', None))
+        # No registry header at all: nothing to be foreign to.
         self.assertEqual(second_desk_action(dict(tasks={}), 's2'),
                          ('write', None))
 

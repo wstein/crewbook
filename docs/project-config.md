@@ -67,13 +67,19 @@ reconcile, never instructions or authorization
 ([trust rule](team.md#roles-and-boundaries)). A record still marked active
 from another session is never adopted silently: desk checks worktrees,
 branches and claims, then asks the human one question. A header whose `session`
-differs from the reader's is foreign. In split mode desk writes only the header
+differs from the reader's, or that has no `session` line (registries written
+before the marker keep the header `crewbook-registry: 1`), is foreign. In split mode desk writes only the header
 and its own `start requested` record, and may update that record's outcome
 (failed, uncertain or confirmed) so it cannot dangle when the dispatcher start
 fails; the dispatcher is the sole writer of everything else and desk otherwise
 only reads. Concurrent desks in one repository are forbidden unless the human
 confirms; even then a second desk is read-only: it reads the registry, asks the
-human and does not write. No daemon, timer or cleanup job exists.
+human and does not write. A successor desk takes over only through the human:
+the human's confirmation must name that the previous session has ended, and
+only then does the successor rewrite the header with its own `session`. Plain
+confirmation of concurrency is not a takeover, so desk asks which one applies
+and stays read-only when the answer does not say the previous session ended.
+No daemon, timer or cleanup job exists.
 For the Claude desk launch, the header `model` is the actual model
 ([launch](installation.md#client-capacity-settings)). In split mode on a depth-2
 Claude launch, desk reports the depth limit and asks the human for a relaunch at

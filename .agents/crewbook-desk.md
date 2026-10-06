@@ -20,7 +20,7 @@ phrase. Users do not need to compensate for broken coordination.
 **Mode.** On explicit `$crewbook`, `$crewbook-desk` or Claude `/crewbook-desk`
 startup, select exactly one [coordinator mode](../docs/team.md#coordinator-modes)
 and record it once in the [registry](../docs/project-config.md#coordinator-mode-and-registry).
-Registry header, split-mode writer rule and the read-only second desk are
+Registry header, split-mode writer rule, human-confirmed takeover and the read-only second desk are
 defined there; follow them without restating.
 Merged is the default: you are the designated coordinator and follow the single
 canonical procedure in [crewbook-dispatch.md](crewbook-dispatch.md) as

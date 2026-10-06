@@ -82,7 +82,7 @@ Use depth 3 instead when split mode adds a dispatcher; in split mode on a
 depth-2 launch, desk reports the depth limit and asks the human for a relaunch
 at depth 3 (not measured). `--model sonnet` pins the
 desk session to Sonnet; desk records the actual model in the registry header
-(split-mode writer rule: [registry](project-config.md#coordinator-mode-and-registry)). Whether
+(writer, takeover and second-desk rules: [registry](project-config.md#coordinator-mode-and-registry)). Whether
 command frontmatter can pin a model is **unverified**. The Codex launch above
 keeps `gpt-6.1-sol` with low reasoning effort.
 

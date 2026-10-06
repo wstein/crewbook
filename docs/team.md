@@ -180,7 +180,7 @@ Start desk once as the human contact with explicit `$crewbook` or the
 dedicated `$crewbook-desk` skill in Codex; Claude uses `/crewbook-desk`. Desk
 selects exactly one mode and records it once at startup in the
 [registry](project-config.md#coordinator-mode-and-registry); the registry
-header, split-mode writer rule, concurrent-desk rule and read-only second desk
+header, split-mode writer rule, concurrent-desk and takeover rules and read-only second desk
 are defined there. Switching
 mid-session needs the existing explicit ownership handoff. The client supplies
 subagent/resume/wait tools; these prompts cannot create a background daemon or
