@@ -60,6 +60,7 @@
   ],
   "maintenance": [
     ".git/",
+    ".gitignore",
     ".github/",
     "tools/",
     "AGENTS.md",
