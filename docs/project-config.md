@@ -43,7 +43,7 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 | Operation | Required input |
 | --- | --- |
 | Local edit/check | Target, authorized task, applicable instructions and relevant available checks |
-| Dispatch local task | Coordinator, bounded assignment, author, explicit model/effort and exclusive editing checkout |
+| Dispatch local task | Coordinator, bounded assignment, author, explicit model/effort and, for a delegated author, an assigned dedicated worktree ([rule](team.md#delegated-authoring-worktrees)) |
 | Read/write issue | Confirmed repository/issue endpoint, available authorized forge tool; writes within user scope |
 | Board operation | Explicit destination, field/status mapping, authorized adapter and any required approval |
 | Concurrent editing | Assigned separate checkouts and disjoint file scopes |

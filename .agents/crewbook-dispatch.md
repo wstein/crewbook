@@ -37,7 +37,8 @@ Read and claim a configured issue/card before starting its pinned lane agent.
 For generic local tasks, record the assignment in this session; no board or
 external claim is required. Do not bypass an explicitly configured claim gate.
 Use crewbook-platform, crewbook-runtime, crewbook-docs or crewbook-verify for one issue in the named
-exclusive checkout; generic work needs no persistent lane directory. Allow one editor per worktree and at most two code
+exclusive checkout; generic work needs no persistent lane directory, but assign a verified clean IDLE slot, creating one only when none is eligible and creation is authorized, before starting an author per the
+[delegated authoring worktree rule](../docs/team.md#delegated-authoring-worktrees). Allow one editor per worktree and at most two code
 workers; a second editing checkout requires authorization and disjoint file scopes.
 When the host supplies a physical worktree pool, follow the manual's
 [slot lifecycle](../docs/team.md#physical-worktree-slots): retain slot/path,

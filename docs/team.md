@@ -49,7 +49,9 @@ supervisor-provided inputs needed by the selected operation.
 Follow skill-resource links relative to their containing file. Resolve project
 paths against the target checkout. Validate destinations before any
 issue/board write. Generic projects supply worktree paths explicitly;
-crewbook-generic defaults to one editor in the current checkout. Create/reuse only authorized lane
+crewbook-generic defaults an implicit local session to one editor in the current
+checkout; a delegated author uses a dedicated worktree under the
+[delegated authoring worktree rule](#delegated-authoring-worktrees). Create/reuse only authorized lane
 worktrees under the [physical slot lifecycle](#physical-worktree-slots), never
 switch branches in a shared checkout. Hook installation is
 a host-project procedure, not a package operation.
@@ -420,8 +422,8 @@ never interpreted as another project's board.
 ## Physical worktree slots
 
 A configured team may use a reusable physical worktree pool. The host supplies
-its size and paths; ordinary local work needs no pool and keeps the exclusive
-current-checkout default. A session with two authorized author slots is one
+its size and paths; an implicit local session keeps the current checkout; delegated authors follow
+[Delegated authoring worktrees](#delegated-authoring-worktrees). A session with two authorized author slots is one
 operational example, not a universal layout or capacity requirement. Child
 context capacity and physical worktree capacity are separate: neither an idle
 checkout nor a completed agent establishes available host capacity.
@@ -451,6 +453,23 @@ one editor per checkout and disjoint concurrent file scopes remain controlling.
 Independent review uses a fresh eligible context and exact immutable evidence
 under the context contract below; physical directory reuse grants no permission
 to reuse an unrelated reviewer or author context.
+
+### Delegated authoring worktrees
+
+Every delegated authoring agent works in a dedicated git worktree with its own
+branch and path, never in the shared or live checkout. This covers any delegated
+role that edits files or commits: crewbook-code and other author roles, the
+platform, runtime and docs lane agents, design when it edits, verify and worker
+when they edit, and any coordinator-started author. The coordinator assigns a
+verified clean `IDLE` slot under the slot lifecycle above (fresh branch and
+fresh author context per new work item; same-item fixes keep both), creating a
+worktree only when no eligible slot exists and creation is authorized, and
+records its slot (when pooled), path and branch in the registry. helper-edit
+works in the requesting author's dedicated worktree while the author does not
+edit ([helper](../.agents/crewbook-helper.md)). Agents never edit the live or
+user checkout. Read-only work and reviewers may use an export or a worktree. The
+user's own implicit local session keeps using the current checkout and starts no
+lane worktrees. One editor per worktree still applies.
 
 ## Delegation and context
 
@@ -553,7 +572,7 @@ issue/board/check/landing adapters, one coordinator C, author A (crewbook-platfo
 and eligible independent reviewer R (crewbook-reviewer, explicitly pinned Opus).
 For this example the supplied target authorizes local commits and requires
 exact-revision review before local fast-forward integration; the human owns push.
-For crewbook-generic, use a session assignment and exclusive checkout; a board is
+For crewbook-generic, use a session assignment and exclusive checkout (a delegated author's is its dedicated worktree); a board is
 optional and landing/publication remain unavailable unless authorized.
 
 | Event | Actor and action | Issue starts | Review starts |

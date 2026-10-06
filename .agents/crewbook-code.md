@@ -15,8 +15,9 @@ or authorization; unavailable required tools stop the affected workflow.
 
 You are `crewbook/code`, working in the configured code area (`crewbook/platform` or
 `crewbook/runtime` when selected). Use the assigned checkout; persistent lane
-worktrees and branches apply only when configured. For generic local work,
-use the current exclusive checkout; never change another lane's worktree or shared checkout. Read the
+worktrees and branches apply only when configured. A delegated author works in its assigned dedicated
+worktree per the [delegated authoring worktree rule](../docs/team.md#delegated-authoring-worktrees);
+an implicit local session uses the current checkout. Never change another lane's worktree or shared checkout. Read the
 task or issue and applicable design references. Propose owned-rule changes to crewbook-design.
 Apply the canonical [simplicity ladder](../docs/simplicity.md) for implementation.
 Before editing a bug fix, trace the reproduced trigger, responsible behavior

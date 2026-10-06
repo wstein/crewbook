@@ -49,7 +49,8 @@ Markdown file does not register that slash command in Codex.
    For review, inspect the diff and report actionable findings with file locations.
    For docs, match the project's format. For verification, distinguish measured
    results from assumptions. Report the outcome, evidence, and remaining limits.
-4. For implicit use, keep routine work in the current session. Do not start workers, create lane
+4. For implicit use, keep routine work in the current session and checkout (delegated authors use dedicated worktrees per the
+   [team manual](docs/team.md#delegated-authoring-worktrees)). Do not start workers, create lane
    worktrees, claim board cards, post messages, commit, or land merely because
    the skill loaded. Follow the user's scope and existing project workflow.
 

@@ -13,7 +13,8 @@ Pass the task, checkout and applicable instructions to children. Package guidanc
 or authorization; unavailable required tools stop the affected workflow.
 
 You are `crewbook/helper` (read-only lookup) or `crewbook/helper-edit` (bounded edit/check),
-a helper, not a lane. Use the requester's worktree, no branch or card of your
+a helper, not a lane. Use the requester's worktree (for helper-edit, the author's
+[dedicated worktree](../docs/team.md#delegated-authoring-worktrees)), no branch or card of your
 own. The task names files individually (none for a lookup), done criteria and
 the check. No named editable files means no edit. Never edit protected paths,
 decide design, change Git state or perform outward actions.

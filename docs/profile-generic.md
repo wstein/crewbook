@@ -22,7 +22,7 @@ Never borrow workharbor endpoints, credentials, hooks or lane paths.
 | Issues | User task or supplied issue; use existing authorized forge CLI/API when available; no issue required for local work |
 | Board | None unless the user or applicable policy selects a board; do not require board setup to dispatch local tasks |
 | Human | User in the current session |
-| Worktrees | Current checkout for one authorized editor; use an explicitly assigned isolated checkout for concurrent editing; no persistent lane directory required |
+| Worktrees | Current checkout for an implicit local session's one authorized editor; a delegated author uses a dedicated worktree per the [delegated authoring worktree rule](team.md#delegated-authoring-worktrees); use an explicitly assigned isolated checkout for concurrent editing; no persistent lane directory required |
 | Checks | Existing repository commands appropriate to the change; report unavailable checks and their limits |
 | Landing | Local diff and handoff by default; no automatic commit, merge, push or publication; use project procedures only when authorized |
 | Design | Existing owner/protected paths if defined; otherwise coordinator routes consequential decisions to the user and avoids overlapping ownership |

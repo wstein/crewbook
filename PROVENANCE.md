@@ -100,6 +100,7 @@ These ordinary crewbook commits are distinct from the unmodified raw import:
 | `fbe178f066a579048824cab25f5d4ebc3080d6a8` | Added the dedicated Codex cb-desk skill and invocation metadata with a canonical desk-role link; distinguished optional user installation from Claude slash commands. Superseded: `cb-*` names were later replaced by `crewbook-*` (#37, `404ac06`); row kept as history. |
 | `d330620d93f98374f926f5fdc46d0b6d0df7503b` | Renamed the public skill entrypoint to crewbook and updated invocation/discovery documentation and metadata; kept the canonical cb-desk workflow and optional alias. Superseded: `cb-*` names were later replaced by `crewbook-*` (#37, `404ac06`); row kept as history. |
 | Helper hardening, review-note identity, link preamble | Helper untrusted-data and check-reporting rules; project-policy-configurable review-note identity (default `crewbook/review`); link-assumption sentence in all Claude profiles/commands; Claude install procedure marked UNVERIFIED (native loading and subagent link resolution unmeasured). |
+| Delegated authoring worktrees | Delegated authoring agents work in dedicated worktrees that the coordinator assigns from a clean idle slot (creating one only when none is eligible and authorized) and records; implicit local sessions keep the current checkout. The rule is stated once in the team manual and linked from role, profile and configuration text. |
 
 The first five post-import commits were rebased to use Werner's verified Git
 author/committer identity. Their file contents and messages were preserved;
