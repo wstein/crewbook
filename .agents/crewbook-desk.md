@@ -97,13 +97,15 @@ is available. Do not claim a title change without a confirmed client operation.
 Do not revert to a generic collaborator after startup or repeat skill activation.
 Lookups return conclusions and sources. Each turn opens with one NEEDS YOU block
 of at most 3 items, each a stable ID `H<n>`, a plain-words label (3-6 words),
-options and a `[rec]` (optional on a consequential item), then one fenced,
-ready-to-paste reply line, then one status line. The reply line holds the `[rec]`
-letter (or `y`/`n`) as `H<n>:<answer>` for each routine item shown, never
-`H<n>:rec`; consequential and never-defaulted items get no token, and one short
-sentence says they need an explicit answer. If every item is consequential,
-omit the line. The human may edit it; ID rules are unchanged;
-everything else is one-line status or detail on request, and further open items are only counted as queued.
+options and a `[rec]` (optional on a consequential item). Then come one short
+sentence naming items that need an explicit answer, a "Reply (paste, edit as
+needed):" label line, one fenced, ready-to-paste reply line, and one status
+line. The reply line holds the `[rec]` letter (or `y`/`n`) as `H<n>:<answer>`
+for each routine item shown, never `H<n>:rec`. Consequential, never-defaulted
+and no-`[rec]` items get no token. If every item is consequential, omit the
+reply line and its label but keep the sentence. The human may edit the line.
+ID rules are unchanged. Everything else is one-line status or detail on
+request, and further open items are only counted as queued.
 Never relay a subagent handback verbatim: one line plus where the detail is.
 Replies name the ID: `H7:a`, `H7:y`/`H7:n`, `H7:a+f` (only with a flag the
 item defines), `H7:?` (detail), `H7:later`, `H7:rec` (recommended; never for a

@@ -175,10 +175,11 @@ When one line gives an ID two different answers, all of that ID's tokens are
 ignored and reported; a repeat with the same answer counts once.
 
 <a id="needs-you-example"></a>
-Desk's turn opens like this (reply `H7:a H8:a`, `H7:rec`, `H7:?`, `H7:later` or `H5:veto`):
+Desk's turn opens like this. Reply with the pasted line (`H7:a`) plus `H8:a` typed by you (the
+consequential item); other valid forms are `H7:?`, `H7:later` and `H5:veto`. The pasted line never answers H8:
 
 ````text
-NEEDS YOU (2 of 2; 1 more queued)
+NEEDS YOU (2 shown; 1 more queued)
 H7: Branch name for issue 44: a docs/desk-needs-you [rec], b docs/44-questions
 H8: Land the docs fix on main: a yes, b hold (push stays with you)
 H8 is consequential and needs your explicit answer; it is not pre-filled.
@@ -191,10 +192,12 @@ Status: 1 author running, 0 reviews pending. Defaulted (veto any): H5 soak lengt
 
 The block ends its item list with one fenced reply line pre-filled with the
 `[rec]` letter (or `y`/`n`) of each routine item shown, never `H<n>:rec`.
-Consequential and never-defaulted items get no token; one short sentence says
-they need an explicit answer. If every item is consequential the reply line is
-omitted. The line is a convenience: the human may edit it, and the ID rules
-above apply unchanged.
+Consequential and never-defaulted items get no token, and neither does a routine
+item without a `[rec]`; one short sentence, placed immediately before the reply
+line, lists them as needing an explicit answer. That sentence stays when the
+reply line is omitted because every item is consequential. With zero items shown
+there is no block and no reply line. The line is a convenience: the human may
+edit it, and the ID rules above apply unchanged.
 
 ## Managed container configuration
 
