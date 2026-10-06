@@ -39,7 +39,7 @@ procedure before a worker starts (a configured but unavailable gate still
 selects split). A Git remote, an issue number, an existing forge or project,
 board mode none or authorization text naming no destination are not gates.
 
-Desk records the mode, coordinator identity, target and its actual model once in a
+Desk records the mode, coordinator identity, target, its actual model and its session marker once in a
 durable registry/handoff file at `<git-common-dir>/crewbook/registry.md`, where
 the directory comes from `git rev-parse --git-common-dir`. Worktrees of one
 repository share it, and Git never commits it. A supervisor-supplied path wins.

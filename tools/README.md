@@ -82,9 +82,10 @@ gate selects split, none selects merged, user override both ways), merged
 lifecycle counts with zero dispatcher starts, keyed registry round trips with
 stale-handle ownership resolution, and a merged desk without a wait tool handing
 off; the desk dispatcher-resume safety net is split-only in the model. Split
-sole-writer replays check that desk writes only the header and start record and
-the dispatcher alone writes afterward, and a second desk reads another session's
-active record and never writes.
+sole-writer replays check that desk writes the header and its own start record
+(and may update that record's outcome) while the dispatcher alone writes
+everything else, and that a header `session` from another session makes a
+second desk read-only, even after human confirmation.
 These synthetic cases do not establish native landing or parent supervision.
 They are a maintenance reference model,
 not runtime enforcement or tests that an agent follows prompt text. Timing and

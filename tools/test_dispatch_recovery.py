@@ -271,7 +271,9 @@ def registry_writer(mode, header_written, actor, record='task'):
         if record == 'start_requested':
             return 'desk'
         return None if header_written else 'desk'
-    return 'dispatcher' if actor == 'dispatcher' else None
+    if actor == 'dispatcher':
+        return None if record == 'start_requested' else 'dispatcher'
+    return None
 
 
 def second_desk_action(reg, session, confirmed=False):
@@ -926,7 +928,9 @@ class CoordinatorModes(unittest.TestCase):
                                          actor='desk', record='task'), None)
         self.assertEqual(registry_writer('split', header_written=True,
                                          actor='dispatcher',
-                                         record='start_requested'),
+                                         record='start_requested'), None)
+        self.assertEqual(registry_writer('split', header_written=True,
+                                         actor='dispatcher', record='task'),
                          'dispatcher')
         model = registry_load(header, 's1')
         self.assertEqual(model['model'], 'target-model')
