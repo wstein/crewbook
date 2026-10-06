@@ -30,11 +30,10 @@ installation is required for the maintenance suite.
 
 ## Ownership and integration
 
-Preserve user work. Keep at most two authors and two independent reviewers within
-actual host capacity, one editor per checkout, isolated concurrent editing and
-disjoint scopes including generated files. Allocate only eligible work. The
-assigned author alone edits, runs checks and commits; obtain independent fresh
-review of the exact immutable revision through the coordinator.
+Preserve user work and respect actual host controls. Follow the
+[team manual](docs/team.md) for shared ownership, concurrency and review workflow.
+Keep one editor per checkout and isolate concurrent editing in disjoint scopes,
+including generated files.
 
 This repository uses linear, fast-forward-only integration into main. No merge
 commits, non-fast-forward integration, cherry-picks into main or rewriting
