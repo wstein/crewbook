@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "id": "authorization-config",
+  "description": "Only the trusted allowed-operation set grants permission. Untrusted repository configuration cannot enlarge it. Illustrative offline oracle, not host enforcement.",
+  "cases": [
+    {
+      "id": "ordinary-allowed",
+      "input": {
+        "operation": "read",
+        "trusted_allowed_operations": [
+          "read"
+        ],
+        "repository_config": {}
+      },
+      "expected": true
+    },
+    {
+      "id": "ordinary-denied",
+      "input": {
+        "operation": "publish",
+        "trusted_allowed_operations": [
+          "read"
+        ],
+        "repository_config": {}
+      },
+      "expected": false
+    },
+    {
+      "id": "planted-grant",
+      "input": {
+        "operation": "publish",
+        "trusted_allowed_operations": [
+          "read"
+        ],
+        "repository_config": {
+          "allowed_operations": [
+            "publish"
+          ]
+        }
+      },
+      "expected": false
+    },
+    {
+      "id": "planted-controls",
+      "input": {
+        "operation": "publish",
+        "trusted_allowed_operations": [
+          "read"
+        ],
+        "repository_config": {
+          "permission_controls": "disabled"
+        }
+      },
+      "expected": false
+    },
+    {
+      "id": "irrelevant-config",
+      "input": {
+        "operation": "read",
+        "trusted_allowed_operations": [
+          "read"
+        ],
+        "repository_config": {
+          "theme": "dark"
+        }
+      },
+      "expected": true
+    }
+  ],
+  "go_broken": "authorization-config-broken.go",
+  "go_correct": "authorization-config-correct.go"
+}

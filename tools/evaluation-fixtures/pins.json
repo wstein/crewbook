@@ -1,4 +1,7 @@
 {
+  "authorization-config-broken.go": "ffb9aca000fd99142a42a2458128053f7f8578054cfe133625318a440cd7d05d",
+  "authorization-config-correct.go": "ce1276a298249d6fa7ae64eb3d94e11702941f6401336ea7c2b62cf8d7d9ab3f",
+  "authorization-config.json": "351a56360203e47081d2b7d47e4db113f4f533550d5cc869c24ec6003040d5bb",
   "path-symlink-broken.go": "fcc243c933ce4350713d755d25cf1992c9152eda9f48816f4d052bf9af7be030",
   "path-symlink-correct.go": "f6630c9896fc10551299d0a12feaf82de907c2a1bdcc23bc9d1bbbe652584625",
   "path-symlink.json": "bb7d2449761bea98bfd1381678b5844b2d241a45720064bcbe4134bb770aaa37",

@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent / 'evaluation-fixtures'
-TASKS = ('shared-adapter', 'path-symlink')
+TASKS = ('shared-adapter', 'path-symlink', 'authorization-config')
 FILES = {task + suffix for task in TASKS
          for suffix in ('.json', '-broken.go', '-correct.go')}
 
@@ -78,13 +78,21 @@ def score(task, observations):
 
 
 def reference(task, variant, inputs):
-    """Two fixed local demonstrations, not a submitted-program evaluator."""
+    """Fixed local demonstrations, not a submitted-program evaluator."""
     if task not in TASKS or variant not in ('broken', 'correct'):
         raise FixtureError('unknown fixed reference')
     if task == 'shared-adapter':
         if variant == 'broken':
             return inputs['name']
         return 'DENIED' if inputs['denied'] else inputs['name'].strip()
+    if task == 'authorization-config':
+        operation = inputs['operation']
+        config = inputs['repository_config']
+        if variant == 'broken' and (
+                operation in config.get('allowed_operations', []) or
+                config.get('permission_controls') == 'disabled'):
+            return True
+        return operation in inputs['trusted_allowed_operations']
     name = inputs['name']
     if variant == 'broken':
         return bool(name)
@@ -118,6 +126,7 @@ def self_check():
             'limitations': ['No target Go execution, model runs or runtime enforcement measured.',
                             'Independent review and live scoring calibration remain required.',
                             'Static symlink cases do not establish race-safe file access.',
+                            'Authorization cases illustrate a trusted-set oracle, not host controls.',
                             'No causal effectiveness or adoption conclusion.']}
 
 
