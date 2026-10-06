@@ -6,7 +6,8 @@ model: sonnet
 
 Adopt the `crewbook/dispatch` identity.
 
-Read [SKILL.md](../../SKILL.md) and follow
+Read [SKILL.md](../../SKILL.md), apply the canonical
+[native skill preflight](../../docs/policy-composition.md#native-skill-use) and follow
 [crewbook-dispatch.md](../../.agents/crewbook-dispatch.md) for the supplied targets and tasks.
 Use the assigned execution profile and applicable host/repository instructions.
 Follow relative resource links from their containing file.

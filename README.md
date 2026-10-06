@@ -45,8 +45,9 @@ also coordinates assignments and reviews itself (merged mode). Only when your
 project configures a board or claim gate, or you ask for a separate dispatcher,
 desk starts or reuses one persistent dispatcher (split mode). Add your
 task to the same message, or give it next. A bare invocation starts desk; it is
-not a load-only command. Startup requires the client's subagent and resume
-support, and reports the selected mode and any actual tool limits. It does not create a background daemon.
+not a load-only command. Split mode requires the client's subagent and resume
+support; merged mode can run as a same-session desk without subagents
+([tool-limited hosts](docs/team.md#merged-mode-supervision)). Startup reports the selected mode and any actual tool limits. It does not create a background daemon.
 
 ## Start Codex with desk
 
@@ -73,6 +74,7 @@ These settings and static package checks do not establish native runtime behavio
 
 - **Codex:** use `$crewbook`; `$crewbook-desk` is an optional separately installed
   alias. Desk/dispatch delegation (the former default, now split mode) has been observed in a Codex session;
+  merged mode (the default) has no observed trace in any client;
   installed native startup and managed execution remain unverified.
 - **Claude Code:** `/crewbook-desk` and role wrappers are packaged, but the client
   must register/load them. Native loading and external-mount discovery remain

@@ -239,7 +239,7 @@ def lifecycle_trace(mode):
     """Count starts for desk -> author -> review; merged has no dispatcher."""
     state = fixture()
     state['tasks'] = {'generic': state['tasks']['generic']}
-    state['threads'] = ['author-thread']  # the one author start by the coordinator
+    state['threads'] = ['author-thread']  # modeled: the one author start
     starters = {'crewbook/desk'}
     if mode == 'split':
         start_dispatcher(state, mode)
@@ -801,8 +801,18 @@ class CoordinatorModes(unittest.TestCase):
         mapped = self.policy(board_destination=True, status_mapping=True,
                              authorized_writer='dispatcher')
         self.assertEqual(select_mode(mapped), 'split')
-        # A configured but unavailable gate still selects split.
+        # A configured but unavailable gate still selects split (availability
+        # affects board operations, not mode); an unavailable gate with no
+        # configured mapping is no gate at all and stays merged.
         self.assertEqual(select_mode(dict(mapped, gate_available=False)), 'split')
+        self.assertEqual(select_mode(self.policy(gate_available=False)), 'merged')
+        self.assertEqual(board_operations(self.policy(gate_available=False),
+                                          'merged'), 'none')
+        # Partial configuration is not a gate.
+        self.assertEqual(select_mode(self.policy(
+            board_destination=True, status_mapping=True)), 'merged')
+        self.assertEqual(select_mode(self.policy(
+            status_mapping=True, authorized_writer='dispatcher')), 'merged')
         self.assertEqual(board_operations(dict(mapped, gate_available=False),
                                           'split'), 'blocked')
         self.assertEqual(board_operations(mapped, 'split'), 'available')
@@ -832,7 +842,8 @@ class CoordinatorModes(unittest.TestCase):
     def test_merged_lifecycle_has_zero_dispatcher_starts(self):
         trace = lifecycle_trace('merged')
         self.assertEqual(trace['dispatcher_starts'], 0)
-        # Counts derive from replaying handback/review events, not constants.
+        # review_starts derives from the replayed handback; the author thread and
+        # starters are modeled records of the coordinator's starts, not replayed.
         self.assertEqual((trace['author_starts'], trace['review_starts']), (1, 1))
         self.assertEqual(trace['phase'], 'in_review')
         self.assertEqual(trace['starters'], {'crewbook/desk'})

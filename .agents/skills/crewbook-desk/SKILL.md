@@ -15,7 +15,7 @@ startup outcome; do not merely announce that a skill is loaded.
 
 Use the user's workspace/task and applicable instructions. Follow links from
 their containing files; no root variable or workharbor container is required.
-In split mode keep claims, worker starts and reviews with dispatch; in merged mode desk owns them. Respect host controls and
+In split mode keep claims, worker starts and reviews with dispatch; in merged mode desk owns claims and worker/review starts, never the reviews themselves. Respect host controls and
 user scope. If subagent/resume tools are absent, state the concrete limit.
 
 This is Codex's `$crewbook-desk` skill, independently discovered from a SKILL.md

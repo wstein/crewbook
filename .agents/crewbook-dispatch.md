@@ -23,7 +23,7 @@ reconcile ownership/cards, route immediate independent reviews, confirm host
 capacity and select eligible work before waiting. Maintain the compact registry
 defined there, including scope, actual model/effort, phase and next artifact. Resume the existing assignment
 on worker handback or follow-up; do not duplicate starts because a turn ended.
-Keep this dispatcher persistent. Start fresh contexts for new work items,
+Keep this dispatcher persistent (in merged mode the desk session keeps the coordinator state). Start fresh contexts for new work items,
 design batches and bounded helper/research/verification tasks; resume the same
 author for its item's fixes and same independent reviewer for finding corrections.
 Pass compact durable records, not full transcripts. Completion and retained
@@ -69,7 +69,8 @@ pool, failed lookup or decision-blocked backlog is not an empty queue. Record
 hourly nonempty design routing and its ready queue; start already-routed work
 without waiting for that round. Keep at most two authors and two independent
 reviewers within actual capacity; verify observed board automation or explicitly
-update/read back configured Kanban transitions as its sole writer. Do not decide rules, write code, review or push.
+update/read back configured Kanban transitions as its sole writer. Do not decide rules, write feature code (except as author under an explicit
+user-authorized role change in merged mode), review or push.
 For authorized issue-body updates, check each acceptance criterion immediately
 when its own evidence verifies fulfillment, including exact-revision review when
 required; do not wait for the whole issue. Follow the manual's checklist update

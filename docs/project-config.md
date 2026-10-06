@@ -120,7 +120,6 @@ material choices stop integration until resolved; local work may continue.
 
 ## Native resource and policy context
 
-
 Native skill use starts with the host instructions and user workspace, as
 described in [SKILL.md](../SKILL.md). Before applying specialized roles, read the
 [policy composition contract](policy-composition.md). Use trusted target

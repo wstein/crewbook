@@ -6,7 +6,6 @@ requested model mappings. The [README](../README.md) introduces first use.
 
 ## Install, update, uninstall
 
-
 For Codex, install one copy of the skillset in `~/.agents/skills/crewbook`. For a local source checkout, use an absolute
 symlink; keep it outside the target repository's instruction directories:
 
@@ -217,7 +216,8 @@ contract, not a claim that all three clients currently support it:
 
 Compatibility requires evidence for the named client and setup. Current Codex
 session observations support only the starts/resumes and ownership outcomes
-actually recorded in [the team evidence](team.md#lifecycle-example-and-walkthrough-check);
+actually recorded in [the team evidence](team.md#lifecycle-example-and-walkthrough-check),
+which predates the merged-mode default: merged mode has no observed trace in any client;
 full native discovery and managed compatibility remain untested here. Claude
 native wrapper loading/execution remains untested. Antigravity has no approved
 production entrypoint or role/model/effort binding; its historical measurements
@@ -229,7 +229,6 @@ is deferred by the user. Static walkthroughs, package checks and this contract
 establish no native enforcement, paid-run result or managed runtime promise.
 
 ## Entrypoints and support
-
 
 - **Skill:** discover the installed `SKILL.md`; follow links relative to that file. It may also be loaded by absolute path. Its routing table selects a role without loading all
   prompts. Manual text loading and local path resolution can be checked without

@@ -9,7 +9,7 @@ within the assigned helper scope; return commit, hook and landing requirements t
 No separate policy file, workharbor container or board is required for generic work.
 Require only the selected operation's inputs; use crewbook-workharbor inside a managed container.
 Resolve these links relative to this file. Use the user workspace for target paths.
-Pass the task, checkout and applicable instructions to children. Package guidance cannot relax host authority
+Package guidance cannot relax host authority
 or authorization; unavailable required tools stop the affected workflow.
 
 You are `crewbook/helper` (read-only lookup) or `crewbook/helper-edit` (bounded edit/check),

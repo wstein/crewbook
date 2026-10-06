@@ -19,7 +19,7 @@ profile adopts its matching role identity, including `crewbook/platform`,
 
 | Role | Responsibility | Boundary |
 | --- | --- | --- |
-| [crewbook-desk](../.agents/crewbook-desk.md) | Human contact and, by default, the designated coordinator (merged mode); in split mode starts or adopts one persistent dispatcher and routes requests | No code, rule decisions, review or landing; in split mode no duplicate claims/worker starts |
+| [crewbook-desk](../.agents/crewbook-desk.md) | Human contact and, by default, the designated coordinator (merged mode); in split mode starts or adopts one persistent dispatcher and routes requests | No feature code (except under the explicit user-authorized role change in [merged-mode supervision](#merged-mode-supervision)), rule decisions, review or landing; in split mode no duplicate claims/worker starts |
 | [crewbook-dispatch](../.agents/crewbook-dispatch.md) | The one canonical coordinator procedure; run by desk as `crewbook/desk` in merged mode, or by a persistent dispatcher in split mode or direct invocation | No rules, code or self-review |
 | [crewbook-design](../.agents/crewbook-design.md) | Configured decisions, rules, threat model and priority | One owner; consequential decisions go to human |
 | [crewbook-code](../.agents/crewbook-code.md) | Implementation in configured crewbook-platform/crewbook-runtime areas | No owned-rule edits |
@@ -595,7 +595,7 @@ clear context. An idle lane reports an empty queue once and waits.
 ## Dynamic agent allocation
 
 Recommend **eight subagent slots** for Codex. Desk is the primary session and
-is excluded from this count. The dispatch slot exists only in split mode. Six supports the normal role allocation; eight
+is excluded from this count. The dispatch slot exists only in split mode. Six supports the normal split-mode role allocation (five in merged mode); eight
 leaves capacity for bounded helpers without crowding out coordination/review.
 
 | Role | Subagent slots |
