@@ -276,13 +276,16 @@ def registry_writer(mode, header_written, actor, record='task'):
     return None
 
 
-def second_desk_action(reg, session, takeover_confirmed=False):
-    """A header whose session differs from the reader's, or that has none, and
-    any existing file without a valid header, is foreign: read-only and ask the human. Only the human's confirmation that the
-    previous session ended (a takeover, never mere concurrency) lets the
-    successor rewrite the header with its own session."""
-    if not reg.get('tasks') and not any(k != 'tasks' for k in reg):
-        return ('write', None)  # no registry: absent or empty file
+def second_desk_action(text, session, takeover_confirmed=False):
+    """`text` is the raw registry file (None when absent). Only an absent or
+    blank file is no registry. Otherwise a valid header whose session is the
+    reader's is writable; anything else, including a header from another
+    session, none, or an unparsable file, is foreign: read-only and ask the
+    human. Only the human's confirmation that the previous session ended (a
+    takeover, never mere concurrency) lets the successor rewrite the header."""
+    if text is None or not text.strip():
+        return ('write', None)
+    reg = registry_load(text)
     if reg.get('crewbook-registry') == '1' and reg.get('session') == session:
         return ('write', None)
     if takeover_confirmed:
@@ -954,18 +957,18 @@ class CoordinatorModes(unittest.TestCase):
         # A foreign header is read-only whether active, header-only or finished;
         # without the human's takeover confirmation nothing grants writes.
         for text in (active, header, finished):
-            self.assertEqual(second_desk_action(registry_load(text), 's2'),
+            self.assertEqual(second_desk_action(text, 's2'),
                              read_only)
-            self.assertEqual(second_desk_action(registry_load(text), 's2',
+            self.assertEqual(second_desk_action(text, 's2',
                                                 takeover_confirmed=False),
                              read_only)
         # Only a human-confirmed takeover (previous session ended) lets a
         # successor rewrite the header with its own session.
         for text in (active, header, finished):
-            self.assertEqual(second_desk_action(registry_load(text), 's2',
+            self.assertEqual(second_desk_action(text, 's2',
                                                 takeover_confirmed=True),
                              ('write_header', None))
-        self.assertEqual(second_desk_action(registry_load(active), 's1'),
+        self.assertEqual(second_desk_action(active, 's1'),
                          ('write', None))
         # A registry without a session line is foreign too (pre-change files).
         legacy = ''.join(line + '\n' for line in active.splitlines()
@@ -973,10 +976,9 @@ class CoordinatorModes(unittest.TestCase):
         legacy_header = ''.join(line + '\n' for line in header.splitlines()
                                 if not line.startswith('session: '))
         for text in (legacy, legacy_header):
-            reg = registry_load(text)
-            self.assertNotIn('session', reg)
-            self.assertEqual(second_desk_action(reg, 's2'), read_only)
-            self.assertEqual(second_desk_action(reg, 's2',
+            self.assertNotIn('session', registry_load(text))
+            self.assertEqual(second_desk_action(text, 's2'), read_only)
+            self.assertEqual(second_desk_action(text, 's2',
                                                 takeover_confirmed=True),
                              ('write_header', None))
         # An existing file without a valid header (damaged, hand-edited or task
@@ -986,16 +988,28 @@ class CoordinatorModes(unittest.TestCase):
         blocks_only = no_version[no_version.index('## '):]
         bad_version = active.replace('crewbook-registry: 1', 'crewbook-registry: 9')
         for text in (no_version, blocks_only, bad_version):
-            reg = registry_load(text)
-            self.assertEqual(second_desk_action(reg, 's2'), read_only)
-            self.assertEqual(second_desk_action(reg, 's1'), read_only)
-            self.assertEqual(second_desk_action(reg, 's2',
+            self.assertEqual(second_desk_action(text, 's2'), read_only)
+            self.assertEqual(second_desk_action(text, 's1'), read_only)
+            self.assertEqual(second_desk_action(text, 's2',
                                                 takeover_confirmed=True),
                              ('write_header', None))
+        # Non-empty but unparsable files are foreign: emptiness is decided from
+        # the raw text, never from what the parser kept.
+        for text in ('crewbook-registry:1\nsession:s1\n',
+                     'Resume: drain completions, then await named artifacts.\n',
+                     'garbage\n'):
+            for reader in ('s1', 's2'):
+                self.assertEqual(second_desk_action(text, reader), read_only)
+                self.assertEqual(second_desk_action(text, reader,
+                                                    takeover_confirmed=True),
+                                 ('write_header', None))
+        for text in ('', '  \n\t\n'):
+            self.assertEqual(second_desk_action(text, 's2'),
+                             ('write', None))
         # No registry (absent or empty file): nothing to be foreign to.
-        self.assertEqual(second_desk_action(registry_load(''), 's2'),
+        self.assertEqual(second_desk_action('', 's2'),
                          ('write', None))
-        self.assertEqual(second_desk_action(dict(tasks={}), 's2'),
+        self.assertEqual(second_desk_action(None, 's2'),
                          ('write', None))
 
     def test_merged_desk_without_wait_tool_writes_registry_and_hands_off(self):
