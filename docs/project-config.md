@@ -50,9 +50,9 @@ The file is plain, client-neutral keyed Markdown. A versioned header
 (`crewbook-registry: 1`, `mode`, `coordinator`, `target`, `model` (desk's actual
 model), `session` (the writing desk's session marker), UTC `updated`) is
 followed by one keyed block per assignment with the registry fields from the
-[supervision cycle](team.md#dispatch-supervision-and-recovery),
-`landing_required`/`landing_authorized`, `state`, the next awaited artifact and
-the next resume action. Client handles are marked valid only in the session
+[supervision cycle](team.md#dispatch-supervision-and-recovery), limited to the
+keys `owner`, `handle`, `handle_session`, `phase`, `evidence`,
+`landing_required`, `landing_authorized` and `next_awaited`. Client handles are marked valid only in the session
 that created them. A one-line `Resume:` summary closes the file.
 
 Write ahead of a claim or start (`start requested`) and update on the confirmed
@@ -76,8 +76,10 @@ foreign: lines end in LF or CRLF; the header (lines up to the first blank or
 `## ` line) holds only `crewbook-registry: 1`, `session` and optionally `mode`,
 `coordinator`, `target`, `model`, `updated`, each at most once, as `key: value`
 with printable ASCII values (no tabs, no empty value); `## name` task blocks
-hold only the registry field keys with printable-ASCII values; one `Resume:`
-line comes last. For such a damaged file the human's confirmation that the writer session ended
+hold only those registry field keys, each at most once, with possibly empty
+printable-ASCII values; blocks and the final `Resume:` line are separated by
+blank lines, and exactly one `Resume:` line with a non-empty printable-ASCII
+value comes last, with nothing after it. For such a damaged file the human's confirmation that the writer session ended
 applies even when the reader is the session it names. In split mode desk writes only the header
 and its own `start requested` record, and may update that record's outcome
 (failed, uncertain or confirmed) so it cannot dangle when the dispatcher start
