@@ -72,14 +72,14 @@ before the marker keep the header `crewbook-registry: 1`), is foreign. There is
 no registry only when the file is absent or holds only spaces, tabs and line
 breaks; any other file without a valid header, even task blocks only or
 unparsable text, is foreign too. Strict grammar, anything else is damaged and
-foreign: lines end in LF or CRLF (a file may mix them); the header (lines up to the first blank or
+foreign: lines end in LF or CRLF (a file may mix them); the header (lines up to the first empty or
 `## ` line) holds only `crewbook-registry: 1`, `session` and optionally `mode`,
 `coordinator`, `target`, `model`, `updated`, each at most once, as `key: value`
 with printable ASCII values (no tabs, no empty value); `## name` task blocks
 hold only those registry field keys, each at most once, with possibly empty
 printable-ASCII values (an empty value is written `key: ` with the trailing space); blocks and the final `Resume:` line are separated by
-blank lines, and exactly one `Resume:` line with a non-empty printable-ASCII
-value comes last, with nothing after it but blank lines. For such a damaged file the human's confirmation that the writer session ended
+empty lines, and exactly one `Resume:` line with a non-empty printable-ASCII
+value comes last, with nothing after it but empty lines (a CRLF counts as empty; a line with spaces or tabs is damage). For such a damaged file the human's confirmation that the writer session ended
 applies even when the reader is the session it names. In split mode desk writes only the header
 and its own `start requested` record, and may update that record's outcome
 (failed, uncertain or confirmed) so it cannot dangle when the dispatcher start
@@ -93,18 +93,20 @@ confirmation of concurrency is not a takeover, so desk asks which one applies
 and stays read-only when the answer does not say the previous session ended.
 No daemon, timer or cleanup job exists.
 
-Limits of this procedure: the grammar, the single strict parser and the
-second-desk and writer decisions are modelled and tested in
-`tools/test_dispatch_recovery.py`. The rest is model-run procedure, unverified
-and unenforced: the regular non-symlink file and non-symlink parent checks,
+Limits of this procedure: the grammar and the single strict parser
+(`registry_parse`) are modelled and tested in
+`tools/test_dispatch_recovery.py`, as are the second-desk and takeover
+decisions and the split-mode writer rule, but only as a model: the behaviour
+itself is model-run procedure. Also model-run, unverified and unenforced: the regular non-symlink file and non-symlink parent checks,
 owner-only permissions, no secrets, never posting, the split-mode sole writer,
 the read-only second desk and takeover only after the human confirms. A hostile
 or concurrent writer is out of scope. No executable helper ships (the package
 has [no agent executable tools](distribution.md#current-content-artifact)). A
-helper is a later item behind any trigger: a fifth fail-open finding or any
-grammar change; a supported client giving desk a verified permitted Python or
+helper is a later item behind any trigger: another finding where a damaged or foreign file is
+treated as valid, or any grammar change; a supported client giving desk a verified permitted Python or
 Bash path; an observed registry symlink or permission incident; or the human
 accepting one shipped executable.
+
 For the Claude desk launch, the header `model` is the actual model
 ([launch](installation.md#client-capacity-settings)). In split mode on a depth-2
 Claude launch, desk reports the depth limit and asks the human for a relaunch at
@@ -159,13 +161,19 @@ explicitly with an option letter or `y`/`n`.
 
 Replies name the ID, never a position: `H7:a`, `H7:y`, `H7:n`, `H7:a+f` (option
 a plus a flag, only when the item defines that flag), `H7:?` (show detail),
-`H7:later` (defer) or `H7:rec`, combinable on one line (`H7:a H8:y`). Option
-letters are fixed per item. An ID is never reused or renumbered; a reply naming
-an unknown, already-answered or superseded ID is ignored and reported, never
-guessed.
+`H7:later` (defer), `H7:rec` or `H5:veto` (revert a `defaulted` item; an
+explicit answer), combinable on one line (`H7:a H8:a`). Option letters are fixed
+per item. An ID is never reused or renumbered; a reply naming an unknown,
+already-answered or superseded ID is ignored and reported, never guessed. IDs
+match exactly: `H` plus a decimal number with no leading zero, case-sensitive,
+so `H07` and `h7` are unknown. A token that is malformed, names an option
+letter or flag the item does not define, repeats an ID with a different answer
+or uses `rec` on a consequential item is ignored and reported, never guessed;
+other tokens on the line still apply. A repeat of the same ID with the same
+answer counts once.
 
 <a id="needs-you-example"></a>
-Desk's turn opens like this (reply `H7:a H8:y`, `H7:rec`, `H7:?` or `H7:later`):
+Desk's turn opens like this (reply `H7:a H8:a`, `H7:rec`, `H7:?`, `H7:later` or `H5:veto`):
 
 ```text
 NEEDS YOU (2 of 2; 1 more queued)
