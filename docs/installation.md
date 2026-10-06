@@ -49,6 +49,13 @@ See [context lifetimes](team.md#delegation-and-context) and
 and quality improvements remain unmeasured.
 The installed skill and selected model must be available in the client.
 
+To update a linked checkout, review and validate its changes. For a fixed copy,
+validate a new export before switching registration for new sessions. Keep old
+copies while active sessions use them. To uninstall a linked skill, remove only
+the `crewbook` symlink; retain the source checkout and target project policy.
+Also remove any Claude links under `~/.claude/agents`, `~/.claude/commands` and
+`~/.claude/skills/crewbook` created for registration.
+
 ## Client capacity settings
 
 For a persistent Codex default, edit `~/.codex/config.toml` and merge this
@@ -116,10 +123,28 @@ include the Codex discovery metadata. This installation does not register Claude
 commands or establish workharbor runtime compatibility. Workharbor's production
 pin/adapter checks remain a separate integration contract.
 
-To update a linked checkout, review and validate its changes. For a fixed copy,
-validate a new export before switching registration for new sessions. Keep old
-copies while active sessions use them. To uninstall a linked skill, remove only
-the `crewbook` symlink; retain the source checkout and target project policy.
+## Claude Code registration (UNVERIFIED)
+
+Native Claude loading of the packaged profiles and commands has not been
+measured; the procedure below is a proposal, not a proven installation. Link the
+skill into the Claude skill directory (`~/.claude/skills/crewbook`, also
+unverified), then link the packaged files into the user-level Claude
+directories, inspecting any existing destination first:
+
+```sh
+mkdir -p ~/.claude/agents ~/.claude/commands
+ln -s /absolute/path/crewbook/.claude/agents/crewbook-*.md ~/.claude/agents/
+ln -s /absolute/path/crewbook/.claude/commands/crewbook-*.md ~/.claude/commands/
+```
+
+The `../../SKILL.md` style links may not resolve from `~/.claude`, whether the
+file is linked or copied. Links resolve relative to the file; each profile and
+command states that they assume its packaged location inside the installed
+`crewbook` package and, when one does not resolve, to locate the installed
+`crewbook` skill directory (never a lookalike) and report the missing
+resource's absolute path. Whether a subagent resolves those links, and whether
+Claude lists the profiles and commands, is unmeasured: verify with a fresh session before relying
+on it. No plugin layout, settings key or hook is supplied or implied.
 
 ## Migrating older role registrations
 
