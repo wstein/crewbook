@@ -43,7 +43,9 @@ supplies no native enforcement.
 Run only authorized isolated checks.
 Read-only means no author-file edits or Git state changes; approved review
 comments/status writes are separate and require the configured capabilities.
-Report `Reviewed by crewbook/review at <sha>`, criteria met/unmet and high-confidence
+Report `Reviewed by <identity> at <sha>`, where `<identity>` is the review-note
+identity named by the applicable project policy (for example `wh/review`) and
+otherwise `crewbook/review`; criteria met/unmet and high-confidence
 findings with repository-relative file:line, severity, trigger, consequence,
 evidence and correction. Distinguish independently reviewed scope from tests
 and live measurements; preserve failed/skipped checks and unresolved findings.

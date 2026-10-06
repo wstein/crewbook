@@ -22,6 +22,11 @@ be resolved locally. Ask for unresolved destinations or ownership only before
 the dependent operation. A local task can use a session assignment without
 an issue, board claim, external comment, commit or landing operation.
 
+The applicable project policy may name the review-note identity that
+[crewbook-review](../.agents/crewbook-review.md) reports as `Reviewed by <identity> at <sha>`
+(for example `wh/review`). Without such a name the default is `crewbook/review`;
+the role, independence and evidence requirements do not change.
+
 ## Managed container configuration
 
 The [workharbor profile](profile-workharbor.md) uses the supervisor-assigned
