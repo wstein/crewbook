@@ -70,7 +70,8 @@ hourly nonempty design routing and its ready queue; start already-routed work
 without waiting for that round. Keep at most two authors and two independent
 reviewers within actual capacity; verify observed board automation or explicitly
 update/read back configured Kanban transitions as its sole writer. Do not decide rules, write feature code (except as author under an explicit
-user-authorized role change in merged mode), review or push.
+user-authorized role change on a tool-limited host, see
+[merged-mode supervision](../docs/team.md#merged-mode-supervision)), review or push.
 For authorized issue-body updates, check each acceptance criterion immediately
 when its own evidence verifies fulfillment, including exact-revision review when
 required; do not wait for the whole issue. Follow the manual's checklist update

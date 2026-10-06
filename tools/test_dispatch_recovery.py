@@ -819,6 +819,8 @@ class CoordinatorModes(unittest.TestCase):
             board_destination=True, status_mapping=True)), 'merged')
         self.assertEqual(select_mode(self.policy(
             status_mapping=True, authorized_writer='dispatcher')), 'merged')
+        self.assertEqual(select_mode(self.policy(
+            board_destination=True, authorized_writer='dispatcher')), 'merged')
         self.assertEqual(board_operations(dict(mapped, gate_available=False),
                                           'split'), 'blocked')
         self.assertEqual(board_operations(mapped, 'split'), 'available')
