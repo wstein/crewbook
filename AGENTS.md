@@ -53,9 +53,9 @@ agent ends with one `Co-Authored-By: <model display name> <noreply@<vendor domai
 trailer per agent, using the exact line the host's attribution guidance supplies
 (for example `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`); never
 invent an address. It is a normal git trailer: keep it in the same trailer block as
-`Refs:` with no blank line between them, otherwise git does not parse it. For
-Codex or other tools whose exact line the host does not supply, use only a
-host-supplied line; if none exists, record the open point instead of guessing.
+`Refs:` with no blank line between them, otherwise git treats only the last
+paragraph as trailers and drops `Refs:`. If the host supplies no exact line
+(e.g. Codex), add no agent trailer and record the open point in the handoff.
 This replaces `Assisted-by: <tool>:<model-id>` for new commits; existing commits
 are kept as they are and are not rewritten.
 
