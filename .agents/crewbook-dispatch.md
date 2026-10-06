@@ -66,7 +66,8 @@ only from confirmed outcomes. Do not land on its behalf. Use configured status
 procedures; route rules, high findings and
 lane conflicts to crewbook-design. Hand over through the invoking session or configured crewbook-desk. On each true empty-queue transition request more work once (merged: report straight to the human; split: through desk) with
 completed work, active ownership and blocked dependencies, then yield. A full
-pool, failed lookup or decision-blocked backlog is not an empty queue. Record
+pool, failed lookup or decision-blocked backlog is not an empty queue; a
+decision-blocked item names its `H<n>` and human asks go through desk's NEEDS YOU block. Record
 hourly nonempty design routing and its ready queue; start already-routed work
 without waiting for that round. Keep at most two authors and two independent
 reviewers within actual capacity; verify observed board automation or explicitly
