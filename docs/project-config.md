@@ -72,14 +72,14 @@ before the marker keep the header `crewbook-registry: 1`), is foreign. There is
 no registry only when the file is absent or holds only spaces, tabs and line
 breaks; any other file without a valid header, even task blocks only or
 unparsable text, is foreign too. Strict grammar, anything else is damaged and
-foreign: lines end in LF or CRLF; the header (lines up to the first blank or
+foreign: lines end in LF or CRLF (a file may mix them); the header (lines up to the first blank or
 `## ` line) holds only `crewbook-registry: 1`, `session` and optionally `mode`,
 `coordinator`, `target`, `model`, `updated`, each at most once, as `key: value`
 with printable ASCII values (no tabs, no empty value); `## name` task blocks
 hold only those registry field keys, each at most once, with possibly empty
 printable-ASCII values (an empty value is written `key: ` with the trailing space); blocks and the final `Resume:` line are separated by
 blank lines, and exactly one `Resume:` line with a non-empty printable-ASCII
-value comes last, with nothing after it. For such a damaged file the human's confirmation that the writer session ended
+value comes last, with nothing after it but blank lines. For such a damaged file the human's confirmation that the writer session ended
 applies even when the reader is the session it names. In split mode desk writes only the header
 and its own `start requested` record, and may update that record's outcome
 (failed, uncertain or confirmed) so it cannot dangle when the dispatcher start
@@ -92,6 +92,19 @@ only then does the successor rewrite the header with its own `session`. Plain
 confirmation of concurrency is not a takeover, so desk asks which one applies
 and stays read-only when the answer does not say the previous session ended.
 No daemon, timer or cleanup job exists.
+
+Limits of this procedure: the grammar, the single strict parser and the
+second-desk and writer decisions are modelled and tested in
+`tools/test_dispatch_recovery.py`. The rest is model-run procedure, unverified
+and unenforced: the regular non-symlink file and non-symlink parent checks,
+owner-only permissions, no secrets, never posting, the split-mode sole writer,
+the read-only second desk and takeover only after the human confirms. A hostile
+or concurrent writer is out of scope. No executable helper ships (the package
+has [no agent executable tools](distribution.md#current-content-artifact)). A
+helper is a later item behind any trigger: a fifth fail-open finding or any
+grammar change; a supported client giving desk a verified permitted Python or
+Bash path; an observed registry symlink or permission incident; or the human
+accepting one shipped executable.
 For the Claude desk launch, the header `model` is the actual model
 ([launch](installation.md#client-capacity-settings)). In split mode on a depth-2
 Claude launch, desk reports the depth limit and asks the human for a relaunch at
