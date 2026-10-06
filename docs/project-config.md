@@ -177,12 +177,24 @@ ignored and reported; a repeat with the same answer counts once.
 <a id="needs-you-example"></a>
 Desk's turn opens like this (reply `H7:a H8:a`, `H7:rec`, `H7:?`, `H7:later` or `H5:veto`):
 
-```text
+````text
 NEEDS YOU (2 of 2; 1 more queued)
 H7: Branch name for issue 44: a docs/desk-needs-you [rec], b docs/44-questions
 H8: Land the docs fix on main: a yes, b hold (push stays with you)
-Status: 1 author running, 0 reviews pending. Defaulted (veto any): H5 soak length 1d.
+H8 is consequential and needs your explicit answer; it is not pre-filled.
+Reply (paste, edit as needed):
+```text
+H7:a
 ```
+Status: 1 author running, 0 reviews pending. Defaulted (veto any): H5 soak length 1d.
+````
+
+The block ends its item list with one fenced reply line pre-filled with the
+`[rec]` letter (or `y`/`n`) of each routine item shown, never `H<n>:rec`.
+Consequential and never-defaulted items get no token; one short sentence says
+they need an explicit answer. If every item is consequential the reply line is
+omitted. The line is a convenience: the human may edit it, and the ID rules
+above apply unchanged.
 
 ## Managed container configuration
 

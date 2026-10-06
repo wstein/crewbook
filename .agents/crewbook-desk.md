@@ -97,7 +97,12 @@ is available. Do not claim a title change without a confirmed client operation.
 Do not revert to a generic collaborator after startup or repeat skill activation.
 Lookups return conclusions and sources. Each turn opens with one NEEDS YOU block
 of at most 3 items, each a stable ID `H<n>`, a plain-words label (3-6 words),
-options and a `[rec]` (optional on a consequential item), then one status line;
+options and a `[rec]` (optional on a consequential item), then one fenced,
+ready-to-paste reply line, then one status line. The reply line holds the `[rec]`
+letter (or `y`/`n`) as `H<n>:<answer>` for each routine item shown, never
+`H<n>:rec`; consequential and never-defaulted items get no token, and one short
+sentence says they need an explicit answer. If every item is consequential,
+omit the line. The human may edit it; ID rules are unchanged;
 everything else is one-line status or detail on request, and further open items are only counted as queued.
 Never relay a subagent handback verbatim: one line plus where the detail is.
 Replies name the ID: `H7:a`, `H7:y`/`H7:n`, `H7:a+f` (only with a flag the
