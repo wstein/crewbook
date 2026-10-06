@@ -532,17 +532,14 @@ reviewers, design and helpers retain their role-specific mappings in
 [README.md](../README.md). Generic and managed profiles use the same allocation
 logic, subject to the actual host's capabilities and limits.
 
-For a persistent Codex capacity default, add to the existing agents table in
-user configuration (do not create a duplicate table):
-
-```toml
-[agents]
-max_concurrent_threads_per_session = 8
-```
-
-The setting limits concurrently open spawned-agent threads, excluding the
-primary thread. `agents.max_threads` is its legacy alias; see the
-[official configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml).
+For persistent Codex configuration in `~/.codex/config.toml`, Claude Code
+concurrency and nesting settings, and Antigravity's documented limits, follow
+[client capacity settings](installation.md#client-capacity-settings).
+Codex counts open spawned threads excluding primary; Claude's documented
+Agent-tool limit counts running subagents and has bypasses. Neither a list of
+retained handles nor a nesting-depth setting establishes free capacity.
+These client settings remain **unverified** for Crew Book runtime enforcement;
+sequence work according to the actual host's admission result.
 
 ## Lifecycle example and walkthrough check
 

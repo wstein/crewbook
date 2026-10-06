@@ -49,6 +49,50 @@ See [context lifetimes](team.md#delegation-and-context) and
 and quality improvements remain unmeasured.
 The installed skill and selected model must be available in the client.
 
+## Client capacity settings
+
+For a persistent Codex default, edit `~/.codex/config.toml` and merge this
+key into its existing `[agents]` table; do not add a duplicate table:
+
+```toml
+[agents]
+max_concurrent_threads_per_session = 8
+```
+
+The launch command above overrides this setting for one session. The
+[configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml)
+defines the limit as open spawned-agent threads, excluding the primary thread;
+`agents.max_threads` is the legacy alias. An unset value uses the client's
+default. Open threads, running agents and retained completed handles are
+separate observations; do not derive available capacity from handle count.
+
+For Claude Code v2.1.217 or later, after registering the packaged commands and
+profiles, start from the target repository with:
+
+```sh
+CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=8 CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=3 claude '/crewbook-desk'
+```
+
+For a persistent shell default, export those same two variables in the shell's
+startup configuration before opening a new client. Keep the packaged explicit
+model pins and tool fields. Depth three accommodates desk → dispatch → author
+→ bounded helper; depth controls nesting, independently of concurrency.
+The [Claude concurrency documentation](https://code.claude.com/docs/en/sub-agents#concurrent-subagent-limit)
+describes a positive-integer running Agent-tool limit (default 20). `/subtask`,
+resumes of finished agents and sessions with `ultracode` active bypass that limit;
+workflows and agent teams have separate limits. It is not a universal agent cap.
+The [nesting documentation](https://code.claude.com/docs/en/sub-agents#let-subagents-spawn-their-own-subagents)
+describes version-dependent defaults, including depth one in v2.1.217–2.1.218;
+set the required depth explicitly rather than rely on a version default.
+
+These are documented setup settings, **unverified** for native Crew Book
+loading and enforcement. They do not authorize extra code authors or change
+independent review. Antigravity has no documented equivalent numeric
+concurrency setting in the reviewed native documentation; see its
+[setup boundary](antigravity.md#documented-native-subagent-controls).
+
+## Optional Codex desk alias
+
 The dedicated Codex desk skill is
 [.agents/skills/crewbook-desk/SKILL.md](../.agents/skills/crewbook-desk/SKILL.md). Its repository skill location
 is intended for Codex discovery when launched in the Crew Book repository;

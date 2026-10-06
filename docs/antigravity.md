@@ -25,6 +25,20 @@ A version string proves neither the executable's provenance nor any runtime
 capability. No current native run, login, inference or container provisioning
 was performed for this documentation slice.
 
+## Documented native subagent controls
+
+The [native subagent documentation](https://www.antigravity.google/docs/subagents/)
+describes parallel agents, `/agents` status inspection, model tiers `inherit`,
+`flash` and `pro`, and a maximum nesting depth of ten. Depth is not concurrency
+capacity. No equivalent numeric concurrency configuration was found in that
+reviewed page; do not invent a flag or environment variable to match Codex or
+Claude Code. Sequence assignments within the actual host's available capacity.
+
+This is documented vendor behavior, **unverified** for Crew Book on a current
+native setup. Native model tiers do not establish approved Crew Book role
+bindings. The existing readiness matrix still governs admission; these controls
+supply no production entrypoint or managed-runtime support.
+
 ## Capability admission matrix
 
 Every current integration capability below is **unverified**. Each row needs
