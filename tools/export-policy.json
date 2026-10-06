@@ -9,6 +9,7 @@
     ".agents/crewbook-helper.md",
     ".agents/crewbook-review.md",
     ".agents/crewbook-verify.md",
+    ".agents/crewbook-worker.md",
     ".agents/skills/crewbook-desk/SKILL.md",
     ".agents/skills/crewbook-desk/agents/openai.yaml",
     ".claude/agents/crewbook-design.md",

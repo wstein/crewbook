@@ -252,6 +252,13 @@ establish no native enforcement, paid-run result or managed runtime promise.
   **unverified**. Existing `model: sonnet`, `opus` and `haiku` pins remain
   Claude profile values.
 - **Codex:** select `SKILL.md` or load a selected role by absolute path from the installed skill. `.claude` files are reference data, not Codex registration.
+  The research-worker contract lives only in the shared
+  [.agents/crewbook-worker.md](../.agents/crewbook-worker.md); the Claude wrapper
+  `.claude/agents/crewbook-worker.md` just points to it. A Codex session reaches it the
+  same way as the other shared roles: load that file by absolute path from the installed
+  skill (or follow the `SKILL.md` prompt table). There is no `.codex` adapter yet (later
+  work, behind crewbook #41). Native client loading of the shared file, by Claude, Codex
+  or Antigravity, is **unverified**; only the explicit path route is described here.
   Model selection is a separate launcher setting, not a rewrite of Claude YAML:
 
   | Claude role tier | Codex model | Reasoning effort |

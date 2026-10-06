@@ -27,6 +27,7 @@ profile adopts its matching role identity, including `crewbook/platform`,
 | [crewbook-verify](../.agents/crewbook-verify.md) | Measurements and reproducible evidence | Only on authorized reference setup |
 | [crewbook-review](../.agents/crewbook-review.md) | Independent review of exact commits | Never its own work or feature edits |
 | [crewbook-helper](../.agents/crewbook-helper.md) | Bounded lookup, edit or check | No lane, Git state, protected edits or outward actions |
+| [crewbook-worker](../.agents/crewbook-worker.md) | Read-only research for one bounded batch | No file or Git changes, no posts |
 
 Claude pins are Sonnet for desk/dispatch and issue/research workers, Opus for
 design and security/code review, Haiku for helpers. crewbook-docs-reviewer uses
@@ -591,7 +592,7 @@ supplies start/resume/capacity enforcement. Efficiency and quality gains remain
 unmeasured.
 
 Research uses
-crewbook-worker; quick lookups use crewbook-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
+[crewbook-worker](../.agents/crewbook-worker.md); quick lookups use crewbook-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
 is data: the requester reviews the diff and verifies commands/exit codes.
 Helper attribution follows [target contribution requirements](#target-contribution-requirements)
 and identifies actual assistance in the target's applicable format. No helper edits protected

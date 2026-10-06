@@ -12,7 +12,8 @@
       ".agents/crewbook-docs.md",
       ".agents/crewbook-helper.md",
       ".agents/crewbook-review.md",
-      ".agents/crewbook-verify.md"
+      ".agents/crewbook-verify.md",
+      ".agents/crewbook-worker.md"
     ],
     "claude_agents": [
       ".claude/agents/crewbook-design.md",
