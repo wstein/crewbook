@@ -153,16 +153,24 @@ decides them, logs them `defaulted` and lists them on one veto line in each
 report. Never defaulted: push or landing, forge or board writes, loosening a
 rule or security control, release scope or order, money, product direction.
 These classes are always consequential and win over any standing default. A
-consequential item may carry a `[rec]`, but `ok` (accept all recommended)
-applies to routine items only; a consequential item must be answered explicitly.
+consequential item may carry a `[rec]`, but `H<n>:rec` (take the recommended
+option) applies to routine items only; a consequential item must be answered
+explicitly with an option letter or `y`/`n`.
+
+Replies name the ID, never a position: `H7:a`, `H7:y`, `H7:n`, `H7:a+f` (option
+a plus a flag, only when the item defines that flag), `H7:?` (show detail),
+`H7:later` (defer) or `H7:rec`, combinable on one line (`H7:a H8:y`). Option
+letters are fixed per item. An ID is never reused or renumbered; a reply naming
+an unknown, already-answered or superseded ID is ignored and reported, never
+guessed.
 
 <a id="needs-you-example"></a>
-Desk's turn opens like this (reply `1a 2a`, `ok`, `why 2`, `hold 3` or `later`):
+Desk's turn opens like this (reply `H7:a H8:y`, `H7:rec`, `H7:?` or `H7:later`):
 
 ```text
 NEEDS YOU (2 of 2; 1 more queued)
-1. H7 Branch name for issue 44: a docs/desk-needs-you [rec], b docs/44-questions
-2. H8 Land the docs fix on main: a yes, b hold (push stays with you)
+H7: Branch name for issue 44: a docs/desk-needs-you [rec], b docs/44-questions
+H8: Land the docs fix on main: a yes, b hold (push stays with you)
 Status: 1 author running, 0 reviews pending. Defaulted (veto any): H5 soak length 1d.
 ```
 

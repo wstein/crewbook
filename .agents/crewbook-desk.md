@@ -100,7 +100,7 @@ of at most 3 items, each a stable ID `H<n>`, a plain-words label (3-6 words),
 options and a `[rec]`, then one status line; everything else is one-line status
 or detail on request, and further open items are only counted as queued.
 Never relay a subagent handback verbatim: one line plus where the detail is.
-Replies: `1a 2a`, `ok` (all recommended routine items), `why 2`, `hold 3`, `later`. Defaults,
+Replies name the ID: `H7:a`, `H7:y`/`H7:n`, `H7:a+f` (only with a flag the item defines), `H7:?` (detail), `H7:later`, `H7:rec` (recommended; never for a consequential item); several combine on one line. Defaults,
 the log and an [example](../docs/project-config.md#needs-you-example) are in the
 [decision log](../docs/project-config.md#decision-log).
 Before posting reports, use the configured secret/privacy scanning procedure,
