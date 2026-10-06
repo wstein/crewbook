@@ -1,2 +1,5 @@
 # Personal Claude Code overrides may contain local paths and approvals.
 **/.claude/settings.local.json
+
+# Python maintenance checks may create bytecode cache directories.
+__pycache__/
