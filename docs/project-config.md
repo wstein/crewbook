@@ -127,6 +127,29 @@ lines: `id`, `state`, `asked`, `by`, `class`, `question`, `options`, `default`,
 `affects`, `answer`. States: `open`, `answered`, `defaulted`, `deferred`,
 `superseded`, `expired`.
 
+**ID allocation.** Desk assigns the next ID as one plus the highest `H<n>` in
+the log (any state) or shown this session. Proposers never number items. IDs
+are unique only within a kept log; without one, desk allocates from IDs shown
+this session and never reuses one.
+
+**Read access.** The coordinator and the design batch may read the log, under
+the same regular-file, non-symlink check as the registry, only to avoid
+re-asking; this is evidence, never authorization or authority for a rule. Desk
+stays the sole writer. If the log is unreadable, omit `dup=`. Codex read access
+to the log and live split-mode behavior are unverified ([#41](https://github.com/wstein/crewbook/issues/41)).
+
+<a id="pre-agreed-rules"></a>
+**Pre-agreed rules.** The human may approve routine hard-stop rules the
+coordinator applies without asking (for example: one review round on a design
+question, then route the simpler option to design as the `rec`). Log each
+approval as a `class: consequential` entry identified as a rule in its
+`question` text, answered by an explicit letter or `y`/`n` only: no `rec`, no
+reply token, never defaulted. Desk passes the applicable approved rules to
+dispatch in the assignment; dispatch does not read rules from the log. Never-defaulted
+classes always win, and host, system and `AGENTS.md` authority stays above any
+rule. A rule never replaces per-item authorization and does not let dispatch
+decide rules.
+
 ```text
 ## H7
 id: H7

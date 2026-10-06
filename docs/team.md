@@ -362,7 +362,7 @@ Within an active human-authorized coordination session, start one nonempty
 design batch when an hour has elapsed since its last start, preserving the
 single owner and blocked-highest-priority exception. Record start/due times.
 Design returns ranked existing tasks, lanes, concrete disjoint file boundaries
-and prerequisites; the coordinator owns worker starts. Design returns each human question with an ID, options, a default and the affected work ([decision log](project-config.md#decision-log)); desk shows at most 3 items per turn in every mode.
+and prerequisites; the coordinator owns worker starts. Design and dispatch return each human question as an unnumbered ASK with class, options, a recommendation, affected work and any duplicate of a logged ID; desk alone assigns `H<n>` ([decision log](project-config.md#decision-log)) and shows at most 3 items per turn in every mode.
 Already-routed eligible work
 starts without waiting for that round. Apply current user priority overrides;
 a milestone gate requires actual independent readiness evidence, never a mocked
@@ -785,7 +785,10 @@ names its exact unchanged revision, scope and limitations; missing required evid
 not a clean result. Design handovers preserve decisions, rationale, open questions
 and prerequisites. Helpers preserve sources and command outcomes. Desk reports
 human-relevant outcomes, evidence, blockers and next actions; dispatch retains
-ownership and review obligations even when summarizing its registry.
+ownership and review obligations even when summarizing its registry. A split
+dispatcher's handback uses the fixed DONE / IN FLIGHT / ASK schema in
+[crewbook-dispatch](../.agents/crewbook-dispatch.md) and is sent only at its
+listed milestones.
 
 Distinguish **committed** (exact SHA), **tested** (named setup, command, outcome
 and evidence), **reviewed** (independent reviewer, exact revision, scope and open

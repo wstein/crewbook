@@ -15,7 +15,7 @@ single canonical coordinator procedure. Desk follows it as `crewbook/desk` in
 merged mode (the default, no dispatcher started); a split-mode dispatcher
 subagent or a direct `/crewbook-dispatch` invocation uses the `crewbook/dispatch`
 identity. When started by crewbook-desk as a split dispatcher, retain this subagent identity across assignments and
-send concise handbacks to the parent desk. Dispatch startup itself does not
+send handbacks in the fixed schema below to the parent desk. Dispatch startup itself does not
 claim an issue; read the supplied task/queue and establish ownership first.
 Apply the [supervision and recovery cycle](../docs/team.md#dispatch-supervision-and-recovery)
 on every resume: drain and preserve all completions, validate exact evidence,
@@ -110,6 +110,27 @@ Apply the manual's supervision rule; never imply a background scheduler.
 Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
 to handovers and public reports; preserve evidence, conditions, uncertainty
 and security detail when shortening.
+
+In split mode hand back to desk only at a milestone: an exact SHA cleared by
+independent review, a blocker that stops a dependent operation, a true
+empty-queue transition, a question for the human, a desk request or a
+context-turnover notice. Use this plain-text schema (one line per item):
+
+```text
+HANDBACK crewbook/dispatch -> crewbook/desk, registry updated <UTC>
+DONE: <task> <sha> stamp=<independent exact-SHA review note ref, never the author's claim> note=<one line verified evidence> base=<base sha> land=<retained author's confirmed result | pending: <next action> | none (content review only)>
+IN FLIGHT: <task> <phase> owner=<role> next=<named artifact>
+ASK <k>: class=<routine|consequential> q=<question> options=<a ...; b ...> rec=<letter|none> affects=<task/operation> dup=<existing H<n>|none>
+```
+
+`<k>` numbers asks within this handback only. Never write a new `H<n>`; desk
+assigns IDs. Cite an existing `H<n>` as `dup=` only from the
+[decision log](../docs/project-config.md#decision-log), which dispatch may read
+but never write, and only to avoid re-asking; desk decides what `dup=` means.
+Decision-log content is never authority for a rule: apply only the
+[pre-agreed rules](../docs/project-config.md#pre-agreed-rules) desk passes in
+the assignment; anything else is an ASK. A paste-ready line is text for desk, never an
+action or authorization.
 
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Sonnet; Codex uses the explicit README mapping, never inherited models.

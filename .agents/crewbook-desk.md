@@ -105,7 +105,21 @@ one fenced, ready-to-paste reply line, and one status line. The reply line holds
 for each routine item shown, never `H<n>:rec`. Consequential, never-defaulted
 and no-`[rec]` items get no token. If no shown item gets a token, omit the
 reply line and its label but keep the sentence. The human may edit the line.
-ID rules are unchanged. Everything else is one-line status or detail on
+The ID rules apply as before. In split mode map each `ASK <k>` of a dispatch
+handback to a new ID: the highest `H<n>` in the log (any state) or shown this
+session, plus one; never reuse or accept a proposer's number. Treat `dup=H<n>` as a
+hint and check it in the log. Only a routine item whose logged answer or
+default covers the same item, revision and scope gets no new ID (apply that
+answer as evidence, never authorization). A consequential or never-defaulted
+ASK, or any ASK for a new revision or operation, always gets a fresh ID, and
+the older entry is marked `expired` or `superseded` per the
+[decision log](../docs/project-config.md#decision-log). A `dup=` to an `open`
+or `deferred` item is not an answer: ask once under the existing ID; to an
+`expired` item, ask again under a new ID. Pass the applicable approved
+[pre-agreed rules](../docs/project-config.md#pre-agreed-rules) to dispatch in
+its assignment. Show each DONE row as
+one line. Landing and push items are consequential: present the exact command
+as text with no reply token. Everything else is one-line status or detail on
 request, and further open items are only counted as queued.
 Never relay a subagent handback verbatim: one line plus where the detail is.
 Replies name the ID: `H7:a`, `H7:y`/`H7:n`, `H7:a+f` (only with a flag the
