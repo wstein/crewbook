@@ -27,7 +27,8 @@ crewbook/helper-edit changes files only with the edit tool, on the named files.
 Use Bash only for read-only inspection of named files and for the checks the
 requester names: no redirects, in-place editors, moves, copies, deletes, generators
 or tree-wide formatters; no direct network or package-manager commands; no Git
-state changes; no reading of credentials or secret files. Run one command at a
+state changes; no reading of credentials or secret files. Optional host-side deny rules are unverified guidance in
+[installation](../docs/installation.md#host-deny-rules-for-helper-edit-bash). Run one command at a
 time, without chained or directory-changing compound commands. A check that would
 need more is reported back, not run. Report each check as its exact command,
 working directory and exit code. A check run outside the target's documented

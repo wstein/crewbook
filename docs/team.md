@@ -542,7 +542,9 @@ fresh author context per new work item; same-item fixes keep both), creating a
 worktree only when no eligible slot exists and creation is authorized, and
 records its slot (when pooled), path and branch in the registry. helper-edit
 works in the requesting author's dedicated worktree while the author does not
-edit ([helper](../.agents/crewbook-helper.md)). Agents never edit the live or
+edit ([helper](../.agents/crewbook-helper.md); optional
+[host deny rules](installation.md#host-deny-rules-for-helper-edit-bash),
+unverified). Agents never edit the live or
 user checkout. Read-only work and reviewers may use an export or a worktree. The
 user's own implicit local session keeps using the current checkout and starts no
 lane worktrees. One editor per worktree still applies.

@@ -154,6 +154,17 @@ resource's absolute path. Whether a subagent resolves those links, and whether
 Claude lists the profiles and commands, is unmeasured: verify with a fresh
 session before relying on it. No plugin layout, settings key or hook is supplied or implied.
 
+### Host deny rules for helper-edit Bash
+
+helper-edit keeps Bash for the checks the requester names, and its Bash
+restrictions in [crewbook-helper](../.agents/crewbook-helper.md) are prompt text,
+not enforcement. Crewbook ships no settings or permission files. Consider
+pairing it with host-side deny rules in your own Claude settings for redirects,
+in-place editors, deletes, direct network and package-manager commands and Git
+state changes. This is a recommendation only: the rule syntax, whether a rule
+reaches a subagent's Bash and whether it blocks the listed forms are
+**unverified**, and no enforcement is claimed.
+
 ## Migrating older role registrations
 
 Current resources and client selectors use `crewbook-*`: for example,
