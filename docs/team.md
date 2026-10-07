@@ -855,8 +855,8 @@ the project policy requires for the exact SHA carries a `model=` value
 ([format](project-config.md)) that satisfies the project's tier rule
 ([default](../.agents/crewbook-dispatch.md)), no NOT CLEAR is recorded for that SHA,
 and any other unparsable line naming that SHA is a gap. A line "names" a SHA when it contains
-it (case-insensitive); a malformed NOT CLEAR that names no SHA, or only a prefix of at least 7
-hex characters of it, also blocks. Stamps count by (SHA, canonical model): `opus` and
+it (case-insensitive). A malformed NOT CLEAR blocks unless it contains a different full
+40-hex SHA. Stamps count by (SHA, canonical model): `opus` and
 `claude-opus-5-5` are one stamp, and reviewer identity is not modelled, so two reviewers who both
 record `model=opus` count once. A policy requiring more than one CLEAR therefore needs distinct
 models; no reviewer-key field exists. Fail-closed: any lower-tier CLEAR on the SHA is a gap,

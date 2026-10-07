@@ -143,22 +143,19 @@ class ReviewLineTests(unittest.TestCase):
                     'claude-opus-5-5x'):
             self.assertEqual(rl.canonical(bad), bad)
 
-    def test_not_clear_prefix_or_no_sha_blocks(self):
+    def test_malformed_not_clear_blocks_unless_foreign_full_sha(self):
         ok = 'CLEAR %s model=opus' % SHA
-        for bad in ('NOT CLEAR %s model=opus ' % SHA[:7], 'NOT CLEAR %s' % SHA[:12],
-                    'NOT CLEAR', 'not clear model=opus', 'NOT CLEAR  %s model=' % SHA[:39]):
+        other = 'b' * 40
+        for bad in ('NOT CLEAR model=claude-opus-5-5-20260101', 'NOT CLEAR model=opus-20260101',
+                    'NOT CLEAR 20260101 model=opus', 'NOT CLEAR 1234567890 model=opus',
+                    'NOT CLEAR %s model=opus' % SHA[:7], 'NOT CLEAR %s' % SHA[:12],
+                    'NOT CLEAR', 'not clear model=opus',
+                    'NOT CLEAR model: claude-opus-5-5-20260101', 'NOT\tCLEAR model=opus',
+                    'NOT CLEAR (%s) model=opus' % SHA[:8], 'NOT CLEAR (model=opus)',
+                    'NOT CLEAR %s model=opus %s' % (other, SHA), 'NOT CLEAR %s %s' % (SHA, other)):
             self.assertTrue(any('NOT CLEAR' in g for g in rl.gate([ok, bad], SHA, {'opus'}, 1)), bad)
-
-    def test_not_clear_hex_in_model_token_is_not_a_sha(self):
-        ok = 'CLEAR %s model=opus' % SHA
-        for bad in ('NOT CLEAR model=claude-opus-5-5-20260101',
-                    'NOT CLEAR model=claude-opus-5-5-20260101 '):
-            self.assertTrue(any('NOT CLEAR' in g for g in rl.gate([ok, bad], SHA, {'opus'}, 1)), bad)
-
-    def test_not_clear_other_or_short_sha_does_not_block(self):
-        ok = 'CLEAR %s model=opus' % SHA
-        for fine in ('NOT CLEAR %s model=opus ' % ('b' * 40), 'NOT CLEAR bbbbbbb',
-                     'NOT CLEAR %s' % SHA[:6] + ' bbbbbbbb'):
+        for fine in ('NOT CLEAR %s model=opus ' % other, 'NOT CLEAR (%s) model=opus' % other,
+                     'NOT CLEAR %s model: opus' % other):
             self.assertEqual(rl.gate([ok, fine], SHA, {'opus'}, 1), [], fine)
 
     def test_any_lower_tier_clear_blocks_even_if_extra(self):
