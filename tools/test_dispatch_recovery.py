@@ -423,16 +423,14 @@ def effective_cap(requested, consequential_answer, host_capacity):
     return min(cap, host_capacity)
 
 
-def format_branch_name(category, issue, slug, order='prefix'):
-    """Model of the documented branch naming rule: <cat>/<issue>-<slug> or <cat>/<slug>-<issue>."""
+def format_branch_name(category, issue, slug):
+    """Model of the documented branch naming rule: <cat>/<issue>-<slug> (issue-less: <cat>/<slug>)."""
     cleaned_slug = re.sub(r'[^a-z0-9\-]+', '-', slug.lower().strip().replace(' ', '-').replace('_', '-'))
     cleaned_slug = re.sub(r'-+', '-', cleaned_slug).strip('-')
     if len(cleaned_slug) > 30:
         raise ValueError('branch slug must be at most 30 characters')
     if issue is None:
         return f"{category}/{cleaned_slug}"
-    if order == 'suffix':
-        return f"{category}/{cleaned_slug}-{issue}"
     return f"{category}/{issue}-{cleaned_slug}"
 
 
@@ -1207,15 +1205,14 @@ class CoordinatorModes(unittest.TestCase):
     def test_branch_slug_length_bound(self):
         # The bound applies after normalization, separately from issue/category.
         boundary = 'abcdefghijklmn-opqrstuvwxyzabc'
-        for issue, order in ((63, 'prefix'), (63, 'suffix'), (None, 'prefix')):
-            with self.subTest(issue=issue, order=order):
+        for issue in (63, None):
+            with self.subTest(issue=issue):
                 expected = ('fix/' + boundary if issue is None else
-                            'fix/' + boundary + '-63' if order == 'suffix' else
                             'fix/63-' + boundary)
-                self.assertEqual(format_branch_name('fix', issue, boundary.upper() + '!!!', order),
+                self.assertEqual(format_branch_name('fix', issue, boundary.upper() + '!!!'),
                                  expected)
                 with self.assertRaisesRegex(ValueError, '30 characters'):
-                    format_branch_name('fix', issue, boundary + 'e', order)
+                    format_branch_name('fix', issue, boundary + 'e')
 
     def test_branch_naming_format(self):
         # Canonical format: <category>/<issue>-<short-slug>
@@ -1225,11 +1222,10 @@ class CoordinatorModes(unittest.TestCase):
                          'docs/50-caps')
         self.assertEqual(format_branch_name('fix', 348, 'Refuse Subscription Token'),
                          'fix/348-refuse-subscription-token')
-        # Suffix alternative: <category>/<short-slug>-<issue>
-        self.assertEqual(format_branch_name('docs', 50, 'caps', order='suffix'),
-                         'docs/caps-50')
-        self.assertEqual(format_branch_name('feat', 337, 'setup-wiring', order='suffix'),
-                         'feat/setup-wiring-337')
+        # The suffix order is not a valid form for issue-backed work.
+        self.assertNotEqual(format_branch_name('docs', 50, 'caps'), 'docs/caps-50')
+        self.assertNotEqual(format_branch_name('feat', 337, 'setup-wiring'),
+                            'feat/setup-wiring-337')
         # Standalone without issue: <category>/<short-slug>
         self.assertEqual(format_branch_name('chore', None, 'cleanup-temp'),
                          'chore/cleanup-temp')
