@@ -898,7 +898,7 @@ under the [target Git history policy](git-history.md) and
 
 Before a landing line is offered, the stamp brief and landing line require
 passing results for the supplied target policy's required checks on the exact
-candidate SHA. Where that policy requires the full project test suite plus a
+candidate SHA. The full test run happens once on the stack tip and is bound to the exact reviewed SHA: it is not repeated while that SHA is unchanged and is repeated when the tip changes. Where that policy requires the full project test suite plus a
 second-platform static check (for example, `go test ./...` and
 `GOOS=linux go vet ./...` for a Go project), or an exact-SHA CI run, include
 that required evidence. A result for a different SHA does not count; never
