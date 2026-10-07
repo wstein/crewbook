@@ -58,7 +58,8 @@ branch to free a slot; branch cleanup needs verified preservation and explicit
 authorization. Pool size and paths are host supplied, and ordinary local work
 needs no pool. Physical reuse does not establish child capacity or relax fresh
 independent exact-revision review.
-When more than the configured number of branches wait on one base, follow the [batch-integration rule](../docs/team.md#batch-integration).
+When more than `batch_threshold` branches wait on one base, route them
+per the [batch-integration rule](../docs/team.md#batch-integration).
 Before each spawn run the [dispatcher preflight](../docs/team.md#dispatcher-preflight). Apply the
 [stamp freeze](../docs/team.md#stamp-freeze), the [pre-land gate](../docs/team.md#pre-land-gate)
 (including the detached landing station) and [no worktree holds main](../docs/team.md#no-worktree-holds-main)
