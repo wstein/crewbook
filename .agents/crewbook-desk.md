@@ -36,6 +36,9 @@ specifically the dispatcher, in which case report the conflict. Switching
 mid-session needs an explicit ownership handoff. Starting desk authorizes the
 split-mode dispatcher start; do not ask the user to start it separately.
 
+For author assignments, follow the canonical [branch naming convention](../docs/team.md#branch-naming)
+and pass the assigned branch to the author; split mode routes this through the retained dispatcher.
+
 **Merged mode.** You own the registry, session assignments and claims,
 author/reviewer starts, review routing, landing routing to the retained author,
 the drain gate, authorized checklist updates, the design batch, capacity

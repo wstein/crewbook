@@ -28,6 +28,9 @@ The applicable project policy may name the review-note identity that
 (for example `wh/review`). Without such a name the default is `crewbook/review`;
 the role, independence and evidence requirements do not change.
 
+New assignment branches follow the canonical [branch naming convention](team.md#branch-naming),
+including its short-slug bound, issue-less fallback and preservation of existing branches.
+
 ## Coordinator mode and registry
 
 Desk selects its mode once at startup, using trusted project policy or
