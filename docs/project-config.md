@@ -196,6 +196,7 @@ and workharbor `internal/confirm`; this table does not restate them.
 | `channel` | `relay` |
 | `assurance` | `none` |
 | `by` | `human` |
+| `question` | the entry's `question` text, unchanged |
 | `answer` | `{mode: option, value: <letter\|y\|n\|a+f>}`; `rec` resolved to its option letter |
 | `at` | the entry's `answered` |
 | `evidence` | `[{kind: decision-log, ref: crewbook/decisions.md#H<n>}]` |
