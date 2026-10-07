@@ -175,6 +175,19 @@ class UsageTests(Fixture):
         self.assertEqual((rc, out), (2, ''))
         self.assertIn('price table', err)
 
+    def test_deeply_nested_sidecar_is_ignored(self):
+        self.write('s/subagents/agent-a.jsonl', [asst('m1', 'r1')])
+        (self.dir / 's/subagents/agent-a.meta.json').write_text('[' * 2000 + '0' + ']' * 2000)
+        self.assertEqual(self.report()['rows'][0]['role'], 'unknown')
+
+    def test_deeply_nested_prices_fail_with_generic_diagnostic(self):
+        self.write('s/main.jsonl', [asst('m1', 'r1')])
+        self.prices.write_text('[' * 2000 + '0' + ']' * 2000)
+        rc, out, err = self.run_rc('--json', '--prices', str(self.prices))
+        self.assertEqual((rc, out), (2, ''))
+        self.assertIn('price table cannot be read', err)
+        self.assertNotIn('Traceback', err)
+
     def test_invalid_price_values_reject_table(self):
         self.write('s/main.jsonl', [asst('m1', 'r1')])
         good = {'input': 1, 'output': 2, 'cache_read': 3, 'cache_write': 4}

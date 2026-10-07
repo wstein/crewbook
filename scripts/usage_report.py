@@ -80,7 +80,7 @@ def label_text(meta_path):
     try:
         with open(meta_path, "r", encoding="utf-8") as fh:
             d = json.load(fh)
-    except (OSError, ValueError):
+    except (OSError, ValueError, RecursionError, OverflowError):
         return ""
     if not isinstance(d, dict):
         return ""
@@ -220,7 +220,7 @@ def load_prices(path):
     try:
         with open(path, "r", encoding="utf-8") as fh:
             d = json.load(fh)
-    except (OSError, ValueError):
+    except (OSError, ValueError, RecursionError, OverflowError):
         return "unreadable", "price table cannot be read or is not valid JSON"
     models = d.get("models") if isinstance(d, dict) else None
     if not isinstance(models, dict) or not models:
