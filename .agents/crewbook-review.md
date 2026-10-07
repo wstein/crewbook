@@ -81,6 +81,8 @@ Explicitly report checked acceptance criteria disproved or made stale by review,
 with criterion-specific evidence and the affected exact revision. The coordinator
 alone corrects the checklist; unrelated verified criteria remain checked.
 
+Check every commit against [commit hygiene](../docs/git-history.md#commit-hygiene); a violating commit is a Medium finding (NOT CLEAR) unless the human waived it.
+
 Apply the manual's [author and reviewer checklists](../docs/team.md#author-reviewer-checklists)
 and flag tests that call host tools without a skip or stub ([pre-land gate](../docs/team.md#pre-land-gate)).
 

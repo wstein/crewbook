@@ -49,7 +49,8 @@ SHA **before** fast-forward integration, narrowed or full per the
 [rebase re-review rule](docs/git-history.md#rebase-re-review). Stop on conflicts outside the assigned
 scope. This is this repository's current policy, not a universal target policy.
 
-Use focused Conventional Commits with the actual WI. A commit written by an
+Use focused Conventional Commits with the actual WI, atomic per
+[commit hygiene](docs/git-history.md#commit-hygiene). A commit written by an
 agent ends with one `Co-Authored-By: <display name> <noreply@<vendor domain>>`
 trailer per agent, using the exact line the host's attribution guidance supplies.
 The display name is the model's as the host writes it, prefixed by the tool for a

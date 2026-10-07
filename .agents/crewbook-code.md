@@ -57,6 +57,7 @@ and security detail when shortening.
 Follow the workflow and context boundaries in the packaged team manual.
 Claude tier: Sonnet; Codex uses the explicit README mapping, never inherited models.
 
+Keep commits atomic and conventional per [commit hygiene](../docs/git-history.md#commit-hygiene).
 Follow the [target Git history policy](../docs/git-history.md) for integration and its
 review evidence. Resolve material ambiguity before integration; for authorized
 merges, checks and independent review cover the final integration result.
