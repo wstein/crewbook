@@ -481,6 +481,11 @@ class HardeningTests(Fixture):
         self.assertIsNotNone(models['claude-sonnet-5-5'])
         self.assertIsNone(models['unknown'])
         self.assertNotIn(SECRET, json.dumps(rep))
+        self.assertFalse(ur.valid_model('claude-x\n'))
+        self.assertFalse(ur.valid_model('claude-' + 'a' * 41))
+        self.assertFalse(ur.valid_model('claude-'))
+        self.assertTrue(ur.valid_model('claude-' + 'a' * 40))
+        self.assertTrue(ur.valid_model('claude-sonnet-5-5'))
 
     def test_role_whole_words_agent_type_first(self):
         for typ, desc, want in (('general', 'address review feedback', None),

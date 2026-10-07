@@ -99,7 +99,7 @@ def label_text(meta_path):
 
 
 def valid_model(m):
-    return isinstance(m, str) and MODEL_RE.match(m) is not None
+    return isinstance(m, str) and MODEL_RE.fullmatch(m) is not None
 
 
 def find_files(roots, stats=None):
