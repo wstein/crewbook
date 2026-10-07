@@ -40,6 +40,16 @@ and authorities. Report demonstrated contradictions with the affected locations
 and behavioral consequence. Missing or inapplicable artifacts do not require new
 documentation and are not automatically findings. This replaceable review guidance
 supplies no native enforcement.
+
+Optionally use the [simplicity ladder](../docs/simplicity.md#canonical-prompt)
+as a reviewer lens and return a candidate delete-list of unnecessary code,
+abstractions or dependencies. Tie each candidate to acceptance criteria,
+preserved behavior and evidence; assess reuse of existing code, standard-library
+or native platform features, then an existing installed dependency under that
+ladder. These suggestions never waive security, data-loss, validation,
+accessibility or required-verification findings and never authorize edits on
+the reviewer's behalf.
+
 Run only authorized isolated checks.
 The Claude reviewer profiles keep Bash because reviews run the package check,
 unit tests, the secret scan and scratch clones; Bash is for those checks and
