@@ -955,7 +955,16 @@ classes, share, top-N, context size at the last request and an estimated resume
 count. The script reads local Claude Code session logs (default `~/.claude/projects`)
 read-only and passively; nothing is sent to any agent or service. Output has
 counts, token numbers, hashed agent ids, model names and role labels only,
-never prompt or response text, file paths or secrets.
+never prompt or response text, file paths or secrets. Roles use only structured
+sidecar `agentType`/`description` labels; missing or unmatched labels produce
+`unknown`. Prompt content is never inspected. Model names use the fixed
+`SUPPORTED_MODELS` catalog in the script; unsupported IDs become `unknown` and
+remain unpriced, even if supplied as price-table keys. Adding a model requires
+a reviewed catalog update. This limits coverage of newly introduced models.
+Timing uses each agent's complete request timeline across model changes. A
+resume is counted once against the model of the request after the gap. A loop
+is reported once against the model of the first timestamped request, with mean
+cost over all agent requests per burst when every request is priced.
 
 Cost uses a price table you supply (`--prices`; the shipped
 `scripts/usage_prices.example.json` is an **estimate, not vendor-verified**

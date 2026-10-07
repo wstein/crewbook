@@ -373,6 +373,27 @@ class UsageTests(Fixture):
             row = self.report()['rows'][0]
             self.assertEqual(row['model'], 'claude-sonnet-4-5-20250929' if m.startswith('claude') else 'unknown', m)
 
+    def test_arbitrary_model_values_are_not_rendered_or_priced(self):
+        for planted in ('PRIVATE_SECRET_123', 'AKIA' + 'Q' * 16):
+            self.write('s/main.jsonl', [asst('m1', 'r1', model=planted)])
+            self.prices.write_text(json.dumps({'models': {planted: {
+                'input': 1, 'output': 2, 'cache_read': 3, 'cache_write': 4}}}))
+            rc, out, err = self.run_rc('--json', '--prices', str(self.prices))
+            self.assertEqual(rc, 0)
+            rep = json.loads(out)
+            self.assertEqual(rep['rows'][0]['model'], 'unknown')
+            self.assertEqual(rep['skipped_unknown']['unknown_model'], 1)
+            self.assertIsNone(rep['rows'][0]['cost_estimate'])
+            outputs = [out, err]
+            for flags in ((), ('--json',)):
+                _rc, rendered, diagnostic = self.run_rc(*flags)
+                outputs.extend((rendered, diagnostic))
+            dest = Path(self.tmp.name) / (str(len(planted)) + '.html')
+            _rc, rendered, diagnostic = self.run_rc('--html', str(dest))
+            outputs.extend((rendered, diagnostic, dest.read_text()))
+            for rendered in outputs:
+                self.assertNotIn(planted, rendered)
+
     def test_price_entry_missing_field_rejects_table(self):
         self.write('s/main.jsonl', [asst('m1', 'r1')])
         p = Path(self.tmp.name) / 'missing.json'

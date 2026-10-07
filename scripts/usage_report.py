@@ -38,8 +38,17 @@ ROLES = ("desk", "dispatch", "author", "reviewer", "design")
 # Order matters: first match wins. Keywords only; text is never emitted.
 ROLE_KEYWORDS = (("dispatch", "dispatch"), ("reviewer", "review"), ("design", "design"),
                  ("author", "author"), ("author", "worker"), ("desk", "desk"))
-MODEL_RE = re.compile(r"^(?!sk-)[A-Za-z0-9._:\[\]-]{1,64}$", re.IGNORECASE)
-KEYLIKE_RE = re.compile(r"[A-Za-z0-9]{24,}")
+# Explicit report vocabulary: unsupported strings never cross an output boundary.
+SUPPORTED_MODELS = frozenset((
+    "claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229",
+    "claude-3-5-sonnet-20240620", "claude-3-5-sonnet-20241022",
+    "claude-3-5-haiku-20241022", "claude-3-7-sonnet-20250219",
+    "claude-sonnet-4-20250514", "claude-opus-4-20250514",
+    "claude-opus-4-1-20250805", "claude-sonnet-4-5-20250929",
+    "claude-haiku-4-5-20251001", "claude-opus-4-5-20251101",
+    "claude-sonnet-4-6", "claude-opus-4-6",
+    "claude-sonnet-5", "claude-opus-5", "claude-haiku-5",
+))
 TOKEN_MAX = 10 ** 15
 BURST_IDLE = 60.0
 NOTICE = "Costs are estimates from a user-supplied price table, not vendor-verified."
@@ -89,7 +98,7 @@ def label_text(meta_path):
 
 
 def valid_model(m):
-    return isinstance(m, str) and bool(MODEL_RE.match(m)) and not KEYLIKE_RE.search(m)
+    return isinstance(m, str) and m in SUPPORTED_MODELS
 
 
 def find_files(roots, stats=None):
@@ -240,6 +249,8 @@ def load_prices(path):
 
 
 def price_for(table, model):
+    if model == "unknown":
+        return None
     low = model.lower()
     if low in table:
         return table[low]
