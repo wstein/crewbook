@@ -173,6 +173,25 @@ class ReviewLineTests(unittest.TestCase):
         gaps = rl.gate(['CLEAR %s model=x%sx' % (other, SHA)], SHA, {'opus'}, 1)
         self.assertTrue(any('inside its model token' in g for g in gaps))
 
+    def test_note_with_several_lines_splits_into_entries(self):
+        other = 'b' * 40
+        note = ('NOT CLEAR %s role=review model=sonnet\n'
+                'CLEAR %s role=review model=claude-opus-5-5\n'
+                '\nCLEAR %s role=qa model=opus/high\n' % (SHA, SHA, other))
+        lines = rl.split_note(note)
+        self.assertEqual(len(lines), 3)
+        self.assertEqual(rl.parse(lines[1]), ('CLEAR', SHA, 'claude-opus-5-5'))
+        self.assertEqual(rl.parse(lines[2]), ('CLEAR', other, 'opus/high'))
+        self.assertIn('NOT CLEAR recorded on %s' % SHA, rl.gate(lines, SHA, {'opus'}, 1))
+        self.assertEqual(rl.gate(lines[1:2], SHA, {'opus'}, 1), [])
+
+    def test_role_is_optional_and_validated(self):
+        self.assertIsNotNone(rl.parse('CLEAR %s model=opus' % SHA))
+        self.assertIsNotNone(rl.parse('CLEAR %s role=qa model=opus' % SHA))
+        for bad in ('CLEAR %s role= model=opus' % SHA, 'CLEAR %s role=a role=b model=opus' % SHA,
+                    'CLEAR %s role=Review model=opus' % SHA, 'CLEAR %s model=opus role=qa' % SHA):
+            self.assertIsNone(rl.parse(bad), bad)
+
 
 if __name__ == '__main__':
     unittest.main()

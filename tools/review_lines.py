@@ -2,14 +2,20 @@
 import re
 
 SEPARATOR = '; '
-LINE = re.compile(r'(review started|CLEAR|NOT CLEAR) ([0-9a-f]{40}) model=(?!model=)([!-:<-~]+)')
+LINE = re.compile(r'(review started|CLEAR|NOT CLEAR) ([0-9a-f]{40})(?: role=[a-z][a-z0-9-]*)? model=(?!model=)([!-:<-~]+)')
 CLAUDE_ID = re.compile(r'claude-(opus|sonnet|haiku)-\d+(?:-\d+)*(?:-\d{8})?')
 
 
 def parse(line):
-    """Return (kind, sha, model) or None; a missing or empty model= is invalid."""
+    """Return (kind, sha, model) or None; a missing or empty model= is invalid.
+    An optional `role=<role>` (note lines only) sits between sha and model and is not returned."""
     m = LINE.fullmatch(line)
     return m.groups() if m else None
+
+
+def split_note(text):
+    """A refs/notes/review note holds one entry per line (appended); blank lines are dropped."""
+    return [l for l in text.splitlines() if l.strip()]
 
 
 def canonical(model):
