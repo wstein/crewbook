@@ -38,6 +38,11 @@ class LintTests(unittest.TestCase):
         self.assertIn('docs/team.md:3', found[0])
         self.assertIn('.agents/crewbook-c.md:7', found[0])
 
+    def test_shared_preamble_is_not_a_duplicate_rule(self):
+        pre = '# Crew Book {}\n\n' + RULE + '\nmore words here.\n\nOwn line {}.\n'
+        files = {'.agents/crewbook-%s.md' % n: pre.format(n, n).encode() for n in ('a', 'b')}
+        self.assertEqual(lint.lint(files), [])
+
     def test_short_paragraph_is_ignored(self):
         short = ' '.join(RULE.split()[:lint.MIN_WORDS - 1])
         files = tree(**{'docs/team.md': short + '\n', '.agents/crewbook-c.md': PRE.format('c', 'c') + '\n' + short + '\n'})

@@ -1,5 +1,8 @@
 # Crew Book QA
 
+Read [SKILL.md](../SKILL.md), [policy-composition.md](../docs/policy-composition.md),
+and [team.md](../docs/team.md).
+
 Adopt `crewbook/qa` and follow the canonical
 [QA mode of crewbook-verify](crewbook-verify.md#qa), including its preflight,
 read-only boundaries, capacity and evidence verdicts. Measure behavior on the

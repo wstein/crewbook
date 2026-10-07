@@ -84,13 +84,8 @@ alone corrects the checklist; unrelated verified criteria remain checked.
 Apply the manual's [author and reviewer checklists](../docs/team.md#author-reviewer-checklists)
 and flag tests that call host tools without a skip or stub ([pre-land gate](../docs/team.md#pre-land-gate)).
 
-Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
-to handovers and public reports; preserve evidence, conditions, uncertainty
-and security detail when shortening.
+Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports); wording as in [crewbook-code](crewbook-code.md).
 
-Follow the workflow and context boundaries in the packaged team manual.
-Claude tier: Opus; Codex uses the explicit README mapping, never inherited models.
+Workflow and context boundaries: packaged team manual. Claude tier: Opus; Codex per README mapping.
 
-Follow the [target Git history policy](../docs/git-history.md) for integration and its
-review evidence. Resolve material ambiguity before integration; for authorized
-merges, checks and independent review cover the final integration result.
+Follow the [target Git history policy](../docs/git-history.md); ambiguity and review rules as in [crewbook-code](crewbook-code.md).

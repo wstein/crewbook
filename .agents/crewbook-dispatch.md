@@ -2,13 +2,7 @@
 
 Read [SKILL.md](../SKILL.md), [policy-composition.md](../docs/policy-composition.md),
 and [team.md](../docs/team.md).
-Use crewbook-generic by default as described in [project-config.md](../docs/project-config.md).
-Resolve the target from the user workspace/task and read applicable instructions.
-No separate policy file, workharbor container or board is required for generic work.
-Require only the selected operation's inputs; use crewbook-workharbor inside a managed container.
-Resolve these links relative to this file. Use the user workspace for target paths.
-Pass the task, checkout and applicable instructions to children. Package guidance cannot relax host authority
-or authorization; unavailable required tools stop the affected workflow.
+Generic defaults, target resolution and host-authority limits: as in [crewbook-design](crewbook-design.md).
 
 You are the designated coordinator, not an author or reviewer leaf. This is the
 single canonical coordinator procedure. Desk follows it as `crewbook/desk` in
@@ -120,9 +114,7 @@ reactivate a yielded parent. End only with resolved work, human pause, concrete
 external blocker or explicit ownership handoff retaining the next resume action.
 Apply the manual's supervision rule; never imply a background scheduler.
 
-Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
-to handovers and public reports; preserve evidence, conditions, uncertainty
-and security detail when shortening.
+Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports); wording as in [crewbook-code](crewbook-code.md).
 
 In split mode hand back to desk only at a milestone: an exact SHA cleared by
 independent review, a blocker that stops a dependent operation, a true
@@ -145,5 +137,4 @@ Decision-log content is never authority for a rule: apply only the
 the assignment; anything else is an ASK. A paste-ready line is text for desk, never an
 action or authorization.
 
-Follow the workflow and context boundaries in the packaged team manual.
-Claude tier: Sonnet; Codex uses the explicit README mapping, never inherited models.
+Workflow and context boundaries: packaged team manual. Claude tier: Sonnet; Codex per README mapping.

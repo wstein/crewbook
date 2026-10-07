@@ -25,20 +25,11 @@ prior review; do not integrate it under approval for an older revision. Report
 verified and unverified claims separately; local integration does not authorize
 pushing or publication.
 
-Execute your already-assigned issue or batch directly as a leaf; never start
-another issue worker for it. The designated coordinator owns the claim, review initiation and the card writes
-for work it started or recorded the claim for ([card-owner rule](../docs/team.md#card-owner-rule)); acknowledge its claim and return outcomes to that owner.
-You own your assignment's checks, commits and authorized configured landing.
-Bounded helpers are permitted under the manual, not recursive issue delegation.
+Execute your assigned work as a leaf under the [card-owner rule](../docs/team.md#card-owner-rule); details as in [crewbook-design](crewbook-design.md).
 
 Apply the manual's [author checklist](../docs/team.md#author-reviewer-checklists) before handback.
-Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
-to handovers and public reports; preserve evidence, conditions, uncertainty
-and security detail when shortening.
+Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports); wording as in [crewbook-code](crewbook-code.md).
 
-Follow the workflow and context boundaries in the packaged team manual.
-Claude tier: Sonnet; Codex uses the explicit README mapping, never inherited models.
+Workflow and context boundaries: packaged team manual. Claude tier: Sonnet; Codex per README mapping.
 
-Follow the [target Git history policy](../docs/git-history.md) for integration and its
-review evidence. Resolve material ambiguity before integration; for authorized
-merges, checks and independent review cover the final integration result.
+Follow the [target Git history policy](../docs/git-history.md); ambiguity and review rules as in [crewbook-code](crewbook-code.md).
