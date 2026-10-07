@@ -1222,7 +1222,8 @@ class CoordinatorModes(unittest.TestCase):
                          'docs/50-caps')
         self.assertEqual(format_branch_name('fix', 348, 'Refuse Subscription Token'),
                          'fix/348-refuse-subscription-token')
-        # The suffix order is not a valid form for issue-backed work.
+        # Regression marker for the removed suffix order only; nothing rejects a
+        # hand-typed suffix branch (the convention is documentation-only).
         self.assertNotEqual(format_branch_name('docs', 50, 'caps'), 'docs/caps-50')
         self.assertNotEqual(format_branch_name('feat', 337, 'setup-wiring'),
                             'feat/setup-wiring-337')
