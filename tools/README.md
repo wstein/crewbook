@@ -59,7 +59,8 @@ The unittest command runs every `tools/test_*.py` file: `test_package.py`
 `test_evaluation_fixtures.py` (evaluation harness and fixtures),
 `test_source_linear_history.py` (source main guard), `test_confirm.py`
 (confirmation record v1 codec against shared fixtures), `test_preflight.py`,
-`test_scanner.py` and `test_dispatch_recovery.py`.
+`test_scanner.py`, `test_dispatch_recovery.py` and `test_usage_report.py`
+(synthetic-fixture and redaction tests for the distributed `scripts/usage_report.py`).
 
 The exported skill contains no maintenance code or dependencies. Source/layout
 checks and provider assertions do not establish native loading, permission

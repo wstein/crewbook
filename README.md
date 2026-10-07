@@ -6,7 +6,9 @@ reusable guidance for coding, review, documentation and verification, plus a
 coordinated workflow for larger tasks with authors and independent reviewers.
 
 The package and skill are named `crewbook`; invoke the skill as `$crewbook`.
-It contains text and metadata. Your agent client supplies the tools, and your
+It contains text, metadata and one read-only usage report script
+(`scripts/usage_report.py`, with an example price JSON) that only reads local
+logs; no settings, hooks or permission allowlists ship. Your agent client supplies the tools, and your
 repository instructions and authorization govern the work.
 
 ## Install in Codex

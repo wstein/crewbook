@@ -946,6 +946,24 @@ human-rubric evaluation in [#14](https://github.com/wstein/crewbook/issues/14)
 remains unverified; this guidance makes no measured comprehension or omission
 claim and supplies no prompt parser or runtime enforcement.
 
+## Usage report
+
+`scripts/usage_report.py` (see `--help` for flags and the documented heuristics)
+and the `/crewbook-usage` command (`.claude/commands/crewbook-usage.md`) show where
+tokens and estimated cost go: per agent, model and role, with requests, token
+classes, share, top-N, context size at the last request and an estimated resume
+count. The script reads local Claude Code session logs (default `~/.claude/projects`)
+read-only and passively; nothing is sent to any agent or service. Output has
+counts, token numbers, hashed agent ids, model names and role labels only,
+never prompt or response text, file paths or secrets.
+
+Cost uses a price table you supply (`--prices`; the shipped
+`scripts/usage_prices.example.json` is an **estimate, not vendor-verified**
+example). Without a table the report shows tokens only and cost `n/a`. Resume
+counts and loop/cron tick cost are heuristics and **unverified**. The command
+does not change loop cadence or any rule; whether a given client loads it
+natively is unverified, and the Codex pendant is tracked in #41.
+
 ## Evidence and portability
 
 Use ordinary Markdown labels: **unverified** (not measured), **verified**

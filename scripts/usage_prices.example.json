@@ -1,0 +1,10 @@
+{
+  "label": "ESTIMATE, NOT VENDOR-VERIFIED. Example prices only; replace with the current figures you trust.",
+  "currency": "USD",
+  "unit": "per million tokens",
+  "models": {
+    "opus": {"input": 15.0, "output": 75.0, "cache_read": 1.5, "cache_write": 18.75},
+    "sonnet": {"input": 3.0, "output": 15.0, "cache_read": 0.3, "cache_write": 3.75},
+    "haiku": {"input": 1.0, "output": 5.0, "cache_read": 0.1, "cache_write": 1.25}
+  }
+}

@@ -40,6 +40,7 @@
       ".claude/commands/crewbook-handover.md",
       ".claude/commands/crewbook-land.md",
       ".claude/commands/crewbook-review.md",
+      ".claude/commands/crewbook-usage.md",
       ".claude/commands/crewbook-verify.md"
     ]
   },
@@ -68,7 +69,9 @@
     "docs/root-cause.md",
     "docs/antigravity.md",
     "docs/git-history.md",
-    "docs/installation.md"
+    "docs/installation.md",
+    "scripts/usage_report.py",
+    "scripts/usage_prices.example.json"
   ],
   "host_dependencies": [
     {

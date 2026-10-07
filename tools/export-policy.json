@@ -34,6 +34,7 @@
     ".claude/commands/crewbook-handover.md",
     ".claude/commands/crewbook-land.md",
     ".claude/commands/crewbook-review.md",
+    ".claude/commands/crewbook-usage.md",
     ".claude/commands/crewbook-verify.md",
     "LICENSE",
     "PROVENANCE.md",
@@ -58,7 +59,9 @@
     "docs/root-cause.md",
     "docs/simplicity.md",
     "docs/team.md",
-    "docs/tool-preflight.md"
+    "docs/tool-preflight.md",
+    "scripts/usage_prices.example.json",
+    "scripts/usage_report.py"
   ],
   "maintenance": []
 }

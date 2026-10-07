@@ -100,8 +100,9 @@ decisions and the split-mode writer rule, but only as a model: the behaviour
 itself is model-run procedure. Also model-run, unverified and unenforced: the regular non-symlink file and non-symlink parent checks,
 owner-only permissions, no secrets, never posting, the split-mode sole writer,
 the read-only second desk and takeover only after the human confirms. A hostile
-or concurrent writer is out of scope. No executable helper ships (the package
-has [no agent executable tools](distribution.md#current-content-artifact)). A
+or concurrent writer is out of scope. No registry helper ships (the package's only executable is the
+unrelated read-only usage report, see
+[distribution](distribution.md#current-content-artifact)). A
 helper is a later item behind any trigger: another finding where a damaged or foreign file is
 treated as valid, or any grammar change; a supported client giving desk a verified permitted Python or
 Bash path; an observed registry symlink or permission incident; or the human
@@ -312,7 +313,7 @@ the ID, so `set` runs only under desk; in any other session it is refused, and
 that session tells the user to run it under desk (it does not adopt desk). Without a kept log the entry is shown this session only, and
 desk never reuses an ID. `set` creates no other file, changes no registry key
 (the registry grammar is unchanged), edits no `settings.json` or
-`config.toml`, writes no secret or environment value, ships no executable and
+`config.toml`, writes no secret or environment value, ships no registry helper and
 parses no prompt text. A session value lasts for the session; the entry is
 evidence, never authorization.
 

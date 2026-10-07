@@ -52,9 +52,12 @@ their current byte digests, not the original import digests.
 
 These maintenance files and all Python maintenance source/tests, `.github/` and `.git/`
 are excluded from the distribution. The export contains LICENSE, provenance,
-README, SKILL, Codex discovery metadata, layout metadata, docs and every declared `.agents/` and `.claude/`
-resource. It contains no agent executable tools, runtime plugins, permission
-settings, hooks or maintenance inventory. A source checkout can be linked as a native Codex skill; a pinned distribution
+README, SKILL, Codex discovery metadata, layout metadata, docs, `scripts/` and every declared `.agents/` and `.claude/`
+resource. The export is text plus one read-only report script,
+`scripts/usage_report.py`, and its example price JSON. The script only reads
+local logs; the usage command instructs the agent to run it, and nothing
+enforces that. The export contains no other executables, runtime plugins,
+settings, hooks, permission allowlists or maintenance inventory. A source checkout can be linked as a native Codex skill; a pinned distribution
 uses the exported text artifact. No automatic upstream synchronization or source deletion follows
 from either inventory.
 

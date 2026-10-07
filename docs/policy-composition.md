@@ -77,7 +77,9 @@ prerequisites. Enforcement belongs to the platform/client: native tool limits,
 sandboxing, credential isolation and approval gates are not enforced by prose
 or Makefiles. Claude profile `tools` fields are client configuration requests;
 their effective behavior depends on the host. Crew Book ships no
-`.claude/settings.json`, hooks, permission allowlist or executable tools.
+`.claude/settings.json`, hooks or permission allowlist. Its only executable is
+the read-only `scripts/usage_report.py`, which reads local logs; the usage
+command instructs the agent to run it and nothing enforces that.
 Installing/loading it supplies none of those controls and authorizes no command.
 Any required host permission configuration must be independently supplied and
 verified; absence is never interpreted as permission.
