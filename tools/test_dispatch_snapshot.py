@@ -163,7 +163,23 @@ class SnapshotTest(unittest.TestCase):
             json.dump(data, h)
         out = self.render()
         self.assertNotIn('Ignore', out)
-        self.assertIn('?: #1', out)
+        self.assertIn('[board]\nunavailable: board label unsupported', out)
+
+    def test_distinct_unsupported_labels_do_not_merge(self):
+        with open(self.board, 'w') as h:
+            json.dump({'cards': [
+                {'column': 'In review', 'number': 1, 'own': True},
+                {'column': 'Ready to push', 'number': 2, 'own': True}]}, h)
+        with open(self.ci, 'w') as h:
+            json.dump({'runs': [
+                {'workflow': 'Package checks', 'status': 'completed',
+                 'conclusion': 'failure', 'sha': 'a' * 40, 'id': 1},
+                {'workflow': 'Secret scan', 'status': 'completed',
+                 'conclusion': 'success', 'sha': 'b' * 40, 'id': 2}]}, h)
+        out = self.render()
+        self.assertIn('[board]\nunavailable: board label unsupported', out)
+        self.assertIn('[ci]\nunavailable: ci label unsupported', out)
+        self.assertNotIn('? completed/success', out)
 
     def test_untouched_note_absent(self):
         git(self.root, 'notes', '--ref', 'review', 'remove', self.sha_a)

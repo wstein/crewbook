@@ -203,7 +203,10 @@ def board(path):
         cols = {}
         for card in data['cards']:
             if card.get('own') is True:
-                cols.setdefault(clean(card['column']), []).append(int(card['number']))
+                column = card['column']
+                if not isinstance(column, str) or not TOKEN.fullmatch(column):
+                    raise Unavailable('board label unsupported')
+                cols.setdefault(column, []).append(int(card['number']))
     except (KeyError, TypeError, ValueError, AttributeError):
         raise Unavailable('board input malformed')
     if not cols:
@@ -219,7 +222,9 @@ def ci(path):
     try:
         latest = {}
         for run in data['runs']:
-            wf = clean(run['workflow'])
+            wf = run['workflow']
+            if not isinstance(wf, str) or not TOKEN.fullmatch(wf):
+                raise Unavailable('ci label unsupported')
             if wf not in latest or int(run['id']) > int(latest[wf]['id']):
                 latest[wf] = run
         return ['%s %s/%s %s' % (wf, clean(r['status']),
