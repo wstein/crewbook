@@ -59,8 +59,9 @@ The unittest command runs every `tools/test_*.py` file: `test_package.py`
 `test_evaluation_fixtures.py` (evaluation harness and fixtures),
 `test_source_linear_history.py` (source main guard), `test_confirm.py`
 (confirmation record v1 codec against shared fixtures), `test_preflight.py`,
-`test_scanner.py`, `test_dispatch_recovery.py` and `test_usage_report.py`
-(synthetic-fixture and redaction tests for the distributed `scripts/usage_report.py`).
+`test_scanner.py`, `test_dispatch_recovery.py`, `test_dispatch_snapshot.py`
+and `test_usage_report.py` (synthetic-fixture and redaction tests for the
+distributed `scripts/usage_report.py`).
 
 The exported skill contains no maintenance code or dependencies. Source/layout
 checks and provider assertions do not establish native loading, permission
@@ -94,6 +95,37 @@ These synthetic cases do not establish native landing or parent supervision.
 They are a maintenance reference model,
 not runtime enforcement or tests that an agent follows prompt text. Timing and
 native-client recovery remain unverified.
+
+## Dispatch snapshot
+
+`dispatch_snapshot.py` (source-only maintenance, not exported, not in the export
+policy) prints one compact deterministic block: own board cards per column,
+local branches ahead of main with full SHA, whether `refs/notes/review` (the
+only notes ref read) has a note per SHA, worktrees (path, branch or `bare`,
+short HEAD), latest CI run per workflow and a registry summary (header
+mode/coordinator/target, phase counts and one `name owner=... phase=...` line
+per assignment, owner only from the registry `owner` key). Each section is
+capped at 40 lines; any excess ends with a `... N more` line, so the maximum is
+the six section headers plus 6 x 41 lines plus the optional stamp (253 lines).
+The registry is parsed with the strict grammar of
+[project-config.md](../docs/project-config.md#coordinator-mode-and-registry);
+a damaged or foreign file (including a header without `session`) prints
+`unavailable: damaged or foreign` and nothing else from it. The reader has no
+session marker, so a valid registry from any session is summarised. It is
+read-only (Git plumbing only, no writes, no network, no GraphQL) and prints no
+file contents, note bodies or prompt text; unsafe tokens print as `?`. Each
+section degrades alone to `unavailable: <reason>`.
+
+```sh
+python3 -B tools/dispatch_snapshot.py --root "$(pwd -P)" [--main main] \
+  [--board board.json|-] [--ci ci.json|-] [--registry PATH] [--stamp LABEL]
+```
+
+This repository has no `scripts/board-snapshot.sh`; the caller supplies board
+and CI data as JSON (shapes in the script docstring; `-` reads stdin for at
+most one input; a card counts only with `"own": true`), otherwise those sections read `unavailable`. The only
+time line is the optional caller-labelled `--stamp`. Shipping it is the human's
+decision.
 
 ## Optional source main guard
 
