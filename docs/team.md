@@ -917,9 +917,15 @@ Author before handback and reviewer at review check these recurring classes:
   class-level test, not instance by instance.
 - Security guards refuse when unsure; no hand-written shell parsers.
 
-A mechanical lint for preamble parity and duplicated rule text in
-`tools/crewbook-package.py check` is optional and tracked in
-[#57](https://github.com/wstein/crewbook/issues/57).
+`tools/crewbook-package.py check --lint` is an optional mechanical lint
+([#57](https://github.com/wstein/crewbook/issues/57)); it is off by default and
+only warns, never changing the exit status. The shared preamble is the two
+lines after the title of `.agents/crewbook-*.md` that most files have in
+common (whitespace-normalised); a file that differs is reported with its path
+and line 3. A duplicate is a paragraph of at least 20 words (`MIN_WORDS` in
+`tools/packagelint.py`) whose whitespace-normalised text appears in more than
+one of `docs/team.md` and those agent files; both locations are reported and
+the repeat should become a link. The lint is exact-text only, not semantic.
 
 <a id="dispatcher-preflight"></a>
 ### Dispatcher preflight and desk notifications
