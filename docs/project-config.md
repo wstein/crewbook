@@ -30,6 +30,8 @@ the role, independence and evidence requirements do not change.
 
 Project policy may set `batch_threshold` (default 5), the branch count above which the [batch-integration rule](team.md#batch-integration) applies.
 
+Project policy may set `review_rounds_max` (integer, default 4, hard maximum 5), the number of NOT CLEAR review rounds on the same item before the coordinator escalates; the rule is in [review rounds](team.md#review-rounds). Values outside 1 to 5 are clamped to that range.
+
 New assignment branches follow the canonical [branch naming convention](team.md#branch-naming),
 including its short-slug bound, issue-less fallback and preservation of existing branches.
 
@@ -330,7 +332,7 @@ here. Antigravity has no approved binding and reports that. Native loading of
 the command is unverified ([#41](https://github.com/wstein/crewbook/issues/41)).
 
 **`show`** (the default, read-only) works in any session. It reports: profile
-and mode, coordinator and model, the role to tier mapping, the caps, the
+and mode, coordinator and model, the role to tier mapping, the caps, `review_rounds_max`, the
 registry and decision-log paths, the policy sources, and host fit for Claude,
 Codex and Antigravity. Each value names its source and is labelled
 **measured** (read or observed this session), **configured** (supplied by
@@ -350,9 +352,9 @@ evidence, never authorization.
 
 - **Routine** (the [standing defaults](#decision-log) may apply): model
   mapping per the approved mapping ([README](../README.md),
-  [client mappings](installation.md#entrypoints-and-support)) and review
-  routing.
-- **Consequential** (explicit human answer, no default): raising a cap, adding
+  [client mappings](installation.md#entrypoints-and-support)), review
+  routing, and lowering `review_rounds_max`.
+- **Consequential** (explicit human answer, no default): raising a cap or `review_rounds_max` above the project value (never above 5), adding
   a model outside the approved mapping, and board or landing changes.
 - **Paths**: the registry and decision-log paths are show-only, or settable
   only to a supervisor-supplied path; no defaulted `set` moves these shared,
