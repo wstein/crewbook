@@ -170,10 +170,9 @@ reaches a subagent's Bash and whether it blocks the listed forms are
 
 crewbook-reviewer and crewbook-docs-reviewer keep Bash in their tool grants so
 a reviewer can run the checks the review needs (package check, tests, secret
-scan, scratch clones). The read-only limit is stated in
-[crewbook-review](../.agents/crewbook-review.md) and is prompt text. Whether the
-host enforces the grant, or the same deny rules as above reach a reviewer's
-Bash, is **unverified** (tracked in #41); no enforcement is claimed. A
+scan, scratch clones). The read-only limit and its unverified enforcement
+(#41) are stated once in [crewbook-review](../.agents/crewbook-review.md); no
+enforcement is claimed here. A
 read-only reviewer plus a separate verifier role was considered and not adopted.
 
 ## Migrating older role registrations
