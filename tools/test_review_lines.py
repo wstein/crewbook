@@ -208,11 +208,10 @@ class ReviewLineTests(unittest.TestCase):
             line = '%s %s model=opus' % (v, SHA)
             self.assertTrue(any('NOT CLEAR' in g for g in rl.gate([line, 'CLEAR %s model=opus' % SHA], SHA, {'opus'}, 1)), v)
 
-    def test_malformed_target_not_clear_blocks_with_foreign_sha_on_item(self):
-        other = 'NOT CLEAR %s model=opus' % ('b' * 40)
-        for sep in ('; ', ';'):
-            gaps = rl.gate([sep.join(['NOT CLEAR %s model=' % SHA, other]), 'CLEAR %s model=opus' % SHA], SHA, {'opus'}, 1)
-            self.assertTrue(any('NOT CLEAR' in g for g in gaps), sep)
+    def test_semicolon_tricks_do_not_pass_gate(self):
+        for bad in ('NOT;CLEAR %s model=opus', 'not ;CLEAR %s model=opus',
+                    'NOT-;CLEAR %s model=opus', 'CLEAR %s model=opus;x'):
+            self.assertTrue(rl.gate([bad % SHA, 'CLEAR %s model=opus' % SHA], SHA, {'opus'}, 1), bad)
 
     def test_long_hex_run_is_not_a_full_sha(self):
         gaps = rl.gate(['NOT CLEAR %s model=' % ('b' * 41), 'CLEAR %s model=opus' % SHA], SHA, {'opus'}, 1)

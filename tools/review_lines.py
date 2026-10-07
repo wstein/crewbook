@@ -57,8 +57,8 @@ def gate(lines, sha, tiers, required=1):
         raise ValueError('required must be an int >= 1')
     tiers = {canonical(t) for t in ([tiers] if isinstance(tiers, str) else tiers)}
     gaps, models = [], set()
-    # model tokens cannot contain ';', so a joined evidence value splits safely into entries
-    for line in (seg.strip('\r') for l in lines for seg in l.split(';')):
+    # callers pass split_evidence()/split_note() output: one entry per item, no further splitting here
+    for line in (l.strip('\r') for l in lines):
         loose = ' '.join(unicodedata.normalize('NFKC', line).translate(INVISIBLE).split()).lower()
         p = parse(line)
         if p and p[1] == sha:
