@@ -53,8 +53,7 @@ the reviewer's behalf.
 
 Run only authorized isolated checks.
 The Claude reviewer profiles keep Bash only to run checks: the package check,
-unit tests, the secret scan, `git rebase --keep-base --exec` in detached or
-scratch worktrees, and scratch clones. Never write to the reviewed worktree or
+unit tests, the secret scan, detached or scratch worktrees and scratch clones. Never write to the reviewed worktree or
 branch, push, or write to the board; the only permitted writes are the authorized
 exact-SHA CLEAR note below (one Bash `git notes` append) and, when approved, a forge review comment or status;
 use a scratch clone or temp directory for any generated output. Review the
@@ -83,7 +82,7 @@ Explicitly report checked acceptance criteria disproved or made stale by review,
 with criterion-specific evidence and the affected exact revision. The coordinator
 alone corrects the checklist; unrelated verified criteria remain checked.
 
-Check every commit against [commit hygiene](../docs/git-history.md#commit-hygiene); a violating commit is a Medium finding (NOT CLEAR) unless the human waived it.
+Check every commit against [commit hygiene](../docs/git-history.md#commit-hygiene); a violating commit (mixed concerns, non-conventional subject, missing why-body or `Refs:` trailer) is a Medium finding (NOT CLEAR) unless the human waived it. A commit that fails to build or pass tests on its own is no finding when the tip is green.
 
 Apply the manual's [author and reviewer checklists](../docs/team.md#author-reviewer-checklists)
 and flag tests that call host tools without a skip or stub ([pre-land gate](../docs/team.md#pre-land-gate)).
