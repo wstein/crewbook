@@ -64,10 +64,10 @@ Before each spawn run the [dispatcher preflight](../docs/team.md#dispatcher-pref
 before offering a landing line.
 Keep only the returned conclusion, commits, criteria and unverified items.
 Only the designated coordinator starts the pinned design batch: in fresh context for waiting decisions at most once an hour unless
-a highest-priority issue is blocked; in split mode desk never starts it, and a human-opened design session owns the role when open. Start independent crewbook-reviewer or
-crewbook-docs-reviewer in fresh context before human publication, always with an explicit
-model (Claude `model: opus`; Codex mapping in the [README](../README.md));
-a start without one is refused. Record the model actually reported as `model=` in the
+a highest-priority issue is blocked; in split mode desk never starts it, and a human-opened design session owns the role when open. Start independent reviewers in fresh context before human publication, always with an explicit
+model (Codex mapping in the [README](../README.md)): crewbook-reviewer on Opus (`model: opus`);
+crewbook-docs-reviewer on Sonnet (`model: sonnet`) only for documentation review that project
+policy classifies as eligible; a start without an explicit model is refused. Record the model actually reported as `model=` in the
 [registry review line](../docs/project-config.md). The default tier rule accepts `opus` and
 `gpt-6.1-sol/medium`; a lower tier (`sonnet`, `gpt-6.1-sol/low`) only for documentation
 review that project policy classifies as eligible (see crewbook-review). A review note
