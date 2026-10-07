@@ -21,7 +21,7 @@ otherwise mark them provisional or unverified. Run supplied documentation checks
 and return the exact candidate SHA to the coordinator for independent review.
 Follow the supplied target's review/integration order and reuse established
 local-commit/integration authorization within its scope. A changed SHA invalidates
-prior review; do not integrate it under approval for an older revision. Report
+prior review ([rebase re-review rule](../docs/git-history.md#rebase-re-review)); do not integrate it under approval for an older revision. Report
 verified and unverified claims separately; local integration does not authorize
 pushing or publication.
 

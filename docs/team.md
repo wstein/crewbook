@@ -514,7 +514,7 @@ authorized evidence; retain those criteria as unverified.
 7. The assigned author uses the supplied authorized target integration procedure
    in its required order, after exact-revision review when required. Handle
    conflicts only in files this issue changed; recheck and obtain new review of
-   any rewritten SHA before integration. Never infer push/publication permission.
+   any rewritten SHA ([rebase re-review rule](git-history.md#rebase-re-review)) before integration. Never infer push/publication permission.
    Another checkout's stale lock or index is the human's to repair. The coordinator
    records permitted statuses only after confirmed checks, review and required landing.
 8. Hand over to crewbook-desk/the human with commits, issues, checks, unmet criteria

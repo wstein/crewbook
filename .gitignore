@@ -4,5 +4,5 @@
 # Python maintenance checks may create bytecode cache directories.
 __pycache__/
 
-# Desk coordination notes (TO_LAND.md etc.) stay local.
+# Desk coordination notes (TO_LAND.md, TO_CLOSE.md etc.) stay local.
 /.work/

@@ -76,7 +76,7 @@ that created them. A one-line `Resume:` summary closes the file.
 <a id="review-note"></a>
 **Review note.** A reviewer that returns CLEAR records it as one line in the single note ref
 `refs/notes/review` on the exact full SHA it reviewed. The line is the grammar above plus the role,
-stated once here: `<VERDICT> <full sha> role=<role> model=<model>` (`role=` is a lowercase token such as
+stated once here: `CLEAR <full sha> role=<role> model=<model>` (`role=` is a lowercase token such as
 `review`; it sits between sha and model and is not counted by the gate). One line per entry, appended with
 `git notes --ref=review append -m "<line>" <sha>`; a note therefore holds several lines
 (`tools/review_lines.py` splits it). NOT CLEAR stays in the registry `evidence` value written by the desk.
