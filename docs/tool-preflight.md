@@ -27,6 +27,12 @@ blocker. Approval refusal stops that path. Do not alter credentials, disable
 controls, install substitutes or infer write authorization from successful
 reads. Resolve an uncertain external write outcome before repeating it.
 
+## Dispatcher spawn preflight
+
+Run the [dispatcher preflight](team.md#dispatcher-preflight) before each spawn:
+`df` for free disk space, and the shared build cache check, using the thresholds
+and failure handling stated there.
+
 ## Scan outgoing payloads
 
 Before an authorized issue-body, comment or other external write, resolve the

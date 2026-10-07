@@ -122,6 +122,9 @@ one line. Landing and push items are consequential: present the exact command
 as text with no reply token. Everything else is one-line status or detail on
 request, and further open items are only counted as queued.
 Never relay a subagent handback verbatim: one line plus where the detail is.
+Apply the [desk notification rule](../docs/team.md#dispatcher-preflight), the
+[pre-land gate](../docs/team.md#pre-land-gate) station statement and
+[no worktree holds main](../docs/team.md#no-worktree-holds-main).
 Replies name the ID: `H7:a`, `H7:y`/`H7:n`, `H7:a+f` (only with a flag the
 item defines), `H7:?` (detail), `H7:later`, `H7:rec` (recommended; never for a
 consequential item, which needs a letter or `y`/`n`), `H5:veto` (reopen a

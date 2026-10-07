@@ -31,6 +31,9 @@ for work it started or recorded the claim for ([card-owner rule](../docs/team.md
 You own your assignment's checks, commits and authorized configured landing.
 Bounded helpers are permitted under the manual, not recursive issue delegation.
 
+Apply the manual's [author and reviewer checklists](../docs/team.md#author-reviewer-checklists)
+and [stamp freeze](../docs/team.md#stamp-freeze) to rule changes.
+
 Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
 to handovers and public reports; preserve evidence, conditions, uncertainty
 and security detail when shortening.

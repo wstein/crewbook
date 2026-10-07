@@ -67,6 +67,9 @@ Explicitly report checked acceptance criteria disproved or made stale by review,
 with criterion-specific evidence and the affected exact revision. The coordinator
 alone corrects the checklist; unrelated verified criteria remain checked.
 
+Apply the manual's [author and reviewer checklists](../docs/team.md#author-reviewer-checklists)
+and flag tests that call host tools without a skip or stub ([pre-land gate](../docs/team.md#pre-land-gate)).
+
 Apply the manual's [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports)
 to handovers and public reports; preserve evidence, conditions, uncertainty
 and security detail when shortening.

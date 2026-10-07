@@ -58,6 +58,10 @@ branch to free a slot; branch cleanup needs verified preservation and explicit
 authorization. Pool size and paths are host supplied, and ordinary local work
 needs no pool. Physical reuse does not establish child capacity or relax fresh
 independent exact-revision review.
+Before each spawn run the [dispatcher preflight](../docs/team.md#dispatcher-preflight). Apply the
+[stamp freeze](../docs/team.md#stamp-freeze), the [pre-land gate](../docs/team.md#pre-land-gate)
+(including the detached landing station) and [no worktree holds main](../docs/team.md#no-worktree-holds-main)
+before offering a landing line.
 Keep only the returned conclusion, commits, criteria and unverified items.
 Only the designated coordinator starts the pinned design batch: in fresh context for waiting decisions at most once an hour unless
 a highest-priority issue is blocked; in split mode desk never starts it, and a human-opened design session owns the role when open. Start independent crewbook-reviewer or

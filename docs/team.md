@@ -797,6 +797,83 @@ merge-result review, locks, hooks and landing tools, and operation ownership,
 are in the [target Git history policy](git-history.md) and
 [its ownership section](git-history.md#ownership-and-evidence).
 
+## Stamp, landing and checklist rules
+
+These rules narrow, never relax, independent exact-SHA review, host controls
+and the user's authorized scope. They add no runtime enforcement.
+
+<a id="stamp-freeze"></a>
+### Stamp freeze
+
+A **carve-out** is a change to security-relevant paths, rules or agent prompts
+that needs an independent reviewer agent of the configured strength (see
+[crewbook-review](../.agents/crewbook-review.md)). A **stamp** is that reviewer's
+note that the exact SHA has no open Medium or higher finding. After a stamp,
+land that SHA. Lows go to a follow-up issue, never to new commits on the stamped
+branch. A Medium or higher finding discovered after a stamp blocks landing and
+needs a new commit plus a fresh independent review of the new exact SHA. A
+rebased or otherwise rewritten SHA needs fresh review under the existing rules
+([AGENTS.md](../AGENTS.md), [git history](git-history.md)).
+
+<a id="pre-land-gate"></a>
+### Pre-land gate
+
+The stamp brief and the landing line require, before a landing line is offered,
+the result of the full project test suite plus a second-platform static check
+(for a Go project `go test ./...` and `GOOS=linux go vet ./...`), or a CI run on
+the exact branch SHA. A result for a different SHA does not count. Reviewers
+flag tests that call host tools without a skip or stub. Project-specific build
+targets are tracked in the target project, not here.
+
+The landing station must be detached at current local main before landing. When
+handing over a landing line, the dispatcher states "station: detach to main
+first" and checks read-only that `git -C <station> rev-parse HEAD` equals local
+main and that `git -C <station> symbolic-ref -q HEAD` prints nothing (detached);
+a stale branch there can run an outdated recipe.
+
+<a id="no-worktree-holds-main"></a>
+### No worktree holds main
+
+No worktree holds `main` as a named branch permanently, because that blocks the
+user's own checkout of it; integration worktrees stay detached, and the
+dispatcher flags any slot whose branch is `main` in the slot registry.
+Integrate (fast-forward only) from a detached worktree with a local ref update
+such as `git push . <sha>:main`. `git update-ref refs/heads/main <new> <old>`
+(old-value form) is allowed only when no worktree holds `main` and the
+[source main guard](../tools/README.md#optional-source-main-guard) permits it;
+otherwise ask desk. Never switch a worktree's branch on the user's behalf: the
+user runs `git switch --detach` in a worktree that holds main. See
+[physical worktree slots](#physical-worktree-slots).
+
+<a id="author-reviewer-checklists"></a>
+### Author and reviewer checklists
+
+Author before handback and reviewer at review check these recurring classes:
+
+- Link to the canonical rule instead of restating it.
+- Sibling agent preambles stay in parity; change all siblings or none.
+- Every authority or permission rule answers who may decide, whether it can
+  default, and whether it can bypass desk.
+- Fix a whole class of cases (for example every variable of one kind) with one
+  class-level test, not instance by instance.
+- Security guards refuse when unsure; no hand-written shell parsers.
+
+A mechanical lint for preamble parity and duplicated rule text in
+`tools/crewbook-package.py check` is optional and tracked in
+[#57](https://github.com/wstein/crewbook/issues/57).
+
+<a id="dispatcher-preflight"></a>
+### Dispatcher preflight and desk notifications
+
+Before each spawn the dispatcher checks free disk space (`df`, at least about
+15 GB), uses one shared build cache per repository with a scheduled cleanup, and
+tells authors to commit a WIP commit or report early so a stop loses nothing.
+A failed preflight defers the spawn and is reported. Command detail:
+[tool preflight](tool-preflight.md#dispatcher-spawn-preflight).
+
+Desk ignores a completion notification whose body hash equals the last
+hand-back it processed, and hand-backs carry only what changed.
+
 ## Precise issues, handovers and review reports
 
 Lead with the problem or outcome, then decisive evidence, unmet criteria and
