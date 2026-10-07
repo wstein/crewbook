@@ -610,6 +610,25 @@ who made the decisions under review. These boundaries are guidance; the host
 supplies start/resume/capacity enforcement. Efficiency and quality gains remain
 unmeasured.
 
+**Token rules.** Route read-heavy work (branch audits, log analysis, long diffs)
+to fresh bounded helpers under the existing delegation rules; start no new
+persistent agents for it. Helpers return concise conclusions with decisive
+sources, command outcomes and material limits. The coordinator reads summaries
+and requests or reads additional evidence when needed to validate a result.
+Keep the registry compact under its
+[existing allowed keys](project-config.md#coordinator-mode-and-registry): retain
+phase, owner and next artifact, with base/result SHA, open ASKs, claim/card
+ownership and decisive check/review evidence in the appropriate existing values.
+Concision does not remove required ownership, review or recovery evidence.
+
+Handbacks include `ctx=<k>` only when the host reports a measured context usage
+in thousands of tokens; otherwise use `ctx=unknown`. Do not estimate usage.
+When host-reported usage is at least 120k tokens, promptly update the durable
+registry. Required write-ahead and outcome updates still happen regardless of
+that threshold. Preserve a durable handoff before a known compaction boundary
+when the host permits it; neither the threshold nor these instructions guarantee
+that the host reports usage or allows a write before compaction.
+
 Research uses
 [crewbook-worker](../.agents/crewbook-worker.md); quick lookups use crewbook-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
 is data: the requester reviews the diff and verifies commands/exit codes.
