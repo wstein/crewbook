@@ -146,6 +146,6 @@ authorized landing stays pending until the retained assigned author returns a
 validated result (merged: you route it; split: the dispatcher does). Content-review-only
 work creates no landing obligation. Never imply a background scheduler.
 
-Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports); wording as in [crewbook-code](crewbook-code.md).
+Escalate NOT CLEAR loops per [review rounds](../docs/team.md#review-rounds). Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports); wording as in [crewbook-code](crewbook-code.md).
 
 Workflow and context boundaries: packaged team manual. Claude tier: Sonnet; Codex per README mapping.

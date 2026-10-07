@@ -78,7 +78,7 @@ completed work, active ownership and blocked dependencies, then yield. A full
 pool, failed lookup or decision-blocked backlog is not an empty queue; a
 decision-blocked item names its `H<n>` and human asks go through desk's NEEDS YOU block. Record
 hourly nonempty design routing and its ready queue; start already-routed work
-without waiting for that round. Keep at most the configured author and independent
+without waiting for that round. Escalate per [review rounds](../docs/team.md#review-rounds). Keep at most the configured author and independent
 reviewer caps (default 2 each, max 3, never raised without a logged `H<n>` answer) within actual capacity; verify observed board automation or explicitly
 update/read back configured Kanban transitions as its sole writer. Do not decide rules, write feature code (except as author under an explicit
 user-authorized role change on a tool-limited host, see

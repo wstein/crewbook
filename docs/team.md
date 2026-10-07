@@ -876,6 +876,16 @@ are in the [target Git history policy](git-history.md) and
 These rules narrow, never relax, independent exact-SHA review, host controls
 and the user's authorized scope. They add no runtime enforcement.
 
+<a id="review-rounds"></a>
+### Review rounds
+
+A round is one fix plus one fresh review of the new exact SHA. After
+`review_rounds_max` ([project-config](project-config.md#generic-configuration),
+default 4, maximum 5) NOT CLEAR rounds on the same item, the coordinator stops
+and asks the human, offering the smallest remaining fix. Lows accepted as
+follow-ups per the stamp freeze below do not trigger a round; there is no other
+exemption.
+
 <a id="stamp-freeze"></a>
 ### Stamp freeze
 
