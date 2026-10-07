@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.dont_write_bytecode = True
@@ -202,12 +203,29 @@ class UsageTests(Fixture):
         (self.dir / 's/subagents/agent-a.meta.json').write_text('[' * 2000 + '0' + ']' * 2000)
         self.assertEqual(self.report()['rows'][0]['role'], 'unknown')
 
-    def test_deeply_nested_prices_fail_with_generic_diagnostic(self):
+    def test_deeply_nested_malformed_prices_fail_with_generic_diagnostic(self):
         self.write('s/main.jsonl', [asst('m1', 'r1')])
-        self.prices.write_text('[' * 2000 + '0' + ']' * 2000)
+        # This is malformed JSON even when a decoder supports this nesting depth.
+        # Older decoders may raise RecursionError before reaching the missing ']'.
+        self.prices.write_text('[' * 2000 + '0' + ']' * 1999)
         rc, out, err = self.run_rc('--json', '--prices', str(self.prices))
         self.assertEqual((rc, out), (2, ''))
         self.assertIn('price table cannot be read', err)
+        self.assertNotIn('Traceback', err)
+
+    def test_sidecar_decoder_recursion_failure_is_ignored(self):
+        meta = self.dir / 's/subagents/agent-a.meta.json'
+        meta.write_text('{}')
+        with mock.patch.object(ur.json, 'load', side_effect=RecursionError('private detail')):
+            self.assertEqual(ur.label_text(str(meta)), '')
+
+    def test_price_decoder_recursion_failure_has_generic_diagnostic(self):
+        self.write('s/main.jsonl', [asst('m1', 'r1')])
+        with mock.patch.object(ur.json, 'load', side_effect=RecursionError('private detail')):
+            rc, out, err = self.run_rc('--json', '--prices', str(self.prices))
+        self.assertEqual((rc, out), (2, ''))
+        self.assertIn('price table cannot be read', err)
+        self.assertNotIn('private detail', err)
         self.assertNotIn('Traceback', err)
 
     def test_invalid_price_values_reject_table(self):
