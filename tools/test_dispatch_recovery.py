@@ -423,6 +423,17 @@ def effective_cap(requested, consequential_answer, host_capacity):
     return min(cap, host_capacity)
 
 
+def format_branch_name(category, issue, slug, order='prefix'):
+    """Model of the documented branch naming rule: <cat>/<issue>-<slug> or <cat>/<slug>-<issue>."""
+    cleaned_slug = re.sub(r'[^a-z0-9\-]+', '-', slug.lower().strip().replace(' ', '-').replace('_', '-'))
+    cleaned_slug = re.sub(r'-+', '-', cleaned_slug).strip('-')
+    if issue is None:
+        return f"{category}/{cleaned_slug}"
+    if order == 'suffix':
+        return f"{category}/{cleaned_slug}-{issue}"
+    return f"{category}/{issue}-{cleaned_slug}"
+
+
 def merged_desk_turn(state, handles, wait_available, completion_reenters=False):
     """Desk as coordinator: never ends with obligations without a registry."""
     action, awaited = parent_continuation(state, handles, wait_available)
@@ -1190,6 +1201,23 @@ class CoordinatorModes(unittest.TestCase):
         self.assertEqual(effective_cap(9, True, 8), 3)
         self.assertEqual(effective_cap(1, False, 8), 1)
         self.assertEqual(effective_cap(3, True, 2), 2)
+
+    def test_branch_naming_format(self):
+        # Canonical format: <category>/<issue>-<short-slug>
+        self.assertEqual(format_branch_name('feat', 63, 'branch-naming'),
+                         'feat/63-branch-naming')
+        self.assertEqual(format_branch_name('docs', 50, 'caps'),
+                         'docs/50-caps')
+        self.assertEqual(format_branch_name('fix', 348, 'Refuse Subscription Token'),
+                         'fix/348-refuse-subscription-token')
+        # Suffix alternative: <category>/<short-slug>-<issue>
+        self.assertEqual(format_branch_name('docs', 50, 'caps', order='suffix'),
+                         'docs/caps-50')
+        self.assertEqual(format_branch_name('feat', 337, 'setup-wiring', order='suffix'),
+                         'feat/setup-wiring-337')
+        # Standalone without issue: <category>/<short-slug>
+        self.assertEqual(format_branch_name('chore', None, 'cleanup-temp'),
+                         'chore/cleanup-temp')
 
 
 if __name__ == '__main__':
