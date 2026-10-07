@@ -28,9 +28,21 @@ If the candidate diverges from the current integration branch, the author
 rebases only their own commits onto its current tip. Stop on conflicts outside
 the assigned changed files or commits outside author ownership. Rerun relevant
 checks and return the rewritten SHA for independent review through the
-coordinator before fast-forward integration. Every rewritten SHA invalidates
-prior approval and readiness. If the target moves again, repeat the required
-checks/review for any further changed candidate; never reuse old clearance.
+coordinator before fast-forward integration. A rewritten SHA never inherits
+prior approval and readiness silently; see the
+[rebase re-review rule](#rebase-re-review). If the target moves again, repeat
+the required checks/review for any further changed candidate; never reuse old
+clearance.
+
+<a id="rebase-re-review"></a>
+### Rebase re-review rule
+
+After a rebase the old stamp does not carry over silently. A rebase that is
+conflict-free, shows identical commits in `git range-diff` (all `=`) and touches
+no file the rebase base change touched needs one narrowed Opus review of the new
+exact SHA (range-diff equality plus tests at the new SHA). A rebase with
+conflicts or file overlap needs a full review. The CLEARs the
+[pre-land gate](team.md#pre-land-gate) requires still apply to the new SHA.
 
 ## Non-linear target with authorized merges
 

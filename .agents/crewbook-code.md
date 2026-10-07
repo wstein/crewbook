@@ -30,8 +30,9 @@ project conventions and accurate issue/assistance trailers when applicable.
 Reuse established commit/local-integration authorization within its scope;
 use only the supplied target procedure and review order. Return a checked exact
 candidate to the coordinator before integration when the target requires review
-first. A rebase or other changed SHA invalidates prior review; obtain independent
-review of the rewritten revision before integrating. Local integration does not
+first. A rebase or other changed SHA never carries prior review over silently; obtain
+independent review of the rewritten revision (narrowed or full per the
+[rebase re-review rule](../docs/git-history.md#rebase-re-review)) before integrating. Local integration does not
 authorize pushing or publication.
 Record material limitations with evidence, a measurable revisit trigger and a
 plausible next step in an existing issue, design record or nearby comment; follow

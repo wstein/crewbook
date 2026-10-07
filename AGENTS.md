@@ -44,8 +44,9 @@ Actual host controls and the user's authorized scope still apply.
 This repository uses linear, fast-forward-only integration into main. No merge
 commits, non-fast-forward integration, cherry-picks into main or rewriting
 existing main history. A diverged author rebases only their own commits onto
-current main, reruns checks and obtains fresh independent review of the rewritten
-SHA **before** fast-forward integration. Stop on conflicts outside the assigned
+current main, reruns checks and obtains independent review of the rewritten
+SHA **before** fast-forward integration, narrowed or full per the
+[rebase re-review rule](docs/git-history.md#rebase-re-review). Stop on conflicts outside the assigned
 scope. This is this repository's current policy, not a universal target policy.
 
 Use focused Conventional Commits with the actual WI. A commit written by an

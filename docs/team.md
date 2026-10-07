@@ -178,8 +178,9 @@ the supplied target procedure, actual host approval controls and review order.
 When a target requires independent review before integration, the author returns
 the checked immutable candidate first, the coordinator obtains exact-revision
 review, and the assigned author integrates only that approved revision. A rebase
-or other SHA change invalidates prior approval and requires review of the new
-revision before integration. Permission to integrate locally does not authorize
+or other SHA change never carries prior approval over silently; it requires
+review of the new revision before integration, narrowed or full per the
+[rebase re-review rule](git-history.md#rebase-re-review). Permission to integrate locally does not authorize
 push/publication; honor the configured human's ownership of those operations.
 No generic permission to update arbitrary targets or rewrite history is supplied.
 Resolve and follow the [target history policy](git-history.md): linear targets
@@ -190,7 +191,7 @@ Topic approval alone does not clear a merge result.
 <a id="batch-integration"></a>
 ### Batch integration
 
-When more than `batch_threshold` ([project-config](project-config.md#generic-configuration)) reviewed or authored branches wait on the same base, an assigned integration author, with the human's explicit authorization, prepares one local `integration/batch-<n>` branch under the [target history policy](git-history.md): original commits kept, no squash, conflict-free branches first, landing tooling last. Without that authorization for rewriting other authors' commits the author stops and reports. The integration author runs the full checks and resolves conflicts within scope; the dispatcher only routes the reviews. Two independent Opus reviews of the batch tip split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, and one narrowed Opus re-review covers the fix commits. Lows go to one batched follow-up issue only when accepted per the [stamp freeze](#stamp-freeze) (reviewer acceptance, owner, evidence). The human lands the batch SHA once with the CLEARs the [pre-land gate](#pre-land-gate) requires for that SHA. A single branch after a clean rebase with an identical range-diff and no file overlap needs at least one Opus review (more if the pre-land gate requires).
+When more than `batch_threshold` ([project-config](project-config.md#generic-configuration)) reviewed or authored branches wait on the same base, an assigned integration author, with the human's explicit authorization, prepares one local `integration/batch-<n>` branch under the [target history policy](git-history.md): original commits kept, no squash, conflict-free branches first, landing tooling last. Without that authorization for rewriting other authors' commits the author stops and reports. The integration author runs the full checks and resolves conflicts within scope; the dispatcher only routes the reviews. Two independent Opus reviews of the batch tip split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, and one narrowed Opus re-review covers the fix commits. Lows go to one batched follow-up issue only when accepted per the [stamp freeze](#stamp-freeze) (reviewer acceptance, owner, evidence). The human lands the batch SHA once with the CLEARs the [pre-land gate](#pre-land-gate) requires for that SHA. A single branch after a rebase follows the [rebase re-review rule](git-history.md#rebase-re-review).
 
 ## Coordinator modes
 
@@ -750,7 +751,7 @@ optional and landing/publication remain unavailable unless authorized.
 | Candidate | A runs checks and commits; reports immutable SHA S and criteria to C | 1 | 0 |
 | Review assignment | C starts R in separate context on S; records only a target-permitted review status | 1 | 1 |
 | Review completion | R reviews S directly, optionally uses a read-only helper, and records its findings | 1 | 1 |
-| Local integration | A fast-forwards the authorized local target to unchanged approved S; a diverged candidate is rebased, checked and reviewed at its new SHA first | 1 | 1 |
+| Local integration | A fast-forwards the authorized local target to unchanged approved S; a diverged candidate is rebased, checked and re-reviewed at its new SHA first ([rebase re-review](git-history.md#rebase-re-review)) | 1 | 1 |
 | Handoff | C records Ready to push only after clean exact review and confirmed required integration/checks; human owns push | 1 | 1 |
 
 Walk through actions, not repeated wording: count only C's two worker-start
@@ -842,7 +843,8 @@ unchanged SHA only when integration is authorized and the target's required
 gates pass. Accepted follow-ups go to their recorded issues, never to new
 commits on the stamped branch. A Medium or higher finding discovered after a
 stamp blocks landing and needs a new commit plus a fresh independent review
-of the new exact SHA. A rebased or otherwise rewritten SHA needs fresh review
+of the new exact SHA. A rebased or otherwise rewritten SHA needs review of the new exact SHA
+(narrowed or full per the [rebase re-review rule](git-history.md#rebase-re-review))
 under the [target Git history policy](git-history.md) and
 [supplied policy](policy-composition.md#trusted-inputs-and-resolution).
 
