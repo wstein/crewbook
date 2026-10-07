@@ -149,6 +149,12 @@ class ReviewLineTests(unittest.TestCase):
                     'NOT CLEAR', 'not clear model=opus', 'NOT CLEAR  %s model=' % SHA[:39]):
             self.assertTrue(any('NOT CLEAR' in g for g in rl.gate([ok, bad], SHA, {'opus'}, 1)), bad)
 
+    def test_not_clear_hex_in_model_token_is_not_a_sha(self):
+        ok = 'CLEAR %s model=opus' % SHA
+        for bad in ('NOT CLEAR model=claude-opus-5-5-20260101',
+                    'NOT CLEAR model=claude-opus-5-5-20260101 '):
+            self.assertTrue(any('NOT CLEAR' in g for g in rl.gate([ok, bad], SHA, {'opus'}, 1)), bad)
+
     def test_not_clear_other_or_short_sha_does_not_block(self):
         ok = 'CLEAR %s model=opus' % SHA
         for fine in ('NOT CLEAR %s model=opus ' % ('b' * 40), 'NOT CLEAR bbbbbbb',

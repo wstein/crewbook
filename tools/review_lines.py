@@ -31,7 +31,7 @@ def join_evidence(lines):
 def _blocks_by_not_clear(loose, sha):
     """A malformed NOT CLEAR blocks unless it clearly names a different revision: it blocks when it
     names no sha (no hex run of 7+ chars) or any hex run is a prefix of sha (or extends it)."""
-    runs = re.findall(r'\b[0-9a-f]{7,}\b', loose)
+    runs = re.findall(r'\b[0-9a-f]{7,}\b', re.sub(r'model=\S*', ' ', loose))
     return not runs or any(sha.startswith(r) or r.startswith(sha) for r in runs)
 
 
