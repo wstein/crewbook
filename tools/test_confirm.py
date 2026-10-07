@@ -241,6 +241,19 @@ class ValidateRejectTests(unittest.TestCase):
     def base(self):
         return c.decode(fixture(LAND))
 
+    def test_public_validate_requires_integer_version(self):
+        # Python equality makes True and 1.0 equal to 1, but neither is a
+        # v1 integer record version at the decode boundary.
+        for version in (True, 1.0):
+            with self.subTest(version=version, type=type(version).__name__):
+                r = self.base()
+                r.v = version
+                with self.assertRaises(c.ErrUnknownVersion):
+                    r.validate()
+        r = self.base()
+        r.validate()
+        self.assertEqual(c.decode(c.encode(r)).v, 1)
+
     def test_validate_rejects(self):  # vector 7
         def set_subject(r):
             r.subject = c.Subject(issue='o/r#1')

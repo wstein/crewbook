@@ -498,7 +498,7 @@ _AT_RE = re.compile(r'([0-9]{4})-([0-9]{2})-([0-9]{2})T'
 
 def validate(r):
     """Check every v1 rule. A record that fails is not a confirmation."""
-    if r.v != VERSION:
+    if type(r.v) is not int or r.v != VERSION:
         raise ErrUnknownVersion(str(r.v))
     if r.schema != SCHEMA:
         raise ErrBadSchema(json.dumps(r.schema))
