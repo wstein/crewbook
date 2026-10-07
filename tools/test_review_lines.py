@@ -171,7 +171,7 @@ class ReviewLineTests(unittest.TestCase):
     def test_sha_inside_model_token_is_gap(self):
         other = 'b' * 40
         gaps = rl.gate(['CLEAR %s model=x%sx' % (other, SHA)], SHA, {'opus'}, 1)
-        self.assertTrue(any('inside its model token' in g for g in gaps))
+        self.assertTrue(any('inside its role or model token' in g for g in gaps))
 
     def test_note_with_several_lines_splits_into_entries(self):
         other = 'b' * 40
@@ -191,6 +191,17 @@ class ReviewLineTests(unittest.TestCase):
         for bad in ('CLEAR %s role= model=opus' % SHA, 'CLEAR %s role=a role=b model=opus' % SHA,
                     'CLEAR %s role=Review model=opus' % SHA, 'CLEAR %s model=opus role=qa' % SHA):
             self.assertIsNone(rl.parse(bad), bad)
+
+    def test_sha_inside_role_token_is_gap(self):
+        other = 'b' * 40
+        gaps = rl.gate(['NOT CLEAR %s role=x%s model=opus' % (other, SHA)], SHA, {'opus'}, 1)
+        self.assertTrue(any('inside its role or model token' in g for g in gaps))
+
+    def test_split_note_splits_on_newline_only(self):
+        bad = 'NOT CLEAR %s\x85model=opus' % SHA
+        lines = rl.split_note('CLEAR %s model=opus\n%s' % (SHA, bad))
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(rl.gate(lines, SHA, {'opus'}, 1))
 
 
 if __name__ == '__main__':

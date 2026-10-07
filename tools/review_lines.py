@@ -15,7 +15,7 @@ def parse(line):
 
 def split_note(text):
     """A refs/notes/review note holds one entry per line (appended); blank lines are dropped."""
-    return [l for l in text.splitlines() if l.strip()]
+    return [l for l in text.split('\n') if l.strip()]
 
 
 def canonical(model):
@@ -58,8 +58,8 @@ def gate(lines, sha, tiers, required=1):
             elif p[0] == 'CLEAR':
                 models.add(canonical(p[2]))
         elif p:
-            if sha.lower() in p[2].lower():
-                gaps.append('review line for another sha carries %s inside its model token' % sha)
+            if sha.lower() in loose:
+                gaps.append('review line for another sha carries %s inside its role or model token' % sha)
         elif re.search(r'\bnot clear\b', loose):
             if sha.lower() in loose or not re.search(r'[0-9a-f]{40}', loose):
                 gaps.append('malformed NOT CLEAR blocks %s' % sha)
