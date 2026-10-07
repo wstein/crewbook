@@ -34,21 +34,17 @@ FIELDS = ("input", "output", "cache_read", "cache_write")
 USAGE_KEYS = {"input": "input_tokens", "output": "output_tokens",
               "cache_read": "cache_read_input_tokens",
               "cache_write": "cache_creation_input_tokens"}
-ROLES = ("desk", "dispatch", "author", "reviewer", "design")
-# Order matters: first match wins. Keywords only; text is never emitted.
-ROLE_KEYWORDS = (("dispatch", "dispatch"), ("reviewer", "review"), ("design", "design"),
-                 ("author", "author"), ("author", "worker"), ("desk", "desk"))
-# Explicit report vocabulary: unsupported strings never cross an output boundary.
-SUPPORTED_MODELS = frozenset((
-    "claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229",
-    "claude-3-5-sonnet-20240620", "claude-3-5-sonnet-20241022",
-    "claude-3-5-haiku-20241022", "claude-3-7-sonnet-20250219",
-    "claude-sonnet-4-20250514", "claude-opus-4-20250514",
-    "claude-opus-4-1-20250805", "claude-sonnet-4-5-20250929",
-    "claude-haiku-4-5-20251001", "claude-opus-4-5-20251101",
-    "claude-sonnet-4-6", "claude-opus-4-6",
-    "claude-sonnet-5", "claude-opus-5", "claude-haiku-5",
-))
+# Whole-word keywords; agentType is checked before description. Review/design
+# are role words only in agentType ("address review feedback" is not a reviewer).
+TYPE_WORDS = {"dispatch": "dispatch", "dispatcher": "dispatch", "reviewer": "reviewer",
+              "review": "reviewer", "designer": "design", "design": "design",
+              "author": "author", "worker": "author", "desk": "desk"}
+DESC_WORDS = {"dispatcher": "dispatch", "reviewer": "reviewer", "designer": "design",
+              "author": "author", "worker": "author", "desk": "desk"}
+# Safe model-id shape: only strings matching this are ever emitted, so new
+# ids price and report without a code change while arbitrary text stays out.
+MODEL_RE = re.compile(r"^claude-[a-z0-9.-]{1,40}$")
+MAX_LINE = 8 * 1024 * 1024
 TOKEN_MAX = 10 ** 15
 BURST_IDLE = 60.0
 NOTICE = "Costs are estimates from a user-supplied price table, not vendor-verified."
@@ -77,28 +73,33 @@ def hash_id(v):
     return hashlib.sha256(str(v).encode("utf-8", "replace")).hexdigest()[:8]
 
 
-def match_role(text):
-    low = text.lower()
-    for role, kw in ROLE_KEYWORDS:
-        if kw in low:
-            return role
+def match_role(label):
+    """label is "agentType\ndescription"; whole words only, agentType first."""
+    typ, _, desc = label.partition("\n")
+    for text, words in ((typ, TYPE_WORDS), (desc, DESC_WORDS)):
+        for w in re.findall(r"[a-z0-9]+", text.lower()):
+            if w in words:
+                return words[w]
     return None
 
 
 def label_text(meta_path):
     try:
+        if os.path.islink(meta_path):
+            return ""
         with open(meta_path, "r", encoding="utf-8") as fh:
             d = json.load(fh)
     except (OSError, ValueError, RecursionError, OverflowError):
         return ""
     if not isinstance(d, dict):
         return ""
-    return " ".join(str(d.get(k))[:200] for k in ("agentType", "description")
-                    if isinstance(d.get(k), str))
+    parts = [d[k][:200] if isinstance(d.get(k), str) else ""
+             for k in ("agentType", "description")]
+    return "\n".join(parts) if any(parts) else ""
 
 
 def valid_model(m):
-    return isinstance(m, str) and m in SUPPORTED_MODELS
+    return isinstance(m, str) and MODEL_RE.match(m) is not None
 
 
 def find_files(roots, stats=None):
@@ -108,12 +109,15 @@ def find_files(roots, stats=None):
 
     out = []
     for root in roots:
+        if os.path.islink(root):
+            continue
         if os.path.isfile(root):
             out.append(root)
             continue
         for dp, dn, fn in os.walk(root, followlinks=False, onerror=onerror):
             dn.sort()
-            out.extend(os.path.join(dp, f) for f in sorted(fn) if f.endswith(".jsonl"))
+            out.extend(p for p in (os.path.join(dp, f) for f in sorted(fn) if f.endswith(".jsonl"))
+                       if not os.path.islink(p))
     return out
 
 
@@ -137,28 +141,47 @@ class Collector:
         if role:
             self.roles.setdefault(file_agent, role)
         try:
+            if os.path.islink(path):
+                raise OSError("symlink")
             fh = open(path, "r", encoding="utf-8", errors="replace")
         except OSError:
             self.stats["unreadable_files"] += 1
             return
         self.stats["files"] += 1
-        with fh:
-            for line in fh:
-                if not line.strip():
-                    continue
+        try:
+            with fh:
+                self.read_lines(fh, file_agent, label)
+        except OSError:
+            self.stats["unreadable_files"] += 1
+
+    def read_lines(self, fh, file_agent, label):
+        while True:
+            line = fh.readline(MAX_LINE + 1)
+            if not line:
+                return
+            if len(line) > MAX_LINE and not line.endswith("\n"):
+                while True:  # drain the rest of the oversized line
+                    chunk = fh.readline(MAX_LINE)
+                    if not chunk or chunk.endswith("\n"):
+                        break
                 self.stats["lines"] += 1
-                try:
-                    o = json.loads(line)
-                except (ValueError, RecursionError, OverflowError):
-                    self.stats["malformed_lines"] += 1
-                    continue
-                if not isinstance(o, dict):
-                    self.stats["malformed_lines"] += 1
-                    continue
-                try:
-                    self.add_obj(o, file_agent, label)
-                except (OverflowError, RecursionError, ValueError):
-                    self.stats["bad_usage"] += 1
+                self.stats["malformed_lines"] += 1
+                continue
+            if not line.strip():
+                continue
+            self.stats["lines"] += 1
+            try:
+                o = json.loads(line)
+            except (ValueError, RecursionError, OverflowError):
+                self.stats["malformed_lines"] += 1
+                continue
+            if not isinstance(o, dict):
+                self.stats["malformed_lines"] += 1
+                continue
+            try:
+                self.add_obj(o, file_agent, label)
+            except (OverflowError, RecursionError, ValueError):
+                self.stats["bad_usage"] += 1
 
     def add_obj(self, o, file_agent, label):
         aid = o.get("agentId") if isinstance(o.get("agentId"), str) and o.get("agentId") else file_agent
@@ -271,10 +294,9 @@ def median(xs):
     return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2.0
 
 
-def analyse_times(recs, resume_gap):
-    """Return (resumes, loop dict or None) from request timestamps of one agent."""
+def analyse_times(recs):
+    """Return (loop dict or None, burst count) from request timestamps of one agent."""
     ts = sorted(r["ts"] for r in recs if r["ts"] is not None)
-    resumes = sum(1 for a, b in zip(ts, ts[1:]) if b - a > resume_gap)
     starts = [ts[0]] if ts else []
     for a, b in zip(ts, ts[1:]):
         if b - a > BURST_IDLE:
@@ -287,7 +309,7 @@ def analyse_times(recs, resume_gap):
             spread = median([abs(g - med) for g in gaps])
             if spread <= 0.1 * med:
                 loop = {"bursts": len(starts), "interval_s": int(round(med))}
-    return resumes, loop, len(starts)
+    return loop, len(starts)
 
 
 def build(col, table, top, resume_gap):
@@ -309,12 +331,12 @@ def build(col, table, top, resume_gap):
         for a, b in zip(ordered, ordered[1:]):
             if b["ts"] - a["ts"] > resume_gap:
                 resume_models[b["model"]] = resume_models.get(b["model"], 0) + 1
-        _resumes, loop, bursts = analyse_times(recs, resume_gap)
+        loop, bursts = analyse_times(recs)
         # Attribute the agent loop once, to the model at its first request.
         loop_model = ordered[0]["model"] if ordered else None
         agent_cost = 0.0 if isinstance(table, dict) else None
         if agent_cost is not None:
-            for r in recs:
+            for r in ordered:  # timestamped records only, matching the burst count
                 p = price_for(table, r["model"])
                 if p is None:
                     agent_cost = None
@@ -571,6 +593,10 @@ def main(argv=None):
             sys.stderr.write("error: --html destination already exists; not overwriting\n")
             return 2
         except OSError:
+            try:
+                os.unlink(a.html)  # remove the partial file we created
+            except OSError:
+                pass
             sys.stderr.write("error: cannot write --html destination\n")
             return 2
     if a.json:

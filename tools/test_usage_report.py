@@ -471,5 +471,78 @@ class UsageTests(Fixture):
         self.assertEqual(self.report()['rows'][0]['loop_estimate_unverified']['bursts'], 5)
 
 
+class HardeningTests(Fixture):
+    def test_new_model_ids_priced_and_hostile_ids_unknown(self):
+        self.write('s/main.jsonl', [asst('m1', 'r1', 'claude-sonnet-5-5'),
+                                    asst('m2', 'r2', 'claude-sonnet-5 ' + SECRET),
+                                    asst('m3', 'r3', 'Claude/' + PATHSEC)])
+        rep = self.report('--prices', str(self.prices))
+        models = {r['model']: r['cost_estimate'] for r in rep['rows']}
+        self.assertIsNotNone(models['claude-sonnet-5-5'])
+        self.assertIsNone(models['unknown'])
+        self.assertNotIn(SECRET, json.dumps(rep))
+
+    def test_role_whole_words_agent_type_first(self):
+        for typ, desc, want in (('general', 'address review feedback', None),
+                                ('general', 'redesign the page', None),
+                                ('general-purpose', 'the reviewer', 'reviewer'),
+                                ('crewbook-author', 'review things', 'author'),
+                                ('reviewer', '', 'reviewer')):
+            self.assertEqual(ur.match_role(typ + '\n' + desc), want, (typ, desc))
+
+    def test_mid_read_oserror_is_counted_not_traceback(self):
+        self.write('s/main.jsonl', [asst('m1', 'r1')])
+        self.write('s/other.jsonl', [asst('m2', 'r2')])
+        real = ur.Collector.read_lines
+
+        def boom(self, fh, fa, label):
+            if fa == 'main-other':
+                raise OSError('io')
+            return real(self, fh, fa, label)
+        with mock.patch.object(ur.Collector, 'read_lines', boom):
+            rep = self.report()
+        self.assertEqual(rep['skipped_unknown']['unreadable_files'], 1)
+        self.assertEqual(rep['summary']['requests'], 1)
+
+    def test_oversized_line_is_bounded(self):
+        self.write('s/main.jsonl', [asst('m1', 'r1')], raw='x' * 3000 + '\n' + json.dumps(asst('m2', 'r2')))
+        with mock.patch.object(ur, 'MAX_LINE', 1500):
+            rep = self.report()
+        self.assertEqual(rep['skipped_unknown']['malformed_lines'], 1)
+        self.assertEqual(rep['summary']['requests'], 2)
+
+    def test_symlinks_skipped(self):
+        self.write('s/main.jsonl', [asst('m1', 'r1')])
+        outside = Path(self.tmp.name) / 'outside.jsonl'
+        outside.write_text(json.dumps(asst('m9', 'r9')) + '\n')
+        try:
+            os.symlink(outside, self.dir / 's' / 'link.jsonl')
+            os.symlink(self.dir, Path(self.tmp.name) / 'rootlink')
+        except (OSError, NotImplementedError):
+            self.skipTest('no symlinks')
+        self.assertEqual(self.report()['summary']['requests'], 1)
+        rc, _o, err = self.run_rc(path=Path(self.tmp.name) / 'rootlink')
+        self.assertEqual(rc, 2)
+        rc, _o, _e = self.run_rc(path=self.dir / 's' / 'link.jsonl')
+        self.assertEqual(rc, 2)
+
+    def test_bursts_cost_ignores_untimestamped_records(self):
+        recs = [asst('m%d' % i, 'r%d' % i, ts='2026-01-01T%02d:00:00Z' % i) for i in range(5)]
+        recs.append(asst('mx', 'rx', ts=None))
+        self.write('s/main.jsonl', recs)
+        rep = self.report('--prices', str(self.prices))
+        row = rep['rows'][0]
+        per = 10 * 1 + 20 * 2 + 1000 * 3 + 100 * 4
+        self.assertAlmostEqual(row['loop_estimate_unverified']['mean_cost_per_burst'], per / 1e6)
+
+    def test_html_partial_file_removed_on_write_error(self):
+        self.write('s/main.jsonl', [asst('m1', 'r1')])
+        dest = Path(self.tmp.name) / 'out.html'
+        with mock.patch.object(ur, 'render_html', side_effect=OSError('disk')):
+            rc, _o, _e = self.run_rc('--html', str(dest))
+        self.assertEqual(rc, 2)
+        self.assertFalse(dest.exists())
+
+
 if __name__ == '__main__':
     unittest.main()
