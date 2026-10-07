@@ -3,3 +3,6 @@
 
 # Python maintenance checks may create bytecode cache directories.
 __pycache__/
+
+# Desk coordination notes (TO_LAND.md etc.) stay local.
+/.work/

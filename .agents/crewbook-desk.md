@@ -83,6 +83,8 @@ Only the designated coordinator (merged desk or split dispatcher) starts the
 pinned design batch; in split mode desk never starts it; a human-opened design
 session owns the role when open. Do not decide rules or write feature code.
 Across multiple repositories keep separate targets, queues and claims.
+Keep temporary coordination notes in the gitignored `/.work/` folder per the
+[team manual](../docs/team.md#merged-mode-supervision).
 
 A persistent subagent retains context; it is not a daemon. Never poll GitHub
 continuously or claim anything runs after the parent session ends. A fresh

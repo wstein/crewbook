@@ -424,6 +424,10 @@ coordinator, and an author only under an explicit user-authorized role change;
 independent review is reported unavailable and there is no self-review. With subagents but no wait or resume capability, write the
 registry, tell the human the exact resume step and stop.
 
+Desk's temporary coordination notes (for example `TO_LAND.md`) live in the
+gitignored `/.work/` folder of the coordinator checkout; never put secrets or
+decisions of record there (those stay in the [decision log](project-config.md#decision-log)).
+
 ### Completion gate and desk safety net
 
 Before declaring drained, verify the registry has **no eligible queued work,
