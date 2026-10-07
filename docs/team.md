@@ -486,9 +486,10 @@ authorized evidence; retain those criteria as unverified.
 2. The coordinator claims once through authorized issue/board procedures and
    starts the named author once in fresh context in an assigned exclusive
    worktree, reusing an eligible idle physical slot when a pool is configured.
-   Each new work item gets a fresh branch from the supplied current base;
-   same-item fixes retain that branch and author context. The already-started
-   author executes directly on its assigned branch.
+   Each new work item gets a fresh branch from the supplied current base
+   under the [branch naming convention](#branch-naming); same-item fixes
+   retain that branch and author context. The already-started author
+   executes directly on its assigned branch.
 3. Specify before implementation. Propose rule changes to crewbook-design. Reproduce
    bugs, implement focused changes and verify using real supplied checks.
 4. Commit once each logical change is finished, following project trailers and
@@ -555,8 +556,9 @@ branch and path, never in the shared or live checkout. This covers any delegated
 role that edits files or commits: crewbook-code and other author roles, the
 platform, runtime and docs lane agents, design when it edits, verify and worker
 when they edit, and any coordinator-started author. The coordinator assigns a
-verified clean `IDLE` slot under the slot lifecycle above (fresh branch and
-fresh author context per new work item; same-item fixes keep both), creating a
+verified clean `IDLE` slot under the slot lifecycle above (fresh branch under
+the [branch naming convention](#branch-naming) and fresh author context per
+new work item; same-item fixes keep both), creating a
 worktree only when no eligible slot exists and creation is authorized, and
 records its slot (when pooled), path and branch in the registry. helper-edit
 works in the requesting author's dedicated worktree while the author does not
@@ -566,6 +568,22 @@ unverified). Agents never edit the live or
 user checkout. Read-only work and reviewers may use an export or a worktree. The
 user's own implicit local session keeps using the current checkout and starts no
 lane worktrees. One editor per worktree still applies.
+
+### Branch naming
+
+Branch names for issue-backed work items follow a deterministic, hyphen-separated
+schema under standard conventional category prefixes:
+
+```text
+<category>/<issue-number>-<short-slug>
+```
+
+- **`<category>`**: Standard conventional type (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`).
+- **`<issue-number>`**: Decimal tracking issue number without `#` or leading zeros (for example `63`).
+- **`<short-slug>`**: Lowercase alphanumeric words separated by hyphens (2–5 words, concise description of the task).
+- **Alternative suffix order**: `<category>/<short-slug>-<issue-number>` (for example `docs/caps-50` or `feat/setup-wiring-337`) is an accepted equivalent.
+- **Standalone fallback**: Work items with no tracking issue use `<category>/<short-slug>`.
+- **Preservation**: Existing branches and in-flight worktrees are preserved as-is; never rename or delete active branches retroactively.
 
 ## Delegation and context
 
