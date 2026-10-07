@@ -57,7 +57,8 @@ host credential helpers. Tests never execute instruction fixtures.
 The unittest command runs every `tools/test_*.py` file: `test_package.py`
 (package, export and hash checks), `test_evaluation.py` and
 `test_evaluation_fixtures.py` (evaluation harness and fixtures),
-`test_source_linear_history.py` (source main guard), `test_preflight.py`,
+`test_source_linear_history.py` (source main guard), `test_confirm.py`
+(confirmation record v1 codec against shared fixtures), `test_preflight.py`,
 `test_scanner.py` and `test_dispatch_recovery.py`.
 
 The exported skill contains no maintenance code or dependencies. Source/layout

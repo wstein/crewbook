@@ -1,0 +1,16 @@
+{
+  "source": {
+    "repository": "workharbor",
+    "commit": "fcbf2a365805c3a4acc3b5fd1e535041117b97ad",
+    "path": "internal/confirm/testdata/v1"
+  },
+  "files": {
+    "decision-relay.json": "8067226d800eb1d331200f93db0b4231b314030f05ffabc4331bfc9e4c7f6d48",
+    "land-cli.json": "24b1c4f97953d73f87a4b7ce3210dc630e232b9108fc7de24bda88608e2f52d7"
+  },
+  "digests": {
+    "decision-relay": "ada2e2d9f9217c11d3c460a2690d0b4e32ad4e9a547aa0129ea7607bfad3b6c8",
+    "land-cli": "e384bb14aa73efed070d8a421d4ee3216ba04b666a323a2d8063ff097993e57e"
+  },
+  "note": "files are byte copies including the final newline; the record is the file without exactly one trailing newline; digest is over those bytes with the domain prefix"
+}
