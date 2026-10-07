@@ -41,8 +41,9 @@ and behavioral consequence. Missing or inapplicable artifacts do not require new
 documentation and are not automatically findings. This replaceable review guidance
 supplies no native enforcement.
 
-Optionally use the [simplicity ladder](../docs/simplicity.md#canonical-prompt)
-as a reviewer lens and return a candidate delete-list of unnecessary code,
+Optionally apply an "over-engineering" lens using the
+[simplicity ladder](../docs/simplicity.md#canonical-prompt)
+and return a candidate delete-list of unnecessary code,
 abstractions or dependencies. Tie each candidate to acceptance criteria,
 preserved behavior and evidence; assess reuse of existing code, standard-library
 or native platform features, then an existing installed dependency under that
