@@ -96,10 +96,53 @@ class MoveTests(unittest.TestCase):
                 calls.append(1)
                 raise board.BoardError('gh exit 1: down')
             return orig(args)
-        with self.assertRaisesRegex(board.BoardError, 'not applied'):
+        with self.assertRaisesRegex(board.BoardError, 'not seen applied'):
             self.run_move(down, 5, 'Blocked')
         self.assertEqual(len(calls), board.WRITE_ATTEMPTS)
         self.assertEqual(fake.cards[5][0], 'Todo')
+
+    def test_readback_failure_reports_unknown_outcome(self):
+        fake = FakeGh({5: ['Todo', 'OPEN']})
+        orig = fake.__call__
+        state = {'down': False}
+
+        def flaky(args):
+            if 'mutation' in args[3]:
+                state['down'] = True
+                raise board.BoardError('gh exit 1: write')
+            if state['down']:
+                raise board.BoardError('gh exit 1: read')
+            return orig(args)
+        with self.assertRaisesRegex(
+                board.BoardError, r'outcome unknown \(pending\): gh exit 1: '
+                'write; read-back failed: gh exit 1: read'):
+            self.run_move(flaky, 5, 'Blocked')
+
+    def test_stale_state_after_failed_write_is_not_retried(self):
+        fake = FakeGh({5: ['Todo', 'OPEN']})
+        orig = fake.__call__
+
+        def racy(args):
+            if 'mutation' in args[3]:
+                fake.cards[5][0] = 'In review'  # someone else moved it
+                raise board.BoardError('gh exit 1: timeout')
+            return orig(args)
+        with self.assertRaisesRegex(board.BoardError, 'stale state'):
+            self.run_move(racy, 5, 'Blocked')
+        self.assertEqual(fake.writes, [])
+
+    def test_wrong_project_id_fails_without_writing(self):
+        fake = FakeGh({5: ['Todo', 'OPEN']})
+        orig = fake.__call__
+
+        def wrong(args):
+            if 'id=other' in args:
+                raise board.BoardError('gh exit 1: not found')
+            return orig(args)
+        with mock.patch.object(board, 'run_gh', wrong):
+            with self.assertRaises(board.BoardError):
+                board.move(5, 'Blocked', project_id='other')
+        self.assertEqual(fake.writes, [])
 
     def test_other_repo_card_is_not_found(self):
         fake = FakeGh({5: ['Todo', 'OPEN']})

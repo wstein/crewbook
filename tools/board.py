@@ -121,11 +121,18 @@ def move(number, status, project_id=PROJECT_ID, repo=REPO):
         except BoardError as exc:
             # Outcome unknown: read back before any retry, never re-write
             # a change that already landed.
-            seen = load(project_id, repo)[2].get(number, {}).get('status')
+            try:
+                seen = load(project_id, repo)[2].get(number, {}).get('status')
+            except BoardError as read_exc:
+                raise BoardError('write outcome unknown (pending): %s; '
+                                 'read-back failed: %s' % (exc, read_exc))
             if seen == status:
                 return old
+            if seen != old:
+                raise BoardError('stale state for #%d: wanted %r after %r, '
+                                 'found %r' % (number, status, old, seen))
             if attempt + 1 == WRITE_ATTEMPTS:
-                raise BoardError('write for #%d failed and not applied '
+                raise BoardError('write for #%d failed and not seen applied '
                                  '(pending, status %r): %s'
                                  % (number, seen, exc))
     now = load(project_id, repo)[2].get(number, {}).get('status')
