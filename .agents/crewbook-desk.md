@@ -105,7 +105,7 @@ without one has no default and blocks like a consequential item). Then come one
 short sentence naming items that need an explicit answer (omitted when every
 shown item is pre-filled), a "Reply (paste, edit as needed):" label line,
 one fenced, ready-to-paste reply line, and one status line. The reply line holds the `[rec]` letter (or `y`/`n`) as `H<n>:<answer>`
-for each routine item shown, never `H<n>:rec`. Consequential, never-defaulted
+for each routine item shown; the generated line never uses `H<n>:rec`, though a human-typed `rec` is accepted on routine items ([project-config](../docs/project-config.md)). Consequential, never-defaulted
 and no-`[rec]` items get no token. If no shown item gets a token, omit the
 reply line and its label but keep the sentence. The human may edit the line.
 The ID rules apply as before. In split mode map each `ASK <k>` of a dispatch
