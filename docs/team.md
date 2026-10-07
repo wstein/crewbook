@@ -220,6 +220,20 @@ Topic approval alone does not clear a merge result.
 
 When more than `batch_threshold` ([project-config](project-config.md#generic-configuration)) reviewed or authored branches wait on the same base, an assigned integration author, with the human's explicit authorization, prepares one local `integration/batch-<n>` branch under the [target history policy](git-history.md): original commits kept, no squash, conflict-free branches first, landing tooling last. Without that authorization for rewriting other authors' commits the author stops and reports. The integration author runs the full checks and resolves conflicts within scope; the dispatcher only routes the reviews. Two independent Opus reviews of the batch tip split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, and one narrowed Opus re-review covers the fix commits (kept as separate commits, the only exception to [commit hygiene](git-history.md#commit-hygiene)). Lows go to one batched follow-up issue only when accepted per the [stamp freeze](#stamp-freeze) (reviewer acceptance, owner, evidence). The human lands the batch SHA once with the CLEARs the [pre-land gate](#pre-land-gate) requires for that SHA. A single branch after a rebase follows the [rebase re-review rule](git-history.md#rebase-re-review). Reviewed work can instead be stacked on the [`landing` pointer](git-history.md#landing-pointer) without copying branches.
 
+<a id="landing-stack-flow-trial"></a>
+### Landing-stack flow (trial)
+
+Experimental, loaded only by `/crewbook-x-landing` (source-only, not distributed); `/crewbook-land` and the [land procedure](#land-procedure) are unchanged. Trial rules, stated here once:
+
+- New work starts on `landing` and stacks optimistically on the newest CLEAR tip; it does not wait for the human to land.
+- Review, rebase and forwarding follow the [landing pointer](git-history.md#landing-pointer) and [rebase re-review rule](git-history.md#rebase-re-review), including the landing pointer's validity condition. The trial only adds: rebase onto `landing` before any review.
+- Human-authorized trial override (human decision 2026-10-07): fixes folded into stack commits get one Sonnet review of the whole stack, repeated until all findings are fixed. This relaxes the required-tier review of that fix content ([stamp rules](#stamp-freeze), [rebase re-review rule](git-history.md#rebase-re-review)) and, for those fixes only, the landing pointer's condition that every original already has its required-tier CLEAR at its own SHA. Security-relevant paths keep the required tier (for example Opus); the desk routes such fixes to the required tier (the pre-land gate checks model tiers, not paths); original never-reviewed content, conflicts and overlap stay at the required tier. The override ends or graduates with [#73](https://github.com/wstein/crewbook/issues/73).
+- Batch integration stays the rare exception: the `batch_threshold` trigger in [Batch integration](#batch-integration) still fires during the trial.
+
+A project whose tier rule does not accept `sonnet` beyond the single landing review sees the pre-land gate fail closed on Sonnet CLEARs for override fixes; note it in the trial evidence.
+
+Graduation: if the human judges the trial evidence good, move these rules into the [land procedure](#land-procedure), delete the `x-` command and remove its symlink from `~/.claude/commands` (created by the source-checkout install glob).
+
 ## Coordinator modes
 
 Start desk once as the human contact with explicit `$crewbook` or the
