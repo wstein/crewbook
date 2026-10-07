@@ -579,12 +579,12 @@ schema under standard conventional category prefixes:
 <category>/<issue-number>-<short-slug>
 ```
 
-The issue-first order above is the default; the suffix order below is equally valid.
+Both the issue-first order above and the suffix order below are valid.
 
 - **`<category>`**: Standard conventional type (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`).
 - **`<issue-number>`**: Decimal tracking issue number without `#` or leading zeros (for example `63`).
 - **`<short-slug>`**: Lowercase alphanumeric words separated by hyphens, at most 30 characters including hyphens after normalization. Prefer 2–5 concise task words; established one-word summaries such as `caps` remain valid. Omit punctuation and unnecessary stop words; choose a shorter summary if the normalized slug exceeds the bound.
-- **Alternative suffix order**: `<category>/<short-slug>-<issue-number>` (for example `docs/caps-50` or `feat/setup-wiring-337`) is equally valid. Either order may be used; no rule requires one order per repo, so both may coexist.
+- **Alternative suffix order**: `<category>/<short-slug>-<issue-number>` (for example `docs/caps-50` or `feat/setup-wiring-337`) is equally valid.
 - **Standalone fallback**: Work items with no tracking issue use `<category>/<short-slug>`.
 - **Preservation**: Existing branches and in-flight worktrees are preserved as-is; never rename or delete active branches retroactively.
 
