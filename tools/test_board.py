@@ -74,6 +74,40 @@ class MoveTests(unittest.TestCase):
         with self.assertRaisesRegex(board.BoardError, 'read-back mismatch'):
             self.run_move(fake, 5, 'Blocked')
 
+    def test_uncertain_write_applied_is_not_repeated(self):
+        fake = FakeGh({5: ['Todo', 'OPEN']})
+        orig = fake.__call__
+
+        def lost(args):
+            out = orig(args)
+            if 'mutation' in args[3]:
+                raise board.BoardError('gh exit 1: timeout')
+            return out
+        self.assertEqual(self.run_move(lost, 5, 'Blocked'), 'Todo')
+        self.assertEqual(len(fake.writes), 1)
+
+    def test_failed_write_retried_once_then_pending(self):
+        fake = FakeGh({5: ['Todo', 'OPEN']})
+        orig = fake.__call__
+        calls = []
+
+        def down(args):
+            if 'mutation' in args[3]:
+                calls.append(1)
+                raise board.BoardError('gh exit 1: down')
+            return orig(args)
+        with self.assertRaisesRegex(board.BoardError, 'not applied'):
+            self.run_move(down, 5, 'Blocked')
+        self.assertEqual(len(calls), board.WRITE_ATTEMPTS)
+        self.assertEqual(fake.cards[5][0], 'Todo')
+
+    def test_other_repo_card_is_not_found(self):
+        fake = FakeGh({5: ['Todo', 'OPEN']})
+        with mock.patch.object(board, 'run_gh', fake):
+            with self.assertRaisesRegex(board.BoardError, 'no card'):
+                board.move(5, 'Blocked', repo='o/other')
+        self.assertEqual(fake.writes, [])
+
     def test_done_refused_without_writing(self):
         fake = FakeGh({5: ['Todo', 'OPEN']})
         with self.assertRaisesRegex(board.BoardError, 'Done'):

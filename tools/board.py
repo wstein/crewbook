@@ -16,6 +16,7 @@ import dispatch_snapshot as snap  # noqa: E402
 
 PROJECT_ID = 'PVT_kwHNjWrOAZaiCg'  # crewbook board, project 10
 REPO = 'wstein/crewbook'
+WRITE_ATTEMPTS = 2  # bounded: one retry, only after a read-back
 STATUSES = ('Todo', 'In progress', 'In review', 'Ready to push', 'Blocked')
 
 QUERY = '''query($id: ID!, $after: String) {
@@ -111,8 +112,21 @@ def move(number, status, project_id=PROJECT_ID, repo=REPO):
     old = card['status']
     if old == status:
         return old
-    graphql(MUTATION, p=project_id, i=card['item'], f=field_id,
-            o=options[status])
+    for attempt in range(WRITE_ATTEMPTS):
+        try:
+            graphql(MUTATION, p=project_id, i=card['item'], f=field_id,
+                    o=options[status])
+            break
+        except BoardError as exc:
+            # Outcome unknown: read back before any retry, never re-write
+            # a change that already landed.
+            seen = load(project_id, repo)[2].get(number, {}).get('status')
+            if seen == status:
+                return old
+            if attempt + 1 == WRITE_ATTEMPTS:
+                raise BoardError('write for #%d failed and not applied '
+                                 '(pending, status %r): %s'
+                                 % (number, seen, exc))
     now = load(project_id, repo)[2].get(number, {}).get('status')
     if now != status:
         raise BoardError('read-back mismatch for #%d: wanted %r, found %r'
