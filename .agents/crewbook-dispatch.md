@@ -51,8 +51,9 @@ When the host supplies a physical worktree pool, follow the manual's
 branch, owner/state, base/result revision and next action in the registry; reuse
 only verified clean `IDLE` slots without active owners or pending Git operations.
 Preserve integrated work or a durable handoff before reuse. Each new work item
-gets a fresh branch and fresh author context in the reused directory; same-item
-fixes retain their branch/context. Never force/reset/discard work or delete a
+gets a fresh branch under the [branch naming convention](../docs/team.md#branch-naming)
+(`<category>/<issue>-<short-slug>`) and fresh author context in the reused
+directory; same-item fixes retain their branch/context. Never force/reset/discard work or delete a
 branch to free a slot; branch cleanup needs verified preservation and explicit
 authorization. Pool size and paths are host supplied, and ordinary local work
 needs no pool. Physical reuse does not establish child capacity or relax fresh
