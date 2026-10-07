@@ -22,6 +22,7 @@ import sys
 
 LIMIT = 12  # Six headers + six 12-line bodies + optional stamp = 79 lines.
 TOKEN = re.compile(r'[A-Za-z0-9._/@+:-]{1,100}\Z')
+LABEL = re.compile(r'[A-Za-z0-9._/@+:-][A-Za-z0-9._/@+: -]{0,99}\Z')
 PATH_TOKEN = re.compile(r'[A-Za-z0-9._/@+:-]{1,400}\Z')
 HEADER_LINE = re.compile(
     r'(crewbook-registry|mode|coordinator|target|model|session|updated): '
@@ -205,7 +206,7 @@ def board(path):
         for card in data['cards']:
             if card.get('own') is True:
                 column = card['column']
-                if not isinstance(column, str) or not TOKEN.fullmatch(column):
+                if not isinstance(column, str) or not LABEL.fullmatch(column):
                     raise Unavailable('board label unsupported')
                 number = card['number']
                 if type(number) is not int or number <= 0:
@@ -227,7 +228,7 @@ def ci(path):
         latest = {}
         for run in data['runs']:
             wf = run['workflow']
-            if not isinstance(wf, str) or not TOKEN.fullmatch(wf):
+            if not isinstance(wf, str) or not LABEL.fullmatch(wf):
                 raise Unavailable('ci label unsupported')
             if wf not in latest or int(run['id']) > int(latest[wf]['id']):
                 latest[wf] = run

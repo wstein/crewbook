@@ -166,7 +166,7 @@ class SnapshotTest(unittest.TestCase):
         self.assertNotIn('Ignore', out)
         self.assertIn('[board]\nunavailable: board label unsupported', out)
 
-    def test_distinct_unsupported_labels_do_not_merge(self):
+    def test_distinct_spaced_labels_do_not_merge(self):
         with open(self.board, 'w') as h:
             json.dump({'cards': [
                 {'column': 'In review', 'number': 1, 'own': True},
@@ -178,8 +178,10 @@ class SnapshotTest(unittest.TestCase):
                 {'workflow': 'Secret scan', 'status': 'completed',
                  'conclusion': 'success', 'sha': 'b' * 40, 'id': 2}]}, h)
         out = self.render()
-        self.assertIn('[board]\nunavailable: board label unsupported', out)
-        self.assertIn('[ci]\nunavailable: ci label unsupported', out)
+        self.assertIn('In review: #1', out)
+        self.assertIn('Ready to push: #2', out)
+        self.assertIn('Package checks completed/failure ' + 'a' * 12, out)
+        self.assertIn('Secret scan completed/success ' + 'b' * 12, out)
         self.assertNotIn('? completed/success', out)
 
     def test_untouched_note_absent(self):

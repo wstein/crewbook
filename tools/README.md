@@ -192,3 +192,4 @@ or verifying a guard never authorizes main integration, push or publication.
 Snapshot board card numbers must be positive JSON integers (booleans, strings
 and fractional numbers are malformed). Unsupported board or workflow labels
 make their section unavailable before grouping, so masked identities cannot merge.
+Bounded labels containing ordinary spaces retain their original distinct identities.
