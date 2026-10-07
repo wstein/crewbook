@@ -180,6 +180,8 @@ class Record:
 
 def encode(record):
     """Canonical bytes of record. Does not validate."""
+    if type(record.v) is not int:
+        raise ErrSyntax("record version must be an integer")
     m = {
         'v': record.v, 'schema': record.schema, 'action': record.action,
         'subject': _subject_map(record.subject),

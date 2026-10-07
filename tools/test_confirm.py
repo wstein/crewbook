@@ -69,6 +69,20 @@ class GoldenTests(unittest.TestCase):
             self.assertEqual(c.digest_of(raw), want)
             self.assertEqual(r.digest(), want)
 
+    def test_encode_requires_integer_version_without_validation(self):
+        for version in (True, False, 1.0):
+            with self.subTest(version=version, type=type(version).__name__):
+                r = c.decode(fixture(LAND))
+                r.v = version
+                with self.assertRaises(c.ErrSyntax):
+                    c.encode(r)
+        # Encoding checks representation, leaving unsupported versions and
+        # other semantic rules to validate/decode.
+        r = c.Record(v=2)
+        self.assertEqual(json.loads(c.encode(r))['v'], 2)
+        with self.assertRaises(c.ErrUnknownVersion):
+            r.validate()
+
     def test_round_trip_is_stable(self):
         for name in PINS['digests']:
             b = c.encode(c.decode(fixture(name)))
