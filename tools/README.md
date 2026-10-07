@@ -60,7 +60,8 @@ The unittest command runs every `tools/test_*.py` file: `test_package.py`
 `test_source_linear_history.py` (source main guard), `test_confirm.py`
 (confirmation record v1 codec against shared fixtures), `test_preflight.py`,
 `test_scanner.py`, `test_dispatch_recovery.py`, `test_dispatch_snapshot.py`,
-`test_review_lines.py` (review-line grammar and model gate, modelled in
+`test_board.py` (`board.py` move/sync with a fake `gh`; rules in
+[team.md](../docs/team.md#board-sync)), `test_review_lines.py` (review-line grammar and model gate, modelled in
 `review_lines.py`) and `test_usage_report.py` (synthetic-fixture and redaction tests for the
 distributed `scripts/usage_report.py`).
 

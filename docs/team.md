@@ -162,6 +162,33 @@ ownership nor review approval: Ready to push, Done and approvals stay human- or
 review-gated as above, and a coordinator cannot approve. All writes still
 require local policy and authorization.
 
+<a id="board-sync"></a>
+**Board move and sync.** Where the project has a board and ships
+`tools/board.py`, cards are written by two deterministic commands, not by an LLM
+step: `python3 tools/board.py move <issue> <status>` moves one card, reads it
+back and fails (exit 1) on a mismatch, refuses Done and is idempotent;
+`board.py sync [--dry-run]` reconciles open cards and prints `#n old -> new
+(reason)` for each change as it happens. Both read the Status option ids from
+the project. The move's read-back covers the read-back part of #7. Sync only
+acts on positive evidence and never lowers a card without it:
+
+| Signal | Effect |
+| --- | --- |
+| Registry block whose name starts with the issue number (`## 51`, `## 53-docs`, `## #57`) and phase `blocked` (waiting on a decision, human or other issue) | Move to Blocked |
+| Phase `start requested`, or a worktree on a branch `<type>/<n>-...` (author started), card Todo or without status | Move to In progress |
+| Card In progress with neither a worktree nor such a phase (idle) | Move to Todo |
+| Anything else, including phase `done` and no signal | Card unchanged |
+
+In review and Ready to push are never set or lowered by sync: the desk moves a
+card to In review at review start and to Ready to push with `board move` only
+after a CLEAR note. Never Done; closed issues and Done cards are left alone.
+Lines after `Resume:` in the registry are ignored; sync stops without changes
+when the grammar-valid part is unreadable. A reused worktree still on a stale
+`<n>-` branch counts as a signal, so detach an idle worktree. Call points: the
+desk (merged mode) after each handback and at session start; the dispatcher in
+split mode, same points. Run `sync --dry-run` first when unsure. Both run under
+the card-owner rule above.
+
 Board mode none omits card operations; pending board setup
 blocks board operations, not explicitly authorized local edits. Unavailable
 landing yields a local-commit handoff, explicitly unlanded and not ready.

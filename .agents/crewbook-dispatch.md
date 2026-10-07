@@ -32,6 +32,7 @@ Check available session assignments and issue claims for overlapping ownership.
 A separate crewbook-desk session is optional; the invoking session is the human contact.
 Record the mode and registry per [coordinator modes](../docs/team.md#coordinator-modes).
 Follow configured priorities: highest priority first, then lowest issue number.
+Where the project has a board, in split mode run [board move/sync](../docs/team.md#board-sync) at start and after each handback.
 Read and claim a configured issue/card before starting its pinned lane agent.
 For generic local tasks, record the assignment in this session; no board or
 external claim is required. Do not bypass an explicitly configured claim gate.

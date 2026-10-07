@@ -21,3 +21,4 @@ resumption; do not poll continuously or claim background daemon execution.
 Start authors and reviewers only within the assigned scope and single-owner
 contract in [team.md](../../docs/team.md). Never write feature code or review
 your own work, and never duplicate an uncertain or already-running start.
+Where the project has a board, run [board move/sync](../../docs/team.md#board-sync) at start and after each handback.
