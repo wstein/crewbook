@@ -16,6 +16,7 @@ CI JSON:    {"runs": [{"workflow": str, "status": str, "conclusion": str|null,
 import argparse
 import json
 import os
+import stat
 import re
 import subprocess
 import sys
@@ -51,6 +52,9 @@ def git(root, *args):
     except (OSError, subprocess.SubprocessError) as exc:
         raise Unavailable('git failed: %s' % type(exc).__name__)
     if p.returncode != 0:
+        if b'dubious ownership' in p.stderr or b'safe.directory' in p.stderr:
+            raise Unavailable('git %s refused: repository owned by another '
+                              'user (safe.directory)' % args[0])
         raise Unavailable('git %s exit %d' % (args[0], p.returncode))
     return p.stdout.decode('utf-8', 'replace')
 
@@ -62,15 +66,16 @@ def clean(value, pattern=TOKEN):
 
 
 def branches(root, main):
-    git(root, 'rev-parse', '--verify', '--quiet', main + '^{commit}')
-    out = git(root, 'for-each-ref', '--format=%(refname:short) %(objectname)',
+    base = git(root, 'rev-parse', '--verify', '--quiet',
+               main + '^{commit}').strip()
+    out = git(root, 'for-each-ref', '--format=%(refname:lstrip=2) %(objectname)',
               'refs/heads')
     rows = []
     for line in out.splitlines():
         name, sha = line.rsplit(' ', 1)
         if name == main:
             continue
-        n = int(git(root, 'rev-list', '--count', '%s..%s' % (main, sha)))
+        n = int(git(root, 'rev-list', '--count', '%s..%s' % (base, sha)))
         if n:
             rows.append((name, n, sha))
     rows.sort()
@@ -137,6 +142,8 @@ def registry_data(root, path=None):
         path = os.path.join(os.path.realpath(os.path.join(root, common)),
                             'crewbook', 'registry.md')
     try:
+        if not stat.S_ISREG(os.stat(path).st_mode):
+            raise Unavailable('registry path is not a regular file')
         with open(path, 'rb') as handle:
             raw = handle.read(262145)
     except OSError:
@@ -263,13 +270,15 @@ def render(root, main, board_path, ci_path, stamp=None, registry_path=None):
     if stamp:
         out.append('generated: %s' % clean(stamp))
     out += section('board', board, board_path)
+    failed = False
     try:
         rows, blines = branches(root, main)
     except Exception as exc:
+        failed = True
         rows, blines = [], ['unavailable: %s' % (
             exc if isinstance(exc, Unavailable) else type(exc).__name__)]
     out += ['[branches]'] + cap(blines)
-    if blines and blines[0].startswith('unavailable'):
+    if failed:
         out += ['[notes]', blines[0]]
     else:
         out += section('notes', notes, root, rows)

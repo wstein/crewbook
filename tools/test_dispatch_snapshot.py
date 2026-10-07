@@ -299,6 +299,33 @@ class SnapshotTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 snap.main(['--root', self.root, '--board', '-', '--ci', '-'])
 
+    def test_branch_named_unavailable_is_not_failure(self):
+        git(self.root, 'switch', '-q', '-c', 'unavailable-x')
+        git(self.root, 'commit', '-q', '--allow-empty', '-m', 'u')
+        git(self.root, 'switch', '-q', 'main')
+        out = self.render()
+        self.assertIn('unavailable-x ahead=1 ', out)
+        self.assertIn('feat/a %s review-notes' % self.sha_a[:12], out)
+
+    def test_tag_same_name_does_not_alter_branch_names(self):
+        git(self.root, 'tag', 'feat/a', 'main')
+        self.assertIn('feat/a ahead=1 ' + self.sha_a, self.render())
+
+    def test_registry_fifo_and_directory_refused(self):
+        fifo = os.path.join(self.tmp, 'fifo')
+        os.mkfifo(fifo)
+        for path in (fifo, self.tmp):
+            out = self.render(registry=path)
+            self.assertIn('[registry]\nunavailable: ', out)
+
+    def test_safe_directory_message(self):
+        err = b'fatal: detected dubious ownership in repository'
+        res = subprocess.CompletedProcess([], 128, b'', err)
+        with mock.patch.object(snap.subprocess, 'run', return_value=res):
+            with self.assertRaises(snap.Unavailable) as cm:
+                snap.git(self.root, 'status')
+        self.assertIn('safe.directory', str(cm.exception))
+
 
 if __name__ == '__main__':
     unittest.main()
