@@ -267,7 +267,9 @@ consequential item ([rule](team.md#roles-and-boundaries)), blocks only its
 dependent operation. An item invalidated by a new revision is
 marked `expired` and asked once more under a new ID; an answered ID is never
 asked again. Standing defaults are a short list of routine classes the human
-approves once: naming, `Refs` target, review scope, soak length, fast-forward
+approves once. **Proposed, needs human approval before first use**; until then
+no class is defaulted and desk asks each item (approval is logged like a
+[pre-agreed rule](#pre-agreed-rules)). Proposed list: naming, `Refs` target, review scope, soak length, fast-forward
 mechanics, trailer wording under existing rules, model mapping per
 [README](../README.md), ordering within a priority, review routing, accepting
 Lows as documented limits and same-branch fixes inside authorized scope. Desk
