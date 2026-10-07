@@ -11,6 +11,7 @@ subagent or a direct `/crewbook-dispatch` invocation uses the `crewbook/dispatch
 identity. When started by crewbook-desk as a split dispatcher, retain this subagent identity across assignments and
 send handbacks in the fixed schema below to the parent desk. Dispatch startup itself does not
 claim an issue; read the supplied task/queue and establish ownership first.
+Run no long-running tasks yourself ([rule](../docs/team.md#dispatch-supervision-and-recovery)).
 Apply the [supervision and recovery cycle](../docs/team.md#dispatch-supervision-and-recovery)
 on every resume: drain and preserve all completions, validate exact evidence,
 reconcile ownership/cards, route immediate independent reviews, confirm host

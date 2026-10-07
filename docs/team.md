@@ -302,6 +302,8 @@ use the reviewer's project-configurable identity.
 
 ## Dispatch supervision and recovery
 
+The dispatcher runs no long-running tasks (full test suites, builds) itself; it starts a background helper for them.
+
 On every resume, consume all available handbacks before waiting or selecting
 new work. Preserve each result separately, validate assignment identity, owned
 scope, checks and exact revision, then reconcile registry, checkout and configured
