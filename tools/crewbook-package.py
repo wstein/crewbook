@@ -5,6 +5,7 @@ import json
 import os
 import sys
 
+import packagelint
 from packagefmt import (MAX_INVENTORY, MAX_MANIFEST, PackageError, check,
                         check_layout, decode, digest, encode, export, load_policy,
                         object_fields, read_regular, runtime_check, scan,
@@ -23,6 +24,7 @@ def run(arguments, output=sys.stdout, diagnostics=sys.stderr):
     for name in ('policy', 'inventory', 'dest', 'pin', 'provider', 'source', 'commit'):
         parser.add_argument('--' + name)
     parser.add_argument('--identity', default='crewbook')
+    parser.add_argument('--lint', action='store_true', help='with check: warn on preamble drift and duplicated rule text')
     args = parser.parse_args(arguments)
     policy_path = args.policy or os.path.join(args.root, 'tools/package-policy.json')
     inventory_path = args.inventory or os.path.join(args.root, 'tools/package.sha256')
@@ -43,6 +45,11 @@ def run(arguments, output=sys.stdout, diagnostics=sys.stderr):
             export(snapshot, args.dest)
         else:
             diagnostics.write('source layout and inventory valid; runtime compatibility not established\n')
+            if args.lint:
+                found = packagelint.lint(snapshot.content)
+                for line in found:
+                    diagnostics.write('lint: ' + line + '\n')
+                diagnostics.write('lint: %d warning(s); exit status unchanged\n' % len(found))
     else:
         if not snapshot.manifest:
             runtime_check(snapshot, {}, [], [])
