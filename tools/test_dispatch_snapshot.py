@@ -332,6 +332,7 @@ class SnapshotTest(unittest.TestCase):
         self.addCleanup(signal.signal, signal.SIGALRM, old)
         self.addCleanup(signal.alarm, 0)
 
+    @unittest.skipUnless(hasattr(signal, 'SIGALRM'), 'needs SIGALRM')
     def test_registry_fifo_and_directory_refused(self):
         fifo = os.path.join(self.tmp, 'fifo')
         os.mkfifo(fifo)
@@ -340,6 +341,7 @@ class SnapshotTest(unittest.TestCase):
             out = self.render(registry=path)
             self.assertIn('[registry]\nunavailable: registry path is not', out)
 
+    @unittest.skipUnless(hasattr(signal, 'SIGALRM'), 'needs SIGALRM')
     def test_board_fifo_refused(self):
         fifo = os.path.join(self.tmp, 'bfifo')
         os.mkfifo(fifo)
