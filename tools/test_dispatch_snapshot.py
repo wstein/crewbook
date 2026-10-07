@@ -105,8 +105,8 @@ class SnapshotTest(unittest.TestCase):
             '[branches]', 'feat/a ahead=1 ' + self.sha_a,
             '[notes]', 'feat/a %s review-notes=review' % self.sha_a[:12],
             '[worktrees]',
-            '%s main %s' % (self.root, git(self.root, 'rev-parse', 'main')[:12]),
-            '%s feat/a %s' % (self.wt, self.sha_a[:12]),
+            '%s main %s owner=unknown' % (self.root, git(self.root, 'rev-parse', 'main')[:12]),
+            '%s feat/a %s owner=unknown' % (self.wt, self.sha_a[:12]),
             '[ci]', 'ci completed/success ' + 'b' * 12, 'lint in_progress/- ' + 'b' * 12,
             '[registry]', 'mode=split coordinator=crewbook/dispatch target=main',
             'assignments=2 in_review=1 working=1',
@@ -211,7 +211,14 @@ class SnapshotTest(unittest.TestCase):
         out = self.render()
         self.assertIn('task-a owner=author-1 phase=in_review', out)
         # the branch feat/a is not an assignment name: no branch-name mapping
-        self.assertNotIn('owner=', out.split('[worktrees]')[1].split('[ci]')[0])
+        self.assertNotIn('owner=author-1', out.split('[worktrees]')[1].split('[ci]')[0])
+
+    def test_worktree_owner_unknown_without_exact_association(self):
+        out = self.render()
+        section = out.split('[worktrees]\n')[1].split('[ci]')[0]
+        self.assertIn(self.wt + ' feat/a ' + self.sha_a[:12] + ' owner=unknown', section)
+        self.assertNotIn('author-1', section)
+        self.assertNotIn('PROMPT-TEXT', section)
 
     def test_registry_path_option_wins(self):
         other = os.path.join(self.tmp, 'other-registry.md')

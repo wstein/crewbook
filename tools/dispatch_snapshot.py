@@ -178,7 +178,9 @@ def worktrees(root):
             br = 'bare'
         else:
             br = f.get('branch', 'detached').replace('refs/heads/', '')
-        rows.append('%s %s %s' % (
+        # The registry grammar has no exact path/branch ownership link.
+        # Never infer one from assignment names, handles or evidence text.
+        rows.append('%s %s %s owner=unknown' % (
             clean(os.path.realpath(f.get('worktree', '?')), PATH_TOKEN),
             clean(br), clean(f.get('HEAD', '?')[:12])))
     return sorted(rows)
