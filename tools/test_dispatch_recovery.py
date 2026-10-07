@@ -427,6 +427,8 @@ def format_branch_name(category, issue, slug, order='prefix'):
     """Model of the documented branch naming rule: <cat>/<issue>-<slug> or <cat>/<slug>-<issue>."""
     cleaned_slug = re.sub(r'[^a-z0-9\-]+', '-', slug.lower().strip().replace(' ', '-').replace('_', '-'))
     cleaned_slug = re.sub(r'-+', '-', cleaned_slug).strip('-')
+    if len(cleaned_slug) > 30:
+        raise ValueError('branch slug must be at most 30 characters')
     if issue is None:
         return f"{category}/{cleaned_slug}"
     if order == 'suffix':
@@ -1201,6 +1203,19 @@ class CoordinatorModes(unittest.TestCase):
         self.assertEqual(effective_cap(9, True, 8), 3)
         self.assertEqual(effective_cap(1, False, 8), 1)
         self.assertEqual(effective_cap(3, True, 2), 2)
+
+    def test_branch_slug_length_bound(self):
+        # The bound applies after normalization, separately from issue/category.
+        boundary = 'abcdefghijklmn-opqrstuvwxyzabc'
+        for issue, order in ((63, 'prefix'), (63, 'suffix'), (None, 'prefix')):
+            with self.subTest(issue=issue, order=order):
+                expected = ('fix/' + boundary if issue is None else
+                            'fix/' + boundary + '-63' if order == 'suffix' else
+                            'fix/63-' + boundary)
+                self.assertEqual(format_branch_name('fix', issue, boundary.upper() + '!!!', order),
+                                 expected)
+                with self.assertRaisesRegex(ValueError, '30 characters'):
+                    format_branch_name('fix', issue, boundary + 'e', order)
 
     def test_branch_naming_format(self):
         # Canonical format: <category>/<issue>-<short-slug>
