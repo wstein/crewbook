@@ -5,6 +5,7 @@ import io
 import json
 import os
 import shutil
+import signal
 import subprocess
 import tempfile
 import unittest
@@ -300,23 +301,51 @@ class SnapshotTest(unittest.TestCase):
                 snap.main(['--root', self.root, '--board', '-', '--ci', '-'])
 
     def test_branch_named_unavailable_is_not_failure(self):
-        git(self.root, 'switch', '-q', '-c', 'unavailable-x')
-        git(self.root, 'commit', '-q', '--allow-empty', '-m', 'u')
-        git(self.root, 'switch', '-q', 'main')
-        out = self.render()
-        self.assertIn('unavailable-x ahead=1 ', out)
-        self.assertIn('feat/a %s review-notes' % self.sha_a[:12], out)
+        repo = os.path.join(self.tmp, 'solo')
+        os.mkdir(repo)
+        git(repo, 'init', '-q', '-b', 'main')
+        git(repo, 'commit', '-q', '--allow-empty', '-m', 'base')
+        git(repo, 'switch', '-q', '-c', 'unavailable-x')
+        git(repo, 'commit', '-q', '--allow-empty', '-m', 'u')
+        sha = git(repo, 'rev-parse', 'HEAD')
+        git(repo, 'switch', '-q', 'main')
+        out = snap.render(repo, 'main', None, None)
+        self.assertIn('[branches]\nunavailable-x ahead=1 ' + sha, out)
+        self.assertIn('[notes]\nunavailable-x %s review-notes=' % sha[:12], out)
+        self.assertNotIn('[notes]\nunavailable-x ahead', out)
 
     def test_tag_same_name_does_not_alter_branch_names(self):
         git(self.root, 'tag', 'feat/a', 'main')
-        self.assertIn('feat/a ahead=1 ' + self.sha_a, self.render())
+        out = self.render()
+        self.assertIn('\nfeat/a ahead=1 ' + self.sha_a, out)
+        self.assertNotIn('heads/', out)
+
+    def guard_hang(self, fifo):
+        # Writer-side opener plus an alarm: a regression fails instead of hanging.
+        fd = os.open(fifo, os.O_RDWR)
+        self.addCleanup(os.close, fd)
+
+        def boom(*_):
+            raise AssertionError('blocked on FIFO')
+        old = signal.signal(signal.SIGALRM, boom)
+        signal.alarm(10)
+        self.addCleanup(signal.signal, signal.SIGALRM, old)
+        self.addCleanup(signal.alarm, 0)
 
     def test_registry_fifo_and_directory_refused(self):
         fifo = os.path.join(self.tmp, 'fifo')
         os.mkfifo(fifo)
+        self.guard_hang(fifo)
         for path in (fifo, self.tmp):
             out = self.render(registry=path)
-            self.assertIn('[registry]\nunavailable: ', out)
+            self.assertIn('[registry]\nunavailable: registry path is not', out)
+
+    def test_board_fifo_refused(self):
+        fifo = os.path.join(self.tmp, 'bfifo')
+        os.mkfifo(fifo)
+        self.guard_hang(fifo)
+        out = self.render(board=fifo)
+        self.assertIn('[board]\nunavailable: board input is not a regular file', out)
 
     def test_safe_directory_message(self):
         err = b'fatal: detected dubious ownership in repository'

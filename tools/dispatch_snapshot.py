@@ -198,6 +198,8 @@ def load_json(path, label):
     try:
         if path == '-':
             return json.loads(sys.stdin.read(1048576))
+        if not stat.S_ISREG(os.stat(path).st_mode):
+            raise Unavailable('%s input is not a regular file' % label)
         with open(path, encoding='utf-8') as handle:
             return json.loads(handle.read(1048576))
     except (OSError, ValueError) as exc:
