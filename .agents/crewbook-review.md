@@ -54,7 +54,7 @@ Run only authorized isolated checks.
 The Claude reviewer profiles keep Bash because reviews run the package check,
 unit tests, the secret scan and scratch clones; Bash is for those checks and
 read-only inspection only. Never write to the reviewed worktree, change its Git
-state, push or write to the forge except an approved review comment or status;
+state (except the CLEAR note below), push or write to the forge except an approved review comment or status;
 use a scratch clone or temp directory for any generated output. Review the
 exact supplied SHA, never a moving ref. This limit is prompt text, not native
 enforcement: whether the host enforces the tool grant or blocks the forbidden
@@ -68,6 +68,9 @@ findings with repository-relative file:line, severity, trigger, consequence,
 evidence and correction. Distinguish independently reviewed scope from tests
 and live measurements; preserve failed/skipped checks and unresolved findings.
 Only no open findings allows the coordinator to record configured ready status for that SHA on your behalf.
+Only for CLEAR, append the [review note](../docs/project-config.md#review-note) as your one permitted
+Git write: `git notes --ref=review append -m "CLEAR <full sha> role=review model=<model>" <full sha>`
+(retry once on a ref lock; no other `git notes` verb).
 Own the review record, not claims/cards, author commits or landing. Return
 findings and approval to the named coordinator; only read-only bounded helpers
 are permitted, never recursive review delegation.
