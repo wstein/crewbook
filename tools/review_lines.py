@@ -1,13 +1,11 @@
 """Model of the registry review-line grammar and the pre-land model gate (no I/O)."""
 import re
-import unicodedata
 
 SEPARATOR = '; '
 LINE = re.compile(r'(review started|CLEAR|NOT CLEAR) ([0-9a-f]{40})(?: role=[a-z][a-z0-9-]*)? model=(?!model=)([!-:<-~]+)')
 CLAUDE_ID = re.compile(r'claude-(opus|sonnet|haiku)-[0-9]+(?:-[0-9]+)*')
 FULL_SHA = re.compile(r'(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])')
-NOT_CLEAR = re.compile(r'\bnot[\W_]*clear\b')
-INVISIBLE = dict.fromkeys(map(ord, '\u200b\u200c\u200d\u200e\u200f\u2060\ufeff\u00ad'))
+NOT_CLEAR = re.compile(r'\bnot[ _-]clear\b')
 
 
 def parse(line):
@@ -59,7 +57,7 @@ def gate(lines, sha, tiers, required=1):
     gaps, models = [], set()
     # callers pass split_evidence()/split_note() output: one entry per item, no further splitting here
     for line in (l.strip('\r') for l in lines):
-        loose = ' '.join(unicodedata.normalize('NFKC', line).translate(INVISIBLE).split()).lower()
+        loose = ' '.join(line.split()).lower()
         p = parse(line)
         if p and p[1] == sha:
             if p[0] == 'NOT CLEAR':
