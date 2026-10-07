@@ -219,7 +219,7 @@ asked: 2026-10-06T09:12Z
 by: crewbook/design
 class: routine
 question: Branch name for issue 44
-options: a docs/desk-needs-you [rec]; b docs/44-human-questions
+options: a docs/44-desk-needs-you [rec]; b docs/44-human-questions
 default: a
 affects: #44 author start
 answer: a
