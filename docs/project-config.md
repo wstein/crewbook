@@ -66,7 +66,8 @@ run, not the one requested. The value is printable ASCII without spaces or `;`, 
 start with `model=`, and a line without it is invalid (modelled in `tools/review_lines.py`).
 Canonical tokens: `opus`, `sonnet`, `gpt-6.1-sol/medium`, `gpt-6.1-sol/low` (role mapping
 in the [README](../README.md)). A reported concrete Claude id normalises to its family
-(`claude-opus-5-5` becomes `opus`); a Codex id keeps its `/<effort>`. A tier rule matches the
+(`claude-<family>-<digits>[-<digits>...][-<yyyymmdd>]`, for example `claude-opus-5-5` becomes
+`opus`; other shapes stay unnormalised); a Codex id keeps its `/<effort>`. A tier rule matches the
 normalised token exactly, as one whole token. Client handles are marked valid only in the session
 that created them. A one-line `Resume:` summary closes the file.
 

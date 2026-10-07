@@ -854,9 +854,14 @@ waive a required target gate. Show a landing line only when every CLEAR stamp
 the project policy requires for the exact SHA carries a `model=` value
 ([format](project-config.md)) that satisfies the project's tier rule
 ([default](../.agents/crewbook-dispatch.md)), no NOT CLEAR is recorded for that SHA,
-any other unparsable line naming that SHA is a gap, and identical CLEAR lines count once
-(the count is of distinct lines and models, not of reviewers; identity is not modelled).
-The required CLEAR count is the project policy's, `1` when policy is silent;
+and any other unparsable line naming that SHA is a gap. A line "names" a SHA when it contains
+it (case-insensitive); a malformed NOT CLEAR that names no SHA, or only a prefix of at least 7
+hex characters of it, also blocks. Stamps count by (SHA, canonical model): `opus` and
+`claude-opus-5-5` are one stamp, and reviewer identity is not modelled, so two reviewers who both
+record `model=opus` count once. A policy requiring more than one CLEAR therefore needs distinct
+models; no reviewer-key field exists. Fail-closed: any lower-tier CLEAR on the SHA is a gap,
+whether or not it is needed for the count. The required CLEAR count is the project policy's,
+`1` when policy is silent;
 name each stamp's model in the brief and report a missing or lower-tier model as a
 NEEDS YOU gap. Reviewers flag tests that call host tools without
 a skip or stub. Project-specific build targets are tracked in the target
