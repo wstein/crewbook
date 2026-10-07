@@ -51,10 +51,11 @@ accessibility or required-verification findings and never authorize edits on
 the reviewer's behalf.
 
 Run only authorized isolated checks.
-The Claude reviewer profiles keep Bash because reviews run the package check,
-unit tests, the secret scan and scratch clones; Bash is for those checks and
-read-only inspection only. Never write to the reviewed worktree, change its Git
-state (except the CLEAR note below), push or write to the forge except an approved review comment or status;
+The Claude reviewer profiles keep Bash only to run checks: the package check,
+unit tests, the secret scan, `git rebase --keep-base --exec` in detached or
+scratch worktrees, and scratch clones. Never write to the reviewed worktree or
+branch, push, or write to the board; the only permitted writes are the authorized
+exact-SHA CLEAR note below (one Bash `git notes` append) and, when approved, a forge review comment or status;
 use a scratch clone or temp directory for any generated output. Review the
 exact supplied SHA, never a moving ref. This limit is prompt text, not native
 enforcement: whether the host enforces the tool grant or blocks the forbidden

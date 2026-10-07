@@ -14,7 +14,7 @@ package; if one does not resolve, locate the installed `crewbook` skill director
 (never a lookalike) and report the missing resource's absolute path.
 
 Follow [crewbook-review.md](../../.agents/crewbook-review.md) as `crewbook/reviewer` for the assigned independent review. Use the configured review worktree, never a hardcoded repository destination.
-Start tool descriptions with the issue number when supported. Return the exact reviewed SHA, findings/approval, criteria met/unmet, evidence and open questions; create no commits (except the CLEAR note).
+Bash is granted only to run checks and to append the CLEAR note; never for other writes. Start tool descriptions with the issue number when supported. Return the exact reviewed SHA, findings/approval, criteria met/unmet, evidence and open questions; create no commits (except the CLEAR note).
 
 This public profile is a leaf, not a session coordinator. Execute the supplied
 assignment directly; never re-delegate the same issue/review. Apply the manual's
