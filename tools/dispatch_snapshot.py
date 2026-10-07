@@ -9,8 +9,7 @@ Each section degrades to 'unavailable: <reason>' on its own.
 Board JSON: {"cards": [{"column": str, "number": int, "own": bool}, ...]}
 Registry: <git-common-dir>/crewbook/registry.md unless --registry PATH is given
 (a supplied path wins); parsed with the strict grammar of docs/project-config.md,
-anything else prints 'unavailable: damaged or foreign'. Each section prints at
-most LIMIT lines, then a '... N more' line.
+anything else prints 'unavailable: damaged or foreign'. Each section prints a bounded share of the global 79-line budget, including a '... N more' line.
 CI JSON:    {"runs": [{"workflow": str, "status": str, "conclusion": str|null,
              "sha": str, "id": int}, ...]}  (latest run per workflow = highest id)
 """
@@ -21,7 +20,7 @@ import re
 import subprocess
 import sys
 
-LIMIT = 40
+LIMIT = 12  # Six headers + six 12-line bodies + optional stamp = 79 lines.
 TOKEN = re.compile(r'[A-Za-z0-9._/@+:-]{1,100}\Z')
 PATH_TOKEN = re.compile(r'[A-Za-z0-9._/@+:-]{1,400}\Z')
 HEADER_LINE = re.compile(
@@ -237,7 +236,7 @@ def ci(path):
 
 def cap(lines):
     if len(lines) > LIMIT:
-        return lines[:LIMIT] + ['... %d more' % (len(lines) - LIMIT)]
+        return lines[:LIMIT - 1] + ['... %d more' % (len(lines) - LIMIT + 1)]
     return lines or ['none']
 
 

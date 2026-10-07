@@ -105,8 +105,9 @@ only notes ref read) has a note per SHA, worktrees (path, branch or `bare`,
 short HEAD), latest CI run per workflow and a registry summary (header
 mode/coordinator/target, phase counts and one `name owner=... phase=...` line
 per assignment, owner only from the registry `owner` key). Each section is
-capped at 40 lines; any excess ends with a `... N more` line, so the maximum is
-the six section headers plus 6 x 41 lines plus the optional stamp (253 lines).
+capped at 12 lines; any excess ends with a `... N more` line, so the maximum is
+the six section headers plus 6 x 12 lines plus the optional stamp (79 lines).
+Truncation counts include every omitted row; unavailable statuses remain visible.
 The registry is parsed with the strict grammar of
 [project-config.md](../docs/project-config.md#coordinator-mode-and-registry);
 a damaged or foreign file (including a header without `session`) prints

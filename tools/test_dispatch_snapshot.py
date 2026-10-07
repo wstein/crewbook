@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from git_test_environment import isolated_git_environment
 
@@ -225,6 +226,19 @@ class SnapshotTest(unittest.TestCase):
         self.write_registry(' \t\r\n\n')
         self.assertIn('[registry]\nunavailable: no registry file', self.render())
 
+    def test_global_budget_with_every_section_populated(self):
+        lines = ['entry-%03d' % i for i in range(100)]
+        with contextlib.ExitStack() as stack:
+            for name in ('board', 'notes', 'worktrees', 'ci', 'registry'):
+                stack.enter_context(mock.patch.object(snap, name, return_value=lines))
+            stack.enter_context(mock.patch.object(snap, 'branches',
+                                                   return_value=([], lines)))
+            out = snap.render(self.root, 'main', self.board, self.ci, 'stamp')
+        self.assertLess(len(out.splitlines()), 80)
+        for name in ('board', 'branches', 'notes', 'worktrees', 'ci', 'registry'):
+            self.assertIn('[' + name + ']', out)
+        self.assertEqual(out.count('... 89 more'), 6)
+
     def test_cap_prints_more_line(self):
         for i in range(49):
             git(self.root, 'branch', 'many/b%02d' % i)
@@ -233,10 +247,10 @@ class SnapshotTest(unittest.TestCase):
             git(self.root, 'switch', '-q', 'main')
         out = self.render()
         sec = out.split('[branches]\n')[1].split('\n[notes]')[0].split('\n')
-        self.assertEqual(len(sec), 41)
-        self.assertEqual(sec[-1], '... 10 more')
+        self.assertEqual(len(sec), 12)
+        self.assertEqual(sec[-1], '... 39 more')
         nsec = out.split('[notes]\n')[1].split('\n[worktrees]')[0].split('\n')
-        self.assertEqual(nsec[-1], '... 10 more')
+        self.assertEqual(nsec[-1], '... 39 more')
 
     def test_only_review_notes_ref(self):
         git(self.root, 'notes', '--ref', 'review', 'remove', self.sha_a)
