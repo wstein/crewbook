@@ -193,20 +193,20 @@ class SyncTests(unittest.TestCase):
         with contextlib.redirect_stdout(out):
             lines = self.run_sync(fake)
         self.assertEqual(lines, [
-            '#10 In review -> Blocked (registry phase blocked)',
             '#11 Todo -> In progress (registry phase start requested)',
             '#13 In progress -> Todo (no worktree or registry signal)',
             '#14 Todo -> In progress (worktree branch)'])
         self.assertEqual(out.getvalue(), '\n'.join(lines) + '\n')
-        self.assertEqual(len(fake.writes), 4)
+        self.assertEqual(len(fake.writes), 3)
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(self.run_sync(fake), [])
-        self.assertEqual(len(fake.writes), 4)
+        self.assertEqual(len(fake.writes), 3)
 
     def test_never_lowers_without_evidence(self):
         fake = FakeGh(self.cards())
         with contextlib.redirect_stdout(io.StringIO()):
             self.run_sync(fake)
+        self.assertEqual(fake.cards[10][0], 'In review')  # phase blocked
         self.assertEqual(fake.cards[12][0], 'Blocked')
         self.assertEqual(fake.cards[15][0], 'Ready to push')
         self.assertEqual(fake.cards[18][0], 'In review')
@@ -215,6 +215,32 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(fake.cards[22][0], 'Ready to push')
         self.assertEqual(fake.cards[16][0], 'Done')
         self.assertEqual(fake.cards[17][0], 'In review')
+
+    def test_target_skips_in_review_ready_done(self):
+        blocked = ('Blocked', 'registry phase blocked')
+        for current in ('In review', 'Ready to push', 'Done'):
+            self.assertIsNone(board.target(current, blocked))
+        self.assertEqual(board.target('Todo', blocked), blocked)
+
+    def test_duplicate_blocks_blocked_overrides(self):
+        for first, second in (('start requested', 'blocked'),
+                              ('blocked', 'start requested'),
+                              ('start requested', 'start requested')):
+            with open(self.registry, 'w') as handle:
+                handle.write('crewbook-registry: 1\nsession: s1\n\n'
+                             '## 30-a\nphase: %s\n\n## #30\nphase: %s\n\n'
+                             'Resume: x\n' % (first, second))
+            got = board.wanted(self.root, self.registry)[30]
+            self.assertEqual(got[0], 'Blocked' if 'blocked' in (first, second)
+                             else 'In progress')
+
+    def test_read_registry_regular_file_and_log_size(self):
+        with self.assertRaises(board.snap.Unavailable):
+            board.read_registry(self.root, os.path.dirname(self.registry))
+        with open(self.registry, 'a') as handle:
+            handle.write('- log\n' * 60000)  # > 262144 bytes after Resume
+        self.assertIn('10-first', board.read_registry(
+            self.root, self.registry)['tasks'])
 
     def test_missing_status_rendered(self):
         fake = FakeGh({14: [None, 'OPEN']})
@@ -225,7 +251,7 @@ class SyncTests(unittest.TestCase):
     def test_dry_run_writes_nothing(self):
         fake = FakeGh(self.cards())
         with contextlib.redirect_stdout(io.StringIO()):
-            self.assertEqual(len(self.run_sync(fake, dry_run=True)), 4)
+            self.assertEqual(len(self.run_sync(fake, dry_run=True)), 3)
         self.assertEqual(fake.writes, [])
 
     def test_missing_registry_changes_nothing(self):

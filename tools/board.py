@@ -8,6 +8,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 
@@ -141,6 +142,8 @@ def read_registry(root, path=None):
         path = os.path.join(os.path.realpath(os.path.join(root, common)),
                             'crewbook', 'registry.md')
     try:
+        if not stat.S_ISREG(os.stat(path).st_mode):
+            raise snap.Unavailable('registry path is not a regular file')
         with open(path, 'rb') as handle:
             text = handle.read(262145).decode('ascii', 'replace')
     except OSError:
@@ -150,7 +153,8 @@ def read_registry(root, path=None):
         kept.append(line)
         if line.startswith('Resume: '):
             break
-    reg = snap.registry_parse('\n'.join(kept)) if len(text) <= 262144 else None
+    body = '\n'.join(kept)  # the size limit excludes the log after Resume
+    reg = snap.registry_parse(body) if len(body) <= 262144 else None
     if reg is None:
         raise snap.Unavailable('damaged or foreign registry')
     return reg
@@ -168,8 +172,9 @@ def wanted(root, registry_path=None):
         m = ISSUE.match(name)
         phase = (fields.get('phase') or '').strip().lower()
         if m and phase in PHASES:
-            out.setdefault(int(m.group(1)),
-                           (PHASES[phase], 'registry phase %s' % phase))
+            number = int(m.group(1))
+            if phase == 'blocked' or number not in out:
+                out[number] = (PHASES[phase], 'registry phase %s' % phase)
     for line in rows.splitlines():
         if line.startswith('branch '):
             m = BRANCH.match(line[7:].replace('refs/heads/', '', 1))
@@ -184,6 +189,8 @@ def target(current, signal):
     if signal is None:
         return ('Todo', 'no worktree or registry signal') \
             if current == 'In progress' else None
+    if current in ('In review', 'Ready to push', 'Done'):
+        return None  # sync never lowers these, whatever the signal
     status, reason = signal
     if status == current:
         return None
