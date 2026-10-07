@@ -979,6 +979,23 @@ class CoordinatorModes(unittest.TestCase):
                                    ('resolve_owner', 'managed')])
         self.assertFalse(any(a[0] == 'fresh_start' for a in actions))
 
+    def test_registry_review_lines_are_append_only(self):
+        import review_lines as rl
+        sha = 'c' * 40
+        state, _ = replay(fixture(), [])
+        task = state['tasks']['generic']
+        appended = []
+        for line in ('review started %s model=opus' % sha,
+                     'NOT CLEAR %s model=opus' % sha,
+                     'CLEAR %s model=opus' % sha):
+            appended.append(line)
+            task['evidence'] = rl.join_evidence(appended)
+            text = registry_dump(state, 'merged', 's1',
+                                 '2026-01-01T00:00:00Z', 'repo')
+            stored = registry_load(text)['tasks']['generic']['evidence']
+            self.assertEqual(rl.split_evidence(stored), appended)
+        self.assertTrue(rl.gate(rl.split_evidence(stored), sha, {'opus'}, 1))
+
     def test_split_registry_has_sole_writer_after_start(self):
         state, _ = replay(fixture(), [])
         stamp = '2026-01-01T00:00:00Z'
