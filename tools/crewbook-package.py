@@ -26,6 +26,8 @@ def run(arguments, output=sys.stdout, diagnostics=sys.stderr):
     parser.add_argument('--identity', default='crewbook')
     parser.add_argument('--lint', action='store_true', help='with check: warn on preamble drift and duplicated rule text')
     args = parser.parse_args(arguments)
+    if args.lint and args.command != 'check':
+        raise PackageError('--lint applies only to check')
     policy_path = args.policy or os.path.join(args.root, 'tools/package-policy.json')
     inventory_path = args.inventory or os.path.join(args.root, 'tools/package.sha256')
     policy = load_policy(policy_path)

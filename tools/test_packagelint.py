@@ -59,6 +59,13 @@ class LintTests(unittest.TestCase):
         cli.run(['check', '--lint', '--root', str(ROOT)], out, err)
         self.assertIn('lint', err.getvalue())
 
+    def test_lint_rejected_for_other_commands(self):
+        spec = importlib.util.spec_from_file_location('cli', ROOT / 'tools/crewbook-package.py')
+        cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cli)
+        with self.assertRaises(cli.PackageError):
+            cli.run(['inventory', '--lint', '--root', str(ROOT)], io.StringIO(), io.StringIO())
+
 
 if __name__ == '__main__':
     unittest.main()
