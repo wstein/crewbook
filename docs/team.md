@@ -32,7 +32,7 @@ profile adopts its matching role identity, including `crewbook/platform`,
 
 Claude pins are Sonnet for desk/dispatch and issue/research workers, Opus for
 design and security/code review, Haiku for helpers. crewbook-docs-reviewer uses
-Sonnet only for policy-classified ordinary documentation. Codex mappings are
+Sonnet only for policy-classified ordinary documentation or the Sonnet landing review of a SHA rebased onto `landing` (range-diff equality plus tests only, see [landing pointer](git-history.md#landing-pointer)). Codex mappings are
 explicit in [README](../README.md). Never inherit a child model implicitly.
 An independent reviewer must meet the configured review-strength requirement.
 
