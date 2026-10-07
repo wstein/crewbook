@@ -808,12 +808,17 @@ and the user's authorized scope. They add no runtime enforcement.
 A **carve-out** is a change to security-relevant paths, rules or agent prompts
 that needs an independent reviewer agent of the configured strength (see
 [crewbook-review](../.agents/crewbook-review.md)). A **stamp** is that reviewer's
-note that the exact SHA has no open Medium or higher finding. After a stamp,
-land that SHA. Lows go to a follow-up issue, never to new commits on the stamped
-branch. A Medium or higher finding discovered after a stamp blocks landing and
-needs a new commit plus a fresh independent review of the new exact SHA. A
-rebased or otherwise rewritten SHA needs fresh review under the existing rules
-([AGENTS.md](../AGENTS.md), [git history](git-history.md)).
+note that the exact SHA has no open findings. The reviewer may dispose of a
+Low as an accepted follow-up only with its owner, evidence and recorded
+acceptance under supplied target policy; close that finding before clean
+exact-SHA clearance. Unresolved Lows block a stamp. After a stamp, land that
+unchanged SHA only when integration is authorized and the target's required
+gates pass. Accepted follow-ups go to their recorded issues, never to new
+commits on the stamped branch. A Medium or higher finding discovered after a
+stamp blocks landing and needs a new commit plus a fresh independent review
+of the new exact SHA. A rebased or otherwise rewritten SHA needs fresh review
+under the [target Git history policy](git-history.md) and
+[supplied policy](policy-composition.md#trusted-inputs-and-resolution).
 
 <a id="pre-land-gate"></a>
 ### Pre-land gate
@@ -825,25 +830,35 @@ the exact branch SHA. A result for a different SHA does not count. Reviewers
 flag tests that call host tools without a skip or stub. Project-specific build
 targets are tracked in the target project, not here.
 
-The landing station must be detached at current local main before landing. When
-handing over a landing line, the dispatcher states "station: detach to main
-first" and checks read-only that `git -C <station> rev-parse HEAD` equals local
-main and that `git -C <station> symbolic-ref -q HEAD` prints nothing (detached);
-a stale branch there can run an outdated recipe.
+Use the integration branch, station layout and history procedure supplied by
+the target under the [target Git history policy](git-history.md). The following
+station rules apply only where the target supplies a detached landing station,
+`main` as its integration branch and fast-forward-only history; they do not
+select those policies for a generic target.
+
+For that configured layout, the landing station must be detached at current
+local `main` before landing. When handing over a landing line, the coordinator
+states "station: detach to main first" and checks read-only that
+`git -C <station> rev-parse HEAD` equals local `main` and that
+`git -C <station> symbolic-ref -q HEAD` prints nothing (detached); a stale
+branch there can run an outdated recipe. Preserve the user's source checkout;
+never switch its branch on the user's behalf.
 
 <a id="no-worktree-holds-main"></a>
 ### No worktree holds main
 
-No worktree holds `main` as a named branch permanently, because that blocks the
-user's own checkout of it; integration worktrees stay detached, and the
-dispatcher flags any slot whose branch is `main` in the slot registry.
-Integrate (fast-forward only) from a detached worktree with a local ref update
-such as `git push . <sha>:main`. `git update-ref refs/heads/main <new> <old>`
-(old-value form) is allowed only when no worktree holds `main` and the
-[source main guard](../tools/README.md#optional-source-main-guard) permits it;
-otherwise ask desk. Never switch a worktree's branch on the user's behalf: the
-user runs `git switch --detach` in a worktree that holds main. See
-[physical worktree slots](#physical-worktree-slots).
+In that supplied detached-station layout, integration worktrees stay detached
+so they do not reserve `main` and block the user's checkout. The coordinator
+flags an integration slot whose branch is `main` in the slot registry; the
+user's source checkout may retain its named branch. Integrate by the target's
+authorized fast-forward procedure from the detached station, such as
+`git push . <sha>:main` when supplied target policy permits that local operation.
+`git update-ref refs/heads/main <new> <old>` (old-value form) is allowed only
+when no worktree holds `main` and the target's supplied controls permit it;
+otherwise report the blocked operation to desk. Never switch any worktree's
+branch on the user's behalf: its user runs `git switch --detach` when needed.
+See [physical worktree slots](#physical-worktree-slots) and
+[ownership and evidence](git-history.md#ownership-and-evidence).
 
 <a id="author-reviewer-checklists"></a>
 ### Author and reviewer checklists
