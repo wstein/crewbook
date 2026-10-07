@@ -119,6 +119,57 @@ class ReviewLineTests(unittest.TestCase):
         self.assertEqual(rl.split_evidence(rl.join_evidence(lines)), lines)
         self.assertEqual(rl.split_evidence(''), [])
 
+    def test_review_started_is_not_a_stamp(self):
+        self.assertTrue(rl.gate(['review started %s model=opus' % SHA], SHA, {'opus'}, 1))
+
+    def test_distinct_count_uses_canonical_model(self):
+        lines = ['CLEAR %s model=opus' % SHA, 'CLEAR %s model=claude-opus-5-5' % SHA]
+        gaps = rl.gate(lines, SHA, {'opus'}, 2)
+        self.assertTrue(any('found 1' in g for g in gaps))
+        self.assertEqual(rl.gate(lines, SHA, {'opus'}, 1), [])
+        mixed = ['CLEAR %s model=claude-opus-5-5' % SHA, 'CLEAR %s model=gpt-6.1-sol/medium' % SHA]
+        self.assertEqual(rl.gate(mixed, SHA, {'opus', 'gpt-6.1-sol/medium'}, 2), [])
+
+    def test_same_model_twice_counts_once(self):
+        lines = ['CLEAR %s model=opus' % SHA, 'CLEAR %s model=opus' % SHA]
+        self.assertTrue(rl.gate(lines, SHA, {'opus'}, 2))
+
+    def test_claude_id_needs_version_shape(self):
+        for ok, fam in (('claude-opus-5-5', 'opus'), ('claude-sonnet-4', 'sonnet'),
+                        ('claude-haiku-4-5-20251001', 'haiku')):
+            self.assertEqual(rl.canonical(ok), fam)
+        for bad in ('claude-opus-x', 'claude-opus--', 'claude-opus-sonnet-5', 'claude-opusx',
+                    'claude-opus-5-5_x', 'xclaude-opus-5', 'claude-opus-5-5-x', 'claude-opus-',
+                    'claude-opus-5-5x'):
+            self.assertEqual(rl.canonical(bad), bad)
+
+    def test_not_clear_prefix_or_no_sha_blocks(self):
+        ok = 'CLEAR %s model=opus' % SHA
+        for bad in ('NOT CLEAR %s model=opus ' % SHA[:7], 'NOT CLEAR %s' % SHA[:12],
+                    'NOT CLEAR', 'not clear model=opus', 'NOT CLEAR  %s model=' % SHA[:39]):
+            self.assertTrue(any('NOT CLEAR' in g for g in rl.gate([ok, bad], SHA, {'opus'}, 1)), bad)
+
+    def test_not_clear_other_or_short_sha_does_not_block(self):
+        ok = 'CLEAR %s model=opus' % SHA
+        for fine in ('NOT CLEAR %s model=opus ' % ('b' * 40), 'NOT CLEAR bbbbbbb',
+                     'NOT CLEAR %s' % SHA[:6] + ' bbbbbbbb'):
+            self.assertEqual(rl.gate([ok, fine], SHA, {'opus'}, 1), [], fine)
+
+    def test_any_lower_tier_clear_blocks_even_if_extra(self):
+        lines = ['CLEAR %s model=opus' % SHA, 'CLEAR %s model=sonnet' % SHA]
+        gaps = rl.gate(lines, SHA, {'opus'}, 1)
+        self.assertEqual(len(gaps), 1)
+        self.assertIn('sonnet', gaps[0])
+
+    def test_tier_gap_message_joins_with_comma(self):
+        gaps = rl.gate(['CLEAR %s model=sonnet' % SHA], SHA, {'opus', 'gpt-6.1-sol/medium'}, 1)
+        self.assertIn('gpt-6.1-sol/medium, opus', gaps[0])
+
+    def test_sha_inside_model_token_is_gap(self):
+        other = 'b' * 40
+        gaps = rl.gate(['CLEAR %s model=x%sx' % (other, SHA)], SHA, {'opus'}, 1)
+        self.assertTrue(any('inside its model token' in g for g in gaps))
+
 
 if __name__ == '__main__':
     unittest.main()
