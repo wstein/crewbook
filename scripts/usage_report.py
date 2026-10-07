@@ -425,7 +425,7 @@ def build(col, table, top, resume_gap):
         "heuristics": {
             "resume": "estimate: gap > %ds between consecutive requests of one agent" % resume_gap,
             "loop_tick": "unverified: >=5 request bursts with near-regular start spacing",
-            "role": "keyword match on short label or first prompt; else unknown",
+            "role": "keyword match on structured sidecar agentType/description labels; else unknown",
         },
     }
 
