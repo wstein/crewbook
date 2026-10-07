@@ -285,6 +285,33 @@ def build(col, table, top, resume_gap):
         role = col.roles.get(r["agent"]) or col.roles.get(r["file_agent"]) or "unknown"
         g = groups.setdefault((r["agent"], r["model"], role), [])
         g.append(r)
+    # Timing belongs to an agent's complete timeline, before model grouping.
+    timelines = {}
+    for recs in groups.values():
+        for r in recs:
+            timelines.setdefault(r["agent"], []).append(r)
+    timing = {}
+    for aid, recs in timelines.items():
+        ordered = sorted((r for r in recs if r["ts"] is not None),
+                         key=lambda r: (r["ts"], r["order"]))
+        resume_models = {}
+        for a, b in zip(ordered, ordered[1:]):
+            if b["ts"] - a["ts"] > resume_gap:
+                resume_models[b["model"]] = resume_models.get(b["model"], 0) + 1
+        _resumes, loop, bursts = analyse_times(recs, resume_gap)
+        # Attribute the agent loop once, to the model at its first request.
+        loop_model = ordered[0]["model"] if ordered else None
+        agent_cost = 0.0 if isinstance(table, dict) else None
+        if agent_cost is not None:
+            for r in recs:
+                p = price_for(table, r["model"])
+                if p is None:
+                    agent_cost = None
+                    break
+                agent_cost += cost_of(r["v"], p)
+            if agent_cost is not None and not math.isfinite(agent_cost):
+                agent_cost = None
+        timing[aid] = (resume_models, loop, bursts, loop_model, agent_cost)
     rows = []
     row_unpriced_by_id = {}
     unpriced = 0
@@ -295,7 +322,9 @@ def build(col, table, top, resume_gap):
                 v[k] += r["v"][k]
         last = max(recs, key=lambda r: (r["ts"] if r["ts"] is not None else -1, r["order"]))
         ctx = last["v"]["input"] + last["v"]["cache_read"] + last["v"]["cache_write"]
-        resumes, loop, bursts = analyse_times(recs, resume_gap)
+        resume_models, agent_loop, bursts, loop_model, agent_cost = timing[aid]
+        resumes = resume_models.get(model, 0)
+        loop = agent_loop if model == loop_model else None
         col.stats["no_timestamp"] += sum(1 for r in recs if r["ts"] is None)
         cost = None
         row_unpriced = 0
@@ -322,7 +351,7 @@ def build(col, table, top, resume_gap):
                "context_last_request": ctx, "resumes_estimate": resumes}
         if loop:
             row["loop_estimate_unverified"] = dict(
-                loop, mean_cost_per_burst=(cost / bursts if cost is not None else None))
+                loop, mean_cost_per_burst=(agent_cost / bursts if agent_cost is not None else None))
         rows.append(row)
         row_unpriced_by_id[id(row)] = row_unpriced
     priced = isinstance(table, dict)

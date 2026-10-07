@@ -138,6 +138,28 @@ class UsageTests(Fixture):
         loop = self.report()['rows'][0]['loop_estimate_unverified']
         self.assertEqual((loop['bursts'], loop['interval_s']), (8, 300))
 
+    def test_model_switch_does_not_invent_resumes(self):
+        self.write('s/main.jsonl', [asst('a', 'a', ts='2026-01-01T00:00:00Z'),
+            asst('b', 'b', model='claude-opus-5', ts='2026-01-01T00:20:00Z'),
+            asst('c', 'c', ts='2026-01-01T00:40:00Z')])
+        self.assertEqual(sum(r['resumes_estimate'] for r in self.report()['rows']), 0)
+
+    def test_resume_at_model_switch_is_attributed_once(self):
+        self.write('s/main.jsonl', [asst('a', 'a', ts='2026-01-01T00:00:00Z'),
+            asst('b', 'b', model='claude-opus-5', ts='2026-01-01T01:00:00Z')])
+        rows = {r['model']: r for r in self.report()['rows']}
+        self.assertEqual(rows['claude-sonnet-5']['resumes_estimate'], 0)
+        self.assertEqual(rows['claude-opus-5']['resumes_estimate'], 1)
+
+    def test_loop_uses_full_agent_timeline_once_across_models(self):
+        self.write('s/main.jsonl', [asst(str(i), str(i),
+            model='claude-opus-5' if i % 2 else 'claude-sonnet-5',
+            ts='2026-01-01T00:%02d:00Z' % (i * 5)) for i in range(8)])
+        loops = [r['loop_estimate_unverified'] for r in self.report()['rows']
+                 if 'loop_estimate_unverified' in r]
+        self.assertEqual(len(loops), 1)
+        self.assertEqual((loops[0]['bursts'], loops[0]['interval_s']), (8, 300))
+
     def test_missing_fields_fail_closed(self):
         bad = [asst('m1', None), asst(None, 'r1'),
                {'type': 'assistant', 'message': 'nope'},
