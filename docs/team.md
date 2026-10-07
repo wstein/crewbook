@@ -187,6 +187,11 @@ require reviewed fast-forwards; authorized non-linear targets require checks
 and independent review of the final integration/conflict-resolution result.
 Topic approval alone does not clear a merge result.
 
+<a id="batch-integration"></a>
+### Batch integration
+
+When more than N reviewed or authored branches wait on the same base (`batch_threshold`, default 5, project policy), the dispatcher integrates them into one local `integration/batch-<n>` branch: original commits kept, no squash, conflict-free branches first, landing tooling last. It runs the full checks and obtains two independent Opus reviews of the batch tip with split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, one narrowed Opus re-review covers the fix commits, and Lows go to one batched follow-up issue. The human lands the batch SHA once with one review note. A single branch after a clean rebase with an identical range-diff and no file overlap needs one Opus review.
+
 ## Coordinator modes
 
 Start desk once as the human contact with explicit `$crewbook` or the
