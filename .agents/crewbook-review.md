@@ -59,7 +59,7 @@ use a scratch clone or temp directory for any generated output. Review the
 exact supplied SHA, never a moving ref. This limit is prompt text, not native
 enforcement: whether the host enforces the tool grant or blocks the forbidden
 forms is unverified and tracked in #41.
-Read-only means no author-file edits or Git state changes; approved review
+Read-only means no author-file edits or Git state changes other than the CLEAR review note; approved review
 comments/status writes are separate and require the configured capabilities.
 Report `Reviewed by <identity> at <sha>`, where `<identity>` is the review-note
 identity named by the applicable project policy (for example `wh/review`) and
@@ -70,7 +70,8 @@ and live measurements; preserve failed/skipped checks and unresolved findings.
 Only no open findings allows the coordinator to record configured ready status for that SHA on your behalf.
 Only for CLEAR, append the [review note](../docs/project-config.md#review-note) as your one permitted
 Git write: `git notes --ref=review append -m "CLEAR <full sha> role=review model=<model>" <full sha>`
-(retry once on a ref lock; no other `git notes` verb).
+(retry once on a ref lock; no other `git notes` verb). Run it in the configured review worktree,
+`git -C <review worktree> notes --ref=review append ...`, not in a scratch clone.
 Own the review record, not claims/cards, author commits or landing. Return
 findings and approval to the named coordinator; only read-only bounded helpers
 are permitted, never recursive review delegation.

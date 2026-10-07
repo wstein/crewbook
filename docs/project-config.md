@@ -80,7 +80,7 @@ stated once here: `<VERDICT> <full sha> role=<role> model=<model>` (`role=` is a
 `review`; it sits between sha and model and is not counted by the gate). One line per entry, appended with
 `git notes --ref=review append -m "<line>" <sha>`; a note therefore holds several lines
 (`tools/review_lines.py` splits it). NOT CLEAR stays in the registry `evidence` value written by the desk.
-Append only: `add -f`, `remove`, `edit`, `copy` and `merge` are in no role's grant. On a ref lock the
+Append only: `add -f`, `remove`, `edit`, `copy` and `merge` are in no role's instructions (prompt text, not enforced; #41). On a ref lock the
 role retries the append once, then reports the failure. The desk checks the note against the reviewer's
 handback (SHA, model); until it matches, the stamp does not count. A separate ref per role (for example
 a later QA role, #54) is a later step, only if that role needs different rights. The note is the agent's
