@@ -73,6 +73,19 @@ in the [README](../README.md)). A reported concrete Claude id normalises to its 
 normalised token exactly, as one whole token. Client handles are marked valid only in the session
 that created them. A one-line `Resume:` summary closes the file.
 
+<a id="review-note"></a>
+**Review note.** A reviewer that returns CLEAR records it as one line in the single note ref
+`refs/notes/review` on the exact full SHA it reviewed. The line is the grammar above plus the role,
+stated once here: `<VERDICT> <full sha> role=<role> model=<model>` (`role=` is a lowercase token such as
+`review`; it sits between sha and model and is not counted by the gate). One line per entry, appended with
+`git notes --ref=review append -m "<line>" <sha>`; a note therefore holds several lines
+(`tools/review_lines.py` splits it). NOT CLEAR stays in the registry `evidence` value written by the desk.
+Append only: `add -f`, `remove`, `edit`, `copy` and `merge` are in no role's grant. On a ref lock the
+role retries the append once, then reports the failure. The desk checks the note against the reviewer's
+handback (SHA, model); until it matches, the stamp does not count. A separate ref per role (for example
+a later QA role, #54) is a later step, only if that role needs different rights. The note is the agent's
+self-report, not a signature.
+
 Write ahead of a claim or start (`start requested`) and update on the confirmed
 outcome; an uncertain outcome stays uncertain. Before writing, check that the
 path is absent or a regular non-symlink file and that its parent is not a
