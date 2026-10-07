@@ -322,3 +322,16 @@ capabilities here. Source checks and CI do not establish native runtime support.
 
 Antigravity support remains incomplete; see the [readiness matrix](antigravity.md)
 for historical evidence, current unverified capabilities and admission requirements.
+
+## Behavior QA entrypoints
+
+Use [crewbook/qa](../.agents/crewbook-qa.md) for behavior evidence, separately
+from exact-SHA diff review. Codex can select that shared role through `$crewbook`
+or discover the optional [crewbook-qa skill](../.agents/skills/crewbook-qa/SKILL.md)
+when separately registered, just as for the desk alias. Claude ships
+`/crewbook-qa` and a Sonnet `crewbook-qa` profile; native registration/loading
+remains unverified. QA maps to `gpt-6.1-sol`/low in Codex. The profile declares Read, Grep, Glob and Bash for authorized measurement;
+Bash read-only restrictions are prompt guidance, not measured host enforcement.
+The native preflight and actual host controls govern each command. These files
+do not install profiles or grant host permissions. Antigravity can read the shared role text, but
+its [entrypoint/model admission limits](antigravity.md) remain unchanged.

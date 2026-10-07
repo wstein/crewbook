@@ -11,6 +11,7 @@
       ".agents/crewbook-dispatch.md",
       ".agents/crewbook-docs.md",
       ".agents/crewbook-helper.md",
+      ".agents/crewbook-qa.md",
       ".agents/crewbook-review.md",
       ".agents/crewbook-verify.md",
       ".agents/crewbook-worker.md"
@@ -23,6 +24,7 @@
       ".claude/agents/crewbook-helper-edit.md",
       ".claude/agents/crewbook-helper.md",
       ".claude/agents/crewbook-platform.md",
+      ".claude/agents/crewbook-qa.md",
       ".claude/agents/crewbook-reviewer.md",
       ".claude/agents/crewbook-runtime.md",
       ".claude/agents/crewbook-verify.md",
@@ -39,6 +41,7 @@
       ".claude/commands/crewbook-docs.md",
       ".claude/commands/crewbook-handover.md",
       ".claude/commands/crewbook-land.md",
+      ".claude/commands/crewbook-qa.md",
       ".claude/commands/crewbook-review.md",
       ".claude/commands/crewbook-usage.md",
       ".claude/commands/crewbook-verify.md"
@@ -71,7 +74,9 @@
     "docs/git-history.md",
     "docs/installation.md",
     "scripts/usage_report.py",
-    "scripts/usage_prices.example.json"
+    "scripts/usage_prices.example.json",
+    ".agents/skills/crewbook-qa/SKILL.md",
+    ".agents/skills/crewbook-qa/agents/openai.yaml"
   ],
   "host_dependencies": [
     {

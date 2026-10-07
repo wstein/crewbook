@@ -25,6 +25,7 @@ profile adopts its matching role identity, including `crewbook/platform`,
 | [crewbook-code](../.agents/crewbook-code.md) | Implementation in configured crewbook-platform/crewbook-runtime areas | No owned-rule edits |
 | [crewbook-docs](../.agents/crewbook-docs.md) | User-facing documentation | Rules remain with design owner |
 | [crewbook-verify](../.agents/crewbook-verify.md) | Measurements and reproducible evidence | Only on authorized reference setup |
+| [crewbook-qa](../.agents/crewbook-qa.md) | Exact-SHA behavior reproduction and fix evidence using [verify QA mode](../.agents/crewbook-verify.md#qa) | Read-only leaf; no Git state changes, forge/board writes, provisioning or landing; separate from diff review |
 | [crewbook-review](../.agents/crewbook-review.md) | Independent review of exact commits | Never its own work or feature edits |
 | [crewbook-helper](../.agents/crewbook-helper.md) | Bounded lookup, edit or check | No lane, Git state, protected edits or outward actions |
 | [crewbook-worker](../.agents/crewbook-worker.md) | Read-only research for one bounded batch | No file or Git changes, no posts |

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Crew Book QA"
+  short_description: "Verify behavior with per-platform evidence"
+  default_prompt: "Use $crewbook-qa to reproduce this bug and verify the supplied fix SHA."
