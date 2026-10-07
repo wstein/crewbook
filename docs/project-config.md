@@ -268,8 +268,10 @@ dependent operation. An item invalidated by a new revision is
 marked `expired` and asked once more under a new ID; an answered ID is never
 asked again. Standing defaults are a short list of routine classes the human
 approves once. **Proposed, needs human approval before first use**; until then
-no class is defaulted and desk asks each item (approval is logged like a
-[pre-agreed rule](#pre-agreed-rules)). Proposed list: naming, `Refs` target, review scope, soak length, fast-forward
+no class is defaulted, including expiry defaulting, and desk asks each item
+(approval is logged like a [pre-agreed rule](#pre-agreed-rules)).
+
+Proposed list: naming, `Refs` target, review scope, soak length, fast-forward
 mechanics, trailer wording under existing rules, model mapping per
 [README](../README.md), ordering within a priority, review routing, accepting
 Lows as documented limits and same-branch fixes inside authorized scope. Desk
@@ -310,7 +312,7 @@ Reply (paste, edit as needed):
 ```text
 H7:a
 ```
-Status: 1 author running, 0 reviews pending. Defaulted (veto any): H5 soak length 1d.
+Status: 1 author running, 0 reviews pending. Defaulted (after approval; veto any): H5 soak length 1d.
 ````
 
 The block ends its item list with one fenced reply line pre-filled with the

@@ -110,7 +110,7 @@ python3 /absolute/source/crewbook/tools/crewbook-package.py inventory --root /ab
 
 `update` accepts deliberately reviewed new bytes; it is not a tamper check.
 Commit the changed content, declarations and generated `tools/package.sha256`
-together. Repeating update on unchanged content produces identical bytes.
+on the same branch tip. Repeating update on unchanged content produces identical bytes.
 The original extraction evidence is not regenerated. The layout checker/CI
 must perform this same coordinated update when it changes packaged resources;
 adding maintenance-only CI or Python source changes no distributed bytes.

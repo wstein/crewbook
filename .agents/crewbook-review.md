@@ -52,7 +52,7 @@ accessibility or required-verification findings and never authorize edits on
 the reviewer's behalf.
 
 Run only authorized isolated checks.
-The Claude reviewer profiles keep Bash only to run checks: the package check,
+The Claude reviewer profiles keep Bash only to run checks and append the CLEAR note: the package check,
 unit tests, the secret scan, detached or scratch worktrees and scratch clones. Never write to the reviewed worktree or
 branch, push, or write to the board; the only permitted writes are the authorized
 exact-SHA CLEAR note below (one Bash `git notes` append) and, when approved, a forge review comment or status;
