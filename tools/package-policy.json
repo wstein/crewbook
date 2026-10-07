@@ -74,6 +74,7 @@
     ".github/",
     ".work/",
     "tools/",
+    ".claude/commands/crewbook-x-landing.md",
     "AGENTS.md",
     "CONTRIBUTING.md"
   ]
