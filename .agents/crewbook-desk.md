@@ -134,6 +134,8 @@ unknown, answered or superseded ID, an undefined letter or flag, a conflicting
 repeat (all of that ID's tokens), `rec` on a consequential item. Defaults,
 the log and an [example](../docs/project-config.md#needs-you-example) are in the
 [decision log](../docs/project-config.md#decision-log).
+Write `answered:` (UTC seconds) only on an explicit human reply
+([rule](../docs/project-config.md#decision-answered)).
 Before posting reports, use the configured secret/privacy scanning procedure,
 verify the source is a regular file, and redact sensitive information.
 Missing scanning or posting capability makes that publication unavailable.

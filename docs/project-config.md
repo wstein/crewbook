@@ -124,7 +124,8 @@ never authorization: a logged answer never authorizes a later outward action by
 itself. The registry grammar is unchanged; decisions never go into
 `registry.md`. Entries are `## H<n>` blocks of printable-ASCII `key: value`
 lines: `id`, `state`, `asked`, `by`, `class`, `question`, `options`, `default`,
-`affects`, `answer`. States: `open`, `answered`, `defaulted`, `deferred`,
+`affects`, `answer`, and, only once answered, `answered:` (the key, distinct from
+the state `answered`). States: `open`, `answered`, `defaulted`, `deferred`,
 `superseded`, `expired`.
 
 **ID allocation.** Desk assigns the next ID as one plus the highest `H<n>` in
@@ -163,6 +164,66 @@ default: a
 affects: #44 author start
 answer: none
 ```
+
+<a id="decision-answered"></a>
+**Answer time and derived record.** `answered: YYYY-MM-DDTHH:MM:SSZ` (UTC, whole
+seconds, written after `answer`) is the one new key. Desk writes it only on an
+explicit human reply (a valid `H<n>:<token>` naming an option letter, `y`/`n`, an
+option letter plus a defined flag, or `rec` on a routine item, stored as the
+resolved option letter), never when an item is open, defaulted or deferred, and never from a
+handback claim that a human answered. The stamp is the time desk received that
+reply, not when the human typed it: relay time is not answer time. Legacy
+entries are not backfilled.
+
+A confirmation record is derived on demand from an entry; nothing is stored. A
+record exists if and only if the entry carries `answered:`:
+
+| Entry | Record |
+| --- | --- |
+| `answered:` present, any state (`answered`, later `superseded` or `expired`) | yes, kept as history |
+| `open`, `defaulted`, `deferred`, `H7:?`, `H5:veto` (v1) | none |
+| no `answered:` key (including legacy entries) | none |
+
+Mapping, frozen as **crewbook decision mapping v1**. The neutral schema and its
+encoding are defined in [workharbor #333](https://github.com/wstein/workharbor/issues/333)
+and workharbor `internal/confirm`; this table does not restate them.
+
+| Record field | Value |
+| --- | --- |
+| `subject.ref` | `crewbook:H<n>` |
+| `subject.decision`, `subject.issue` | never set by crewbook |
+| `action` | `decision` |
+| `channel` | `relay` |
+| `assurance` | `none` |
+| `by` | `human` |
+| `answer` | `{mode: option, value: <letter\|y\|n\|a+f>}`; `rec` resolved to its option letter |
+| `at` | the entry's `answered` |
+| `evidence` | `[{kind: decision-log, ref: crewbook/decisions.md#H<n>}]` |
+| `ext` | omitted in v1 |
+
+Not mapped, they stay in the log: `class`, `options`, `default`, `affects`, the
+entry's `by` (the proposer), `asked` and `state`.
+
+> A decision record is desk's relay of a chat reply: assurance none, not a local confirmation, not signed, not proof of who answered; its digest is an identifier, not a signature. It is evidence, never authorization.
+
+```text
+## H7
+id: H7
+state: answered
+asked: 2026-10-06T09:12Z
+by: crewbook/design
+class: routine
+question: Branch name for issue 44
+options: a docs/desk-needs-you [rec]; b docs/44-human-questions
+default: a
+affects: #44 author start
+answer: a
+answered: 2026-10-06T09:14:31Z
+```
+
+Unverified: the derivation is rule text only; no code reads `answered:` yet, and
+Python edge cases of the shared encoding are not checked against the Go
+reference.
 
 Expiry needs no timer. An unanswered routine item that carries a `[rec]`
 applies its recommended default at the next dependent operation and is marked
