@@ -158,7 +158,7 @@ asked: 2026-10-06T09:12Z
 by: crewbook/design
 class: routine
 question: Branch name for issue 44
-options: a docs/desk-needs-you [rec]; b docs/44-human-questions
+options: a docs/44-desk-needs-you [rec]; b docs/desk-needs-you-44
 default: a
 affects: #44 author start
 answer: none
@@ -205,7 +205,7 @@ typed by you (the consequential item); other valid forms, for example, are
 
 ````text
 NEEDS YOU (2 shown; 1 more queued)
-H7: Branch name for issue 44: a docs/desk-needs-you [rec], b docs/44-questions
+H7: Branch name for issue 44: a docs/44-desk-needs-you [rec], b docs/desk-needs-you-44
 H8: Land the docs fix on main: a yes, b hold (push stays with you)
 H8 is consequential and needs your explicit answer; it is not pre-filled.
 Reply (paste, edit as needed):
