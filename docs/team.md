@@ -859,7 +859,7 @@ waive a required target gate. Show a landing line only when every CLEAR stamp
 the project policy requires for the exact SHA carries a `model=` value
 ([format](project-config.md)) that satisfies the project's tier rule
 ([default](../.agents/crewbook-dispatch.md)), no NOT CLEAR is recorded for that SHA,
-and any other unparsable line naming that SHA is a gap. A line "names" a SHA when it contains
+and any other unparsable line naming that SHA is a gap. A stamp read from a reviewer's [review note](project-config.md#review-note) counts only after the desk has matched it to the handback. A line "names" a SHA when it contains
 it (case-insensitive). A malformed NOT CLEAR blocks unless it contains a different full
 40-hex SHA. Stamps count by (SHA, canonical model): `opus` and
 `claude-opus-5-5` are one stamp, and reviewer identity is not modelled, so two reviewers who both
