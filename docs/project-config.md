@@ -55,7 +55,19 @@ model), `session` (the writing desk's session marker), UTC `updated`) is
 followed by one keyed block per assignment with the registry fields from the
 [supervision cycle](team.md#dispatch-supervision-and-recovery), limited to the
 keys `owner`, `handle`, `handle_session`, `phase`, `evidence`,
-`landing_required`, `landing_authorized` and `next_awaited`. Client handles are marked valid only in the session
+`landing_required`, `landing_authorized` and `next_awaited`. `evidence` holds
+the review lines for the assignment in one value, append-only and joined by `; `: the writer
+appends a line and never rewrites or drops an earlier one, so a later `CLEAR` cannot erase an
+earlier `NOT CLEAR`. Review lines are
+`review started <sha> model=<token>`, `CLEAR <sha> model=<token>` and `NOT CLEAR <sha> model=<token>`
+(lowercase 40-hex `<sha>`).
+`model=<model>[/<effort>]` is required and is derived from the model actually reported for the
+run, not the one requested. The value is printable ASCII without spaces or `;`, must not
+start with `model=`, and a line without it is invalid (modelled in `tools/review_lines.py`).
+Canonical tokens: `opus`, `sonnet`, `gpt-6.1-sol/medium`, `gpt-6.1-sol/low` (role mapping
+in the [README](../README.md)). A reported concrete Claude id normalises to its family
+(`claude-opus-5-5` becomes `opus`); a Codex id keeps its `/<effort>`. A tier rule matches the
+normalised token exactly, as one whole token. Client handles are marked valid only in the session
 that created them. A one-line `Resume:` summary closes the file.
 
 Write ahead of a claim or start (`start requested`) and update on the confirmed
