@@ -1,21 +1,25 @@
 """Model of the registry review-line grammar and the pre-land model gate (no I/O)."""
 import re
+import unicodedata
 
 SEPARATOR = '; '
 LINE = re.compile(r'(review started|CLEAR|NOT CLEAR) ([0-9a-f]{40})(?: role=[a-z][a-z0-9-]*)? model=(?!model=)([!-:<-~]+)')
-CLAUDE_ID = re.compile(r'claude-(opus|sonnet|haiku)-\d+(?:-\d+)*(?:-\d{8})?')
+CLAUDE_ID = re.compile(r'claude-(opus|sonnet|haiku)-[0-9]+(?:-[0-9]+)*')
+FULL_SHA = re.compile(r'(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])')
+NOT_CLEAR = re.compile(r'\bnot[\W_]*clear\b')
+INVISIBLE = dict.fromkeys(map(ord, '\u200b\u200c\u200d\u200e\u200f\u2060\ufeff\u00ad'))
 
 
 def parse(line):
     """Return (kind, sha, model) or None; a missing or empty model= is invalid.
-    An optional `role=<role>` (note lines only) sits between sha and model and is not returned."""
+    An optional `role=<role>` (note lines and registry evidence) sits between sha and model and is not returned."""
     m = LINE.fullmatch(line)
     return m.groups() if m else None
 
 
 def split_note(text):
     """A refs/notes/review note holds one entry per line (appended); blank lines are dropped."""
-    return [l for l in text.split('\n') if l.strip()]
+    return [l.strip('\r') for l in text.split('\n') if l.strip()]
 
 
 def canonical(model):
@@ -45,12 +49,17 @@ def gate(lines, sha, tiers, required=1):
     Counting key: (sha, canonical model); `opus` and `claude-opus-5-5` are one stamp. Reviewer
     identity is not modelled, so two reviewers recording the same model count once. Fail-closed:
     any CLEAR on sha whose canonical model is outside tiers is a gap, counted or not."""
+    if not isinstance(sha, str) or not re.fullmatch(r'[0-9a-f]{40}', sha):
+        raise ValueError('sha must be 40 lowercase hex characters')
+    if tiers is None:
+        raise ValueError('tiers is required')
     if isinstance(required, bool) or not isinstance(required, int) or required < 1:
         raise ValueError('required must be an int >= 1')
-    tiers = {tiers} if isinstance(tiers, str) else set(tiers)
+    tiers = {canonical(t) for t in ([tiers] if isinstance(tiers, str) else tiers)}
     gaps, models = [], set()
-    for line in lines:
-        loose = ' '.join(line.split()).lower()
+    # model tokens cannot contain ';', so a joined evidence value splits safely into entries
+    for line in (seg.strip('\r') for l in lines for seg in l.split(';')):
+        loose = ' '.join(unicodedata.normalize('NFKC', line).translate(INVISIBLE).split()).lower()
         p = parse(line)
         if p and p[1] == sha:
             if p[0] == 'NOT CLEAR':
@@ -58,12 +67,12 @@ def gate(lines, sha, tiers, required=1):
             elif p[0] == 'CLEAR':
                 models.add(canonical(p[2]))
         elif p:
-            if sha.lower() in loose:
+            if sha in loose:
                 gaps.append('review line for another sha carries %s inside its role or model token' % sha)
-        elif re.search(r'\bnot clear\b', loose):
-            if sha.lower() in loose or not re.search(r'[0-9a-f]{40}', loose):
+        elif NOT_CLEAR.search(loose):
+            if sha in loose or not FULL_SHA.search(loose):
                 gaps.append('malformed NOT CLEAR blocks %s' % sha)
-        elif sha.lower() in loose:
+        elif sha in loose:
             gaps.append('unparsable review line names %s' % sha)
     if len(models) < required:
         gaps.append('need %d distinct CLEAR models on %s, found %d' % (required, sha, len(models)))

@@ -203,6 +203,38 @@ class ReviewLineTests(unittest.TestCase):
         self.assertEqual(len(lines), 2)
         self.assertTrue(rl.gate(lines, SHA, {'opus'}, 1))
 
+    def test_not_clear_variants_block(self):
+        for v in ('NOT-CLEAR', 'NOT_CLEAR', 'not clear', 'NOT\u200b CLEAR', 'NOT\uff3f CLEAR', 'NOT  CLEAR'):
+            line = '%s %s model=opus' % (v, SHA)
+            self.assertTrue(any('NOT CLEAR' in g for g in rl.gate([line, 'CLEAR %s model=opus' % SHA], SHA, {'opus'}, 1)), v)
+
+    def test_malformed_target_not_clear_blocks_with_foreign_sha_on_item(self):
+        other = 'NOT CLEAR %s model=opus' % ('b' * 40)
+        for sep in ('; ', ';'):
+            gaps = rl.gate([sep.join(['NOT CLEAR %s model=' % SHA, other]), 'CLEAR %s model=opus' % SHA], SHA, {'opus'}, 1)
+            self.assertTrue(any('NOT CLEAR' in g for g in gaps), sep)
+
+    def test_long_hex_run_is_not_a_full_sha(self):
+        gaps = rl.gate(['NOT CLEAR %s model=' % ('b' * 41), 'CLEAR %s model=opus' % SHA], SHA, {'opus'}, 1)
+        self.assertTrue(any('malformed NOT CLEAR' in g for g in gaps))
+
+    def test_canonical_ascii_digits_and_date(self):
+        self.assertEqual(rl.canonical('claude-opus-5-20260101'), 'opus')
+        self.assertEqual(rl.canonical('claude-opus-\u0665'), 'claude-opus-\u0665')
+
+    def test_gate_validates_sha_and_tiers(self):
+        for bad in ('A' * 40, 'a' * 39, 'a' * 41, None):
+            with self.assertRaises(ValueError):
+                rl.gate([], bad, {'opus'})
+        with self.assertRaises(ValueError):
+            rl.gate([], SHA, None)
+        self.assertEqual(rl.gate(['CLEAR %s model=opus' % SHA], SHA, {'claude-opus-5-5'}), [])
+
+    def test_crlf_note_is_handled(self):
+        lines = rl.split_note('CLEAR %s model=opus\r\n' % SHA)
+        self.assertEqual(lines, ['CLEAR %s model=opus' % SHA])
+        self.assertEqual(rl.gate(['CLEAR %s model=opus\r' % SHA], SHA, {'opus'}), [])
+
 
 if __name__ == '__main__':
     unittest.main()
