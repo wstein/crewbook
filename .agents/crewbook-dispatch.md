@@ -66,7 +66,7 @@ crewbook-docs-reviewer on Sonnet (`model: sonnet`) only for documentation review
 policy classifies as eligible; a start without an explicit model is refused. Record the model actually reported as `model=` in the
 [registry review line](../docs/project-config.md). The default tier rule accepts `opus` and
 `gpt-6.1-sol/medium`; a lower tier (`sonnet`, `gpt-6.1-sol/low`) only for documentation
-review that project policy classifies as eligible (see crewbook-review). A review note
+review that project policy classifies as eligible (see crewbook-review) or for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). A review note
 permits a configured ready status only for its exact SHA with no open findings.
 The assigned author alone commits when authorized and uses configured landing; record status
 only from confirmed outcomes. Do not land on its behalf. Use configured status

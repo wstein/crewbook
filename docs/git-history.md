@@ -39,7 +39,7 @@ clearance.
 
 After a rebase the old stamp does not carry over silently. A rebase that is
 conflict-free, shows identical commits in `git range-diff` (all `=`) and touches
-no file the rebase base change touched needs one narrowed Opus review of the new
+no file the rebase base change touched needs, unless the [landing pointer rule](#landing-pointer) applies, one narrowed Opus review of the new
 exact SHA (range-diff equality plus tests at the new SHA). A rebase with
 conflicts or file overlap needs a full review. The CLEARs the
 [pre-land gate](team.md#pre-land-gate) requires still apply to the new SHA.
@@ -47,7 +47,7 @@ conflicts or file overlap needs a full review. The CLEARs the
 <a id="landing-pointer"></a>
 ### Landing pointer branch
 
-`landing` is a pointer branch to the newest reviewed stack tip. Nobody commits on it, and it neither replaces nor copies the original branches (unlike [`integration/batch-<n>`](team.md#batch-integration)). After every CLEAR the coordinator moves it fast-forward-only to that tip. The next branch is rebased onto `landing` before it is cleared, so nothing is cleared against an old base, and dependent new work bases on `landing`. Such a rebase follows the [rebase re-review rule](#rebase-re-review) with a Sonnet landing review of the rewritten SHA (range-diff against the original plus tests); originals and conflict or overlap rebases keep the Opus review. The human lands the target by fast-forward to the full tip SHA of `landing` (`git merge --ff-only <full sha>`). Landing tooling must enforce this order. The pre-land gate's tier check needs no exception: it takes the accepted tiers from the project's tier rule, so that rule names Sonnet for this review and the gate code stays unchanged.
+`landing` is a pointer branch to the newest reviewed stack tip. Nobody commits on it, and it neither replaces nor copies the original branches (unlike [`integration/batch-<n>`](team.md#batch-integration)). After every CLEAR the coordinator moves it fast-forward-only to that tip. The next branch is rebased onto `landing` before it is cleared, so nothing is cleared against an old base, and dependent new work bases on `landing`. Such a rebase follows the [rebase re-review rule](#rebase-re-review) with a Sonnet landing review of the rewritten SHA (range-diff against the original plus tests); originals and conflict or overlap rebases keep the Opus review. The human lands the target by fast-forward to the full tip SHA of `landing` (`git merge --ff-only <full sha>`). Landing tooling must enforce the stack order (oldest CLEAR first, never a tip that skips earlier stack commits). This Sonnet review is valid only when every original already has its required-tier CLEAR at its own SHA (Opus for rule and security paths); it checks only range-diff equality and tests. The pre-land gate's tier check needs no code exception, but the project's tier rule must accept `sonnet` for this review, otherwise the gate fails closed.
 
 ## Non-linear target with authorized merges
 

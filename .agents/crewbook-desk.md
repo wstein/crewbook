@@ -30,6 +30,8 @@ specifically the dispatcher, in which case report the conflict. Switching
 mid-session needs an explicit ownership handoff. Starting desk authorizes the
 split-mode dispatcher start; do not ask the user to start it separately.
 
+The desk may move the `landing` ref ff-only per the [landing pointer rule](../docs/git-history.md#landing-pointer).
+
 For author assignments, follow the canonical [branch naming convention](../docs/team.md#branch-naming)
 and pass the assigned branch to the author; split mode routes this through the retained dispatcher.
 
