@@ -272,6 +272,16 @@ class SnapshotTest(unittest.TestCase):
             json.dump(data, h)
         self.assertIn('[board]\nReady: #3\n', self.render())
 
+    def test_card_numbers_are_strict_positive_integers(self):
+        for number in (1.9, True, False, 0, -1, '1', None):
+            with self.subTest(number=number):
+                with open(self.board, 'w') as h:
+                    json.dump({'cards': [
+                        {'column': 'Ready', 'number': number, 'own': True}]}, h)
+                out = self.render()
+                self.assertIn('[board]\nunavailable: board input malformed', out)
+                self.assertNotIn('Ready: #', out)
+
     def test_bare_repo_label(self):
         bare = os.path.join(self.tmp, 'bare.git')
         git(self.tmp, 'clone', '-q', '--bare', self.root, bare)

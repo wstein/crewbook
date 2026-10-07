@@ -188,3 +188,7 @@ unverified. `verify` checks local routing and bytes, not actual hook execution.
 Configuration overrides, deleting hooks and direct filesystem ref writes can
 bypass local hooks; this is not a tamperproof boundary or forge policy. Installing
 or verifying a guard never authorizes main integration, push or publication.
+
+Snapshot board card numbers must be positive JSON integers (booleans, strings
+and fractional numbers are malformed). Unsupported board or workflow labels
+make their section unavailable before grouping, so masked identities cannot merge.

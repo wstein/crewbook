@@ -207,7 +207,10 @@ def board(path):
                 column = card['column']
                 if not isinstance(column, str) or not TOKEN.fullmatch(column):
                     raise Unavailable('board label unsupported')
-                cols.setdefault(column, []).append(int(card['number']))
+                number = card['number']
+                if type(number) is not int or number <= 0:
+                    raise ValueError('invalid card number')
+                cols.setdefault(column, []).append(number)
     except (KeyError, TypeError, ValueError, AttributeError):
         raise Unavailable('board input malformed')
     if not cols:
