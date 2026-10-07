@@ -850,7 +850,15 @@ candidate SHA. Where that policy requires the full project test suite plus a
 second-platform static check (for example, `go test ./...` and
 `GOOS=linux go vet ./...` for a Go project), or an exact-SHA CI run, include
 that required evidence. A result for a different SHA does not count; never
-waive a required target gate. Reviewers flag tests that call host tools without
+waive a required target gate. Show a landing line only when every CLEAR stamp
+the project policy requires for the exact SHA carries a `model=` value
+([format](project-config.md)) that satisfies the project's tier rule
+([default](../.agents/crewbook-dispatch.md)), no NOT CLEAR is recorded for that SHA,
+any other unparsable line naming that SHA is a gap, and identical CLEAR lines count once
+(the count is of distinct lines and models, not of reviewers; identity is not modelled).
+The required CLEAR count is the project policy's, `1` when policy is silent;
+name each stamp's model in the brief and report a missing or lower-tier model as a
+NEEDS YOU gap. Reviewers flag tests that call host tools without
 a skip or stub. Project-specific build targets are tracked in the target
 project, not here.
 
