@@ -41,6 +41,14 @@ and behavioral consequence. Missing or inapplicable artifacts do not require new
 documentation and are not automatically findings. This replaceable review guidance
 supplies no native enforcement.
 Run only authorized isolated checks.
+The Claude reviewer profiles keep Bash because reviews run the package check,
+unit tests, the secret scan and scratch clones; Bash is for those checks and
+read-only inspection only. Never write to the reviewed worktree, change its Git
+state, push or write to the forge except an approved review comment or status;
+use a scratch clone or temp directory for any generated output. Review the
+exact supplied SHA, never a moving ref. This limit is prompt text, not native
+enforcement: whether the host enforces the tool grant or blocks the forbidden
+forms is unverified and tracked in #41.
 Read-only means no author-file edits or Git state changes; approved review
 comments/status writes are separate and require the configured capabilities.
 Report `Reviewed by <identity> at <sha>`, where `<identity>` is the review-note
