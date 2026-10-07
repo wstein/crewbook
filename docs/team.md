@@ -823,12 +823,15 @@ under the [target Git history policy](git-history.md) and
 <a id="pre-land-gate"></a>
 ### Pre-land gate
 
-The stamp brief and the landing line require, before a landing line is offered,
-the result of the full project test suite plus a second-platform static check
-(for a Go project `go test ./...` and `GOOS=linux go vet ./...`), or a CI run on
-the exact branch SHA. A result for a different SHA does not count. Reviewers
-flag tests that call host tools without a skip or stub. Project-specific build
-targets are tracked in the target project, not here.
+Before a landing line is offered, the stamp brief and landing line require
+passing results for the supplied target policy's required checks on the exact
+candidate SHA. Where that policy requires the full project test suite plus a
+second-platform static check (for example, `go test ./...` and
+`GOOS=linux go vet ./...` for a Go project), or an exact-SHA CI run, include
+that required evidence. A result for a different SHA does not count; never
+waive a required target gate. Reviewers flag tests that call host tools without
+a skip or stub. Project-specific build targets are tracked in the target
+project, not here.
 
 Use the integration branch, station layout and history procedure supplied by
 the target under the [target Git history policy](git-history.md). The following
