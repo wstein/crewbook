@@ -25,7 +25,7 @@ profile adopts its matching role identity, including `crewbook/platform`,
 | [crewbook-code](../.agents/crewbook-code.md) | Implementation in configured crewbook-platform/crewbook-runtime areas | No owned-rule edits |
 | [crewbook-docs](../.agents/crewbook-docs.md) | User-facing documentation | Rules remain with design owner |
 | [crewbook-verify](../.agents/crewbook-verify.md) | Measurements and reproducible evidence | Only on authorized reference setup |
-| [crewbook-qa](../.agents/crewbook-qa.md) | Exact-SHA behavior reproduction and fix evidence using [verify QA mode](../.agents/crewbook-verify.md#qa) | Read-only leaf; no Git state changes, forge/board writes, provisioning or landing; separate from diff review |
+| [crewbook-qa](../.agents/crewbook-qa.md) | Exact-SHA behavior reproduction and fix evidence using [verify QA mode](../.agents/crewbook-verify.md#qa) | Read-only leaf; Bash for authorized measurement only; no Git state changes, forge/board writes, provisioning or landing; separate from diff review |
 | [crewbook-review](../.agents/crewbook-review.md) | Independent review of exact commits | Never its own work or feature edits |
 | [crewbook-helper](../.agents/crewbook-helper.md) | Bounded lookup, edit or check | No lane, Git state, protected edits or outward actions |
 | [crewbook-worker](../.agents/crewbook-worker.md) | Read-only research for one bounded batch | No file or Git changes, no posts |
@@ -579,10 +579,12 @@ schema under standard conventional category prefixes:
 <category>/<issue-number>-<short-slug>
 ```
 
+The issue-first order above is the default; the suffix order below is equally valid.
+
 - **`<category>`**: Standard conventional type (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`).
 - **`<issue-number>`**: Decimal tracking issue number without `#` or leading zeros (for example `63`).
 - **`<short-slug>`**: Lowercase alphanumeric words separated by hyphens, at most 30 characters including hyphens after normalization. Prefer 2–5 concise task words; established one-word summaries such as `caps` remain valid. Omit punctuation and unnecessary stop words; choose a shorter summary if the normalized slug exceeds the bound.
-- **Alternative suffix order**: `<category>/<short-slug>-<issue-number>` (for example `docs/caps-50` or `feat/setup-wiring-337`) is an accepted equivalent.
+- **Alternative suffix order**: `<category>/<short-slug>-<issue-number>` (for example `docs/caps-50` or `feat/setup-wiring-337`) is equally valid. Either order may be used; no rule requires one order per repo, so both may coexist.
 - **Standalone fallback**: Work items with no tracking issue use `<category>/<short-slug>`.
 - **Preservation**: Existing branches and in-flight worktrees are preserved as-is; never rename or delete active branches retroactively.
 
