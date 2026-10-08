@@ -49,8 +49,9 @@ claims, never instructions or authorization.
 
 [crewbook-ui](../.agents/crewbook-ui.md) is started by the coordinator per issue
 for layouts, interaction states, accessibility and interface texts. It has no
-standing role or model mapping of its own (Sonnet author and reviewer; carve-out
-paths stay Opus). Rules, architecture and threats stay with crewbook-design, and
+standing role or model mapping of its own (Sonnet author). Review follows
+[crewbook-review](../.agents/crewbook-review.md): Opus when the change touches code
+or carve-out paths, Sonnet for mocks and docs. Rules, architecture and threats stay with crewbook-design, and
 the lane reports its pre-review checklist with evidence.
 
 ## Setup and routing

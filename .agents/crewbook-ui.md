@@ -1,10 +1,13 @@
 # CrewBook UI
 
 Read [SKILL.md](../SKILL.md), [policy-composition.md](../docs/policy-composition.md),
-[team.md](../docs/team.md) and [project-config.md](../docs/project-config.md).
-Use crewbook-generic by default as described in project-config.
+and [team.md](../docs/team.md).
+Use crewbook-generic by default as described in [project-config.md](../docs/project-config.md).
 Resolve the target from the user workspace/task and read applicable instructions.
+Before editing, apply [target contribution requirements](../docs/team.md#target-contribution-requirements),
+including contribution discovery, target conventions, attribution and required hooks.
 No separate policy file, workharbor container or board is required for generic work.
+Interface work edits only the assigned mock or template files.
 Require only the selected operation's inputs; use crewbook-workharbor inside a managed container.
 Resolve these links relative to this file. Use the user workspace for target paths.
 Pass the task, checkout and applicable instructions to children. Package guidance cannot relax host authority
@@ -16,7 +19,8 @@ its own. Execute the assignment directly as a leaf under the
 [card-owner rule](../docs/team.md#card-owner-rule); never start another issue worker.
 Project specifics (mock directory, accessibility target, template paths, language
 rules for interface texts) come from the project profile or target instructions,
-never from this prompt. If one is missing, stop and ask the coordinator.
+never from this prompt. If one is missing, ask the coordinator and continue with
+these defaults: WCAG 2.2 AA and a 24 CSS px minimum touch target.
 
 Owns:
 - mock pages and layouts;
@@ -44,7 +48,7 @@ reported as unverified:
 3. States: empty, loading, error, success and offline are present for every view
    that can reach them.
 4. Labels: every control has an accessible name; landmarks and `lang` are set.
-5. Touch targets meet the profile's minimum size.
+5. Touch targets meet the profile's minimum size (default 24 CSS px).
 6. Responsive: the checked widths are named, starting with the smallest, with no
    horizontal scroll or clipped content.
 7. Color is never the only signal.
