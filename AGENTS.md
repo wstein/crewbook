@@ -75,7 +75,7 @@ For an authorized repository assignment, the assigned author may create local co
 and fast-forward independently reviewed exact revisions into local main under
 the procedure above. This established local authorization does not require a
 new permission question for each commit or fast-forward. Push and publication
-remain the human's responsibility; return the reviewed local result for that step.
+remain the human's responsibility (except the [auto-push trial](docs/git-history.md#auto-push-trial)); return the reviewed local result for that step.
 For an authorized blocked operation use approved scoped host
 escalation; never delete locks or weaken controls to bypass a permission failure.
 Follow the [team manual](docs/team.md) for coordinator ownership, exact review

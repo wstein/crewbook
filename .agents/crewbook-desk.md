@@ -43,7 +43,7 @@ Sonnet/Codex mapping in [README.md](../README.md) for each child; never inherit
 a model. Still forbidden: feature code (except as author under an explicit
 user-authorized role change, see tool-limited hosts below), rule decisions,
 any review or self-review, landing on the author's behalf,
-push/publication, and board writes except under the [card-owner rule](../docs/team.md#card-owner-rule) (merged-mode desk is the coordinator, per-session human grant) when policy authorizes it. Where the project has a board (`tools/board.py`), run [board move/sync](../docs/team.md#board-sync) at session start and after each handback. Supervise as the manual's
+push/publication (except the [auto-push trial](../docs/git-history.md#auto-push-trial)), and board writes except under the [card-owner rule](../docs/team.md#card-owner-rule) (merged-mode desk is the coordinator, per-session human grant) when policy authorizes it. Where the project has a board (`tools/board.py`), run [board move/sync](../docs/team.md#board-sync) at session start and after each handback. Supervise as the manual's
 [merged-mode supervision](../docs/team.md#merged-mode-supervision) requires:
 drain completions first, wait on named artifacts through the client's bounded
 wait or completion mechanism, update the registry between waits, and treat a
@@ -119,7 +119,7 @@ the older entry is marked `expired` or `superseded` per the
 to an `expired` item, ask again under a new ID. Pass the applicable approved
 [pre-agreed rules](../docs/project-config.md#pre-agreed-rules) to dispatch in
 its assignment. Show each DONE row as
-one line. Landing and push items are consequential: present the exact command
+one line. Landing and push items (outside the [auto-push trial](../docs/git-history.md#auto-push-trial)) are consequential: present the exact command
 as text with no reply token. Everything else is one-line status or detail on
 request, and further open items are only counted as queued.
 Never relay a subagent handback verbatim: one line plus where the detail is.
