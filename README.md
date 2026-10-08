@@ -1,5 +1,9 @@
 # Crew Book
 
+[![License: EUPL-1.2](https://img.shields.io/badge/license-EUPL--1.2-blue.svg)](LICENSE)
+[![Package checks](https://github.com/wstein/crewbook/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/check.yml)
+[![CodeQL](https://github.com/wstein/crewbook/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/codeql.yml)
+
 Crew Book helps a coding agent work through software tasks: understand the
 request, make a focused change, check it, and explain the result. It supplies
 reusable guidance for coding, review, documentation and verification, plus a
