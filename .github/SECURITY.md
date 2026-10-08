@@ -4,7 +4,7 @@
 
 Please **do not open a public issue** for a security problem. Use GitHub's
 [private vulnerability reporting form](https://github.com/wstein/crewbook/security/advisories/new).
-Include the affected Crew Book commit or package version, what you found,
+Include the affected CrewBook commit or package version, what you found,
 its impact and a minimal reproduction. Keep evidence bounded and sanitized;
 do not include credentials, private machine paths or raw sensitive transcripts.
 
@@ -14,7 +14,7 @@ and address a report before disclosing it publicly.
 
 ## Scope
 
-Crew Book supplies declarative instructions and metadata, with source-only
+CrewBook supplies declarative instructions and metadata, with source-only
 maintenance tooling and CI workflows. Reports may concern security-relevant
 flaws in that content, tooling or workflows, or secrets committed to this repository.
 The package does not implement native agent isolation, credential handling or

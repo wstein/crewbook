@@ -1,6 +1,6 @@
 ---
 name: crewbook-runtime
-description: Crew Book runtime for the configured project; one bounded issue or research/decision batch.
+description: CrewBook runtime for the configured project; one bounded issue or research/decision batch.
 model: sonnet
 ---
 

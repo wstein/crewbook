@@ -125,8 +125,8 @@ including nested objects. JSON and resources must be UTF-8.
 | Manifest field | Required type and constraint |
 | --- | --- |
 | `contract_version` | Integer exactly `1`. |
-| `identity` | String matching `[a-z][a-z0-9_-]{0,63}`; Crew Book identifies itself as `crewbook`. |
-| `entrypoint` | Relative path to one inventoried public text file; Crew Book's entrypoint is `SKILL.md`. |
+| `identity` | String matching `[a-z][a-z0-9_-]{0,63}`; CrewBook identifies itself as `crewbook`. |
+| `entrypoint` | Relative path to one inventoried public text file; CrewBook's entrypoint is `SKILL.md`. |
 | `required_project_inputs` | Array of at most 32 unique strings, each using the identity syntax; confirmed separately by the trusted project-input provider. |
 | `adapters` | Array of 1–32 objects, each with required string `name`, `version`, `model`, `effort`; names use the identity syntax and are unique. |
 | `files` | Array of required `{path, sha256}` string pairs, complete and sorted as above, excluding `workharbor.json`. |

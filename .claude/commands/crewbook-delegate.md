@@ -1,5 +1,5 @@
 ---
-description: Crew Book delegate workflow for the explicitly configured project
+description: CrewBook delegate workflow for the explicitly configured project
 argument-hint: "<task, area, issue or workflow options>"
 ---
 

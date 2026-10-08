@@ -1,4 +1,4 @@
-# Contributing to Crew Book
+# Contributing to CrewBook
 
 Start with a small, focused issue or pull request explaining the problem and
 expected result. For security problems, use the [private reporting policy](.github/SECURITY.md).

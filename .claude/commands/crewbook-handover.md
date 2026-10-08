@@ -1,5 +1,5 @@
 ---
-description: Crew Book handover workflow for the explicitly configured project
+description: CrewBook handover workflow for the explicitly configured project
 ---
 
 Read [SKILL.md](../../SKILL.md) and apply the canonical

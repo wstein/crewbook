@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a reproducible problem with Crew Book.
+description: Report a reproducible problem with CrewBook.
 title: "[Bug]: "
 body:
   - type: markdown
@@ -11,7 +11,7 @@ body:
     id: environment
     attributes:
       label: Affected client and versions
-      description: Client name/version and Crew Book commit or package version; say if unknown.
+      description: Client name/version and CrewBook commit or package version; say if unknown.
     validations:
       required: true
   - type: textarea

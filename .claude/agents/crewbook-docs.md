@@ -1,6 +1,6 @@
 ---
 name: crewbook-docs
-description: Crew Book docs for the configured project; one bounded issue or research/decision batch.
+description: CrewBook docs for the configured project; one bounded issue or research/decision batch.
 model: sonnet
 ---
 

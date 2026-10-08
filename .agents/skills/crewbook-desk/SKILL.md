@@ -1,9 +1,9 @@
 ---
 name: crewbook-desk
-description: Start Crew Book desk as the human contact and coordinator for repository tasks; a persistent dispatcher only in split mode.
+description: Start CrewBook desk as the human contact and coordinator for repository tasks; a persistent dispatcher only in split mode.
 ---
 
-# Crew Book desk
+# CrewBook desk
 
 Adopt the `crewbook/desk` identity and crewbook-desk workflow now. Read [crewbook-desk.md](../../crewbook-desk.md) and follow its startup
 and routing procedure. Select and record the coordinator mode: merged by

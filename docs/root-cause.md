@@ -23,7 +23,7 @@ than expanding the task's authority through this guidance.
 
 ## Examples
 
-These examples are illustrative reasoning checks, not measured Crew Book
+These examples are illustrative reasoning checks, not measured CrewBook
 behavior or prescriptions for a particular repository.
 
 - **Shared cause:** Two adapters render an expired session as active because

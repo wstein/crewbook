@@ -9,7 +9,7 @@ import unittest
 import packagelint as lint
 
 ROOT = Path(__file__).resolve().parent.parent
-PRE = '# Crew Book {}\n\nRead [SKILL.md](../SKILL.md),\nand [team.md](../docs/team.md).\nOwn line {}.\n'
+PRE = '# CrewBook {}\n\nRead [SKILL.md](../SKILL.md),\nand [team.md](../docs/team.md).\nOwn line {}.\n'
 RULE = ' '.join('rule%d' % i for i in range(lint.MIN_WORDS))
 
 
@@ -39,7 +39,7 @@ class LintTests(unittest.TestCase):
         self.assertIn('.agents/crewbook-c.md:7', found[0])
 
     def test_shared_preamble_is_not_a_duplicate_rule(self):
-        pre = '# Crew Book {}\n\n' + RULE + '\nmore words here.\n\nOwn line {}.\n'
+        pre = '# CrewBook {}\n\n' + RULE + '\nmore words here.\n\nOwn line {}.\n'
         files = {'.agents/crewbook-%s.md' % n: pre.format(n, n).encode() for n in ('a', 'b')}
         self.assertEqual(lint.lint(files), [])
 

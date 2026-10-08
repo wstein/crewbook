@@ -1,6 +1,6 @@
 ---
 name: crewbook-design
-description: Crew Book design for the configured project; one bounded issue or research/decision batch.
+description: CrewBook design for the configured project; one bounded issue or research/decision batch.
 model: opus
 ---
 

@@ -373,7 +373,7 @@ tightening `set` (for example lowering a cap) is routine, may default and
 is still logged as an `H<n>` entry. Precedence, highest first: platform; then host instructions, `AGENTS.md`
 and user authorization per the host's hierarchy
 ([authority](policy-composition.md#authority-and-prerequisites)); then session
-configuration; then Crew Book defaults. Session configuration sits below all
+configuration; then CrewBook defaults. Session configuration sits below all
 of these. A `set` that conflicts with a higher layer is refused and reported.
 
 Model-run and unenforced: the labels, the clamping and the refusal are
@@ -409,7 +409,7 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 | Context / request | Expected behavior |
 | --- | --- |
 | Ordinary repository without AGENTS.md; start dispatch | Use crewbook-generic, current session coordinator and user task; no workharbor setup required |
-| Crew Book repository; local edit | Use crewbook-generic and Crew Book checks; no repository-specific profile or workharbor container |
+| CrewBook repository; local edit | Use crewbook-generic and CrewBook checks; no repository-specific profile or workharbor container |
 | Confirmed generic GitHub remote; read issue | Use that repository's authorized forge tool, never a hardcoded workharbor endpoint |
 | Generic local task without a board | Record session assignment; no board creation or claim required |
 | Configured workharbor board unavailable | Stop board-dependent claims; continue independent authorized work |
@@ -434,7 +434,7 @@ context and only the configuration needed by that operation. Missing required in
 no `AGENTS.md` exists; specialized operations require their applicable inputs.
 
 Package guidance cannot relax system/platform controls or human approval
-boundaries. Crew Book supplies no permission settings, hooks or tool enforcement;
+boundaries. CrewBook supplies no permission settings, hooks or tool enforcement;
 native tool limits are not enforced by Makefiles. The contract documents trusted
 writers and focused missing-policy/conflicting-skill review cases. Workharbor's
 current Hard rules remain in its own project policy, not in this package.

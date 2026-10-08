@@ -1,5 +1,5 @@
 ---
-description: Crew Book behavior QA workflow for the explicitly configured project
+description: CrewBook behavior QA workflow for the explicitly configured project
 ---
 
 Read [SKILL.md](../../SKILL.md) and apply the canonical

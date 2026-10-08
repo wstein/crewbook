@@ -1,5 +1,5 @@
 ---
-description: Crew Book land workflow for the explicitly configured project
+description: CrewBook land workflow for the explicitly configured project
 argument-hint: "<task, area, issue or workflow options>"
 ---
 

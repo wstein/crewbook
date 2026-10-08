@@ -1,5 +1,5 @@
 interface:
-  display_name: "Crew Book desk"
+  display_name: "CrewBook desk"
   short_description: "Start desk as the coordinator"
   default_prompt: "Use $crewbook-desk to start desk as the coordinator (a persistent dispatcher only in split mode)."
 policy:

@@ -1,5 +1,5 @@
 ---
-description: Crew Book session configuration (show or set) for the current session
+description: CrewBook session configuration (show or set) for the current session
 argument-hint: "[show | set <value>]"
 ---
 
