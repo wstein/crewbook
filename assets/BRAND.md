@@ -1,10 +1,13 @@
-# Crew Book brand rule
+# crewbook brand rule
 
 One rule for every asset, so the logo, the icons, the README banner and the
 social preview look like one product (#88). The rule is derived from
 workharbor's `assets/BRAND.md`: the same tile, colours, type and lockup
-geometry, with a different mark. Name and casing: the package, skill and paths
-are `crewbook`; only the wordmark and reader-facing prose use **Crew Book**.
+geometry, with a different mark.
+
+Name: the product is **crewbook**, lowercase, in prose, code, paths and
+packages. Only the wordmark (banner, social preview) sets it as **CrewBook**,
+one word like workharbor's "WorkHarbor".
 
 ## The mark
 
@@ -19,8 +22,9 @@ parts are never redrawn in the other style.
   `favicon.ico`, `apple-touch-icon.png`): the teal mark on a rounded navy tile.
   Tile corner radius 13.28 units in the 64-unit box (workharbor's tile); the
   mark's drawn height 70 % of the side (47 units scaled by 0.95319), centred,
-  so it stays legible at 16 px. Every rounded tile has a visible outline: 1.6 units in the 64-unit
-  box (2.5 % of the side), colour `#2a4a7a`, drawn inside the tile's edge.
+  so it stays legible at 16 px. Every rounded tile has a visible outline: 1.6
+  units in the 64-unit box (2.5 % of the side), colour `#2a4a7a`, drawn inside
+  the tile's edge.
 - **Horizontal lockup** (any wide place): the bare teal mark, no tile, then
   the wordmark. A lockup never appears in a square place, and a tile never
   appears in a lockup, except as listed below.
@@ -30,7 +34,8 @@ parts are never redrawn in the other style.
 1. **Tile lockup in the README banner and the social preview.** As in
    workharbor (#143), these two assets show the mark on its rounded tile beside
    the wordmark and the tagline: 96 px in the banner (64 units at scale 1.5),
-   288 px in the social preview (scale 4.5).
+   288 px in the social preview (scale 4.5). Unlike workharbor's, the social
+   preview carries no third line.
 2. **Background gradient.** The banner and the social preview use workharbor's
    diagonal gradient from navy `#0b2545` to `#13315c`. It is the only gradient,
    and `#13315c` appears nowhere else.
@@ -39,28 +44,26 @@ parts are never redrawn in the other style.
    mask and fills transparent pixels with black.
 4. **Stroke and fill.** Unlike workharbor's all-stroke anchor, the star is a
    filled shape beside the book's strokes (see The mark).
-5. **Two words.** The wordmark has a space ("Crew Book"); workharbor's is one
-   word. The social preview carries no third line.
 
 ## The lockup, in proportions of the wordmark's cap height C
 
 | Element | Rule |
 | --- | --- |
-| Wordmark | "Crew Book" in Bricolage Grotesque Bold (wght 700, no added letter spacing), outlined: "Crew" in the text colour, "Book" in teal; cap height 0.66 × font size |
+| Wordmark | "CrewBook", one word, in Bricolage Grotesque Bold (wght 700, no added letter spacing), outlined: "Crew" in the text colour, "Book" in teal; cap height 0.66 × font size |
 | Mark, tile lockup | tile 2.14 × C in the banner, 4.36 × C in the social preview; the wordmark's ink starts about 0.8 × C to the right of the tile |
 | Mark, bare lockup | drawn height 2.4 × C, vertically centred on the wordmark's cap height; book stroke 5.5 in the 64-unit drawing; gap to the wordmark 0.6 × C |
 | Tagline | "Guidance and workflow for coding agents.", IBM Plex Sans Regular, outlined, teal, left-aligned with the wordmark (its origin 3.5 px right of the wordmark's origin in the banner, 4 px in the social preview) |
 | Clear space | at least 0.45 × C above and below the whole block (tile and text); in the README banner the tile leaves 27 px, 0.6 × C, at top and bottom |
 
 The banner and social preview reuse workharbor's exact positions and sizes, so
-"Crew Book" and "WorkHarbor" sit at the same scale, baseline and spacing.
+"CrewBook" and "WorkHarbor" sit at the same scale, baseline and spacing.
 
 ## Sizes
 
 | Asset | Size | Wordmark | Tagline |
 | --- | --- | --- | --- |
 | README banner | 1000 × 150, rounded 18 px; tile at (56, 27) | 68 px (optical size 72), C = 44.9 px, baseline 80, ink from x 187.08 | 30 px, baseline 118 (0.85 × C below) |
-| Social preview | 1280 × 640; tile at y 184, the whole block centred horizontally | 100 px (optical size 96), C = 66 px, baseline 318 | 36 px, baseline 388 (1.06 × C below) |
+| Social preview | 1280 × 640; tile at (132.7, 184), the whole block (tile to the end of the tagline, its widest line) centred horizontally | 100 px (optical size 96), C = 66 px, baseline 318 | 36 px, baseline 388 (1.06 × C below) |
 | `logo.png` | 512 × 512, from `logo.svg` | none | none |
 | `favicon.ico` | 16, 32 and 48 px, from `favicon.svg` | none | none |
 | `apple-touch-icon.png` | 180 × 180, full bleed | none | none |
