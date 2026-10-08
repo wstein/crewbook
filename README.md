@@ -1,3 +1,5 @@
+![CrewBook](https://raw.githubusercontent.com/wstein/crewbook/main/assets/banner.png)
+
 # CrewBook
 
 [![License: EUPL-1.2](https://img.shields.io/badge/license-EUPL--1.2-blue.svg)](LICENSE)
