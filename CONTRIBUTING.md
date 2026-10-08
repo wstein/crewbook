@@ -2,6 +2,7 @@
 
 Start with a small, focused issue or pull request explaining the problem and
 expected result. For security problems, use the [private reporting policy](.github/SECURITY.md).
+All participation follows the [code of conduct](.github/CODE_OF_CONDUCT.md).
 
 This guide is for humans contributing to this source repository. Read the
 [source instructions](AGENTS.md) before editing; host controls and the user's

@@ -115,6 +115,8 @@ records that boundary. Generic native-session use does not require that integrat
 For source changes, issues and pull requests, see the
 [contributor guide](https://github.com/wstein/crewbook/blob/main/CONTRIBUTING.md).
 It links the source checks, review process and private security reporting route.
+Participation follows the
+[code of conduct](https://github.com/wstein/crewbook/blob/main/.github/CODE_OF_CONDUCT.md).
 
 ## Licence and provenance
 
