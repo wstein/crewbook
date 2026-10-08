@@ -218,7 +218,7 @@ Topic approval alone does not clear a merge result.
 <a id="batch-integration"></a>
 ### Batch integration
 
-When more than `batch_threshold` ([project-config](project-config.md#generic-configuration)) reviewed or authored branches wait on the same base, an assigned integration author, with the human's explicit authorization, prepares one local `integration/batch-<n>` branch under the [target history policy](git-history.md): original commits kept, no squash, conflict-free branches first, landing tooling last. Without that authorization for rewriting other authors' commits the author stops and reports. The integration author runs the full checks and resolves conflicts within scope; the dispatcher only routes the reviews. Two independent Opus reviews of the batch tip split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, and one narrowed Opus re-review covers the fix commits; if that re-review is NOT CLEAR, [`review_rounds_max`](#review-rounds) applies to the batch like to any item (kept as separate commits, the only exception to [commit hygiene](git-history.md#commit-hygiene)). Lows go to one batched follow-up issue only when accepted per the [stamp freeze](#stamp-freeze) (reviewer acceptance, owner, evidence). The human merges the batch PR (old flow: lands the batch SHA) once with the CLEARs the [pre-land gate](#pre-land-gate) requires for that SHA. A single branch after a rebase follows the [rebase re-review rule](git-history.md#rebase-re-review). Reviewed work can instead be stacked as pull requests ([pull request flow](git-history.md#pull-request-flow)) without copying branches; the old `landing` pointer applies only until the migration finishes.
+When more than `batch_threshold` ([project-config](project-config.md#generic-configuration)) reviewed or authored branches wait on the same base, an assigned integration author, with the human's explicit authorization, prepares one local `integration/batch-<n>` branch under the [target history policy](git-history.md): original commits kept, no squash, conflict-free branches first, landing tooling last. Without that authorization for rewriting other authors' commits the author stops and reports. The integration author runs the full checks and resolves conflicts within scope; the dispatcher only routes the reviews. Two independent Opus reviews of the batch tip split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, and one narrowed Opus re-review covers the fix commits; if that re-review is NOT CLEAR, [`review_rounds_max`](#review-rounds) applies to the batch like to any item (kept as separate commits, the only exception to [commit hygiene](git-history.md#commit-hygiene)). Lows go to one batched follow-up issue only when accepted per the [stamp freeze](#stamp-freeze) (reviewer acceptance, owner, evidence). The human merges the batch PR (old flow: lands the batch SHA) once with the CLEARs the [pre-land gate](#pre-land-gate) requires for that SHA. A single branch after a rebase follows the [rebase re-review rule](git-history.md#rebase-re-review). Reviewed work can instead be stacked as pull requests ([pull request flow](git-history.md#pull-request-flow)) without copying branches; the old `landing` pointer applies only until the migration finishes. Size budget (proposal, Werner to confirm): the batch PR is exempt from the [size budget](git-history.md#pull-request-flow); each original branch keeps its own budget.
 
 <a id="landing-stack-flow-trial"></a>
 ### Landing-stack flow (trial, retired)
@@ -246,7 +246,7 @@ accounting and the empty-queue report straight to the human. Desk still writes
 no feature code (except under the explicit user-authorized role change in
 [merged-mode supervision](#merged-mode-supervision)), makes no rule decision,
 performs no review or self-review, never lands on the author's behalf, never
-pushes or publishes, and writes board cards only under the
+pushes or publishes (except under the [auto-push trial](git-history.md#auto-push-trial)), and writes board cards only under the
 [card-owner rule](#card-owner-rule) and when policy authorizes the coordinator.
 
 **Split mode.** Desk starts or adopts one persistent dispatcher (a peer
@@ -295,7 +295,7 @@ use the reviewer's project-configurable identity.
 
 The dispatcher runs no long-running tasks (full test suites, builds) itself; it starts a background helper for them.
 
-Monitoring never blocks desk or dispatch: no foreground sleep or poll loops. CI and check watching goes to a read-only background Haiku watcher (model set explicitly) that reports once. A failure report has the check name, the job URL and the first failing test line (`--- FAIL:` plus the next line); the watcher never judges, reruns or comments. Red CI not caused by the PR becomes a defect issue, never a "known failure", and the desk reruns the failed jobs.
+Monitoring never blocks desk or dispatch: no foreground sleep or poll loops. CI and check watching goes to a read-only background Haiku watcher (model set explicitly) that reports once. A failure report has the check name, the job URL and the first failing test line (for example Go `--- FAIL:` plus the next line, Python `FAIL: test_x`); the watcher never judges, reruns or comments. Red CI not caused by the PR becomes a defect issue, never a "known failure", and the desk reruns the failed jobs.
 
 Haiku helpers (model set explicitly, read-only) serve CI and run status lookups, range-diff proofs, consistency greps, short summaries and the launch of the full run (exit codes plus the last failing lines). Never use them for reviews, security judgement, decisions or destructive Git.
 
@@ -631,7 +631,7 @@ schema under standard conventional category prefixes:
 
 This is the only valid form; the issue number always follows the category.
 
-- **`<category>`**: Standard conventional type (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`).
+- **`<category>`**: Standard conventional type (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`) or `spike`. The [auto-delete list](git-history.md#pull-request-flow) after a merge is `fix/`, `feat/`, `docs/`, `chore/`, `ci/`, `refactor/`, `test/`; `spike/*` is never deleted automatically while spike PRs are not merged by the human.
 - **`<issue-number>`**: Decimal tracking issue number without `#` or leading zeros (for example `63`).
 - **`<short-slug>`**: Lowercase alphanumeric words separated by hyphens, at most 30 characters including hyphens after normalization. Prefer 2–5 concise task words; established one-word summaries such as `caps` remain valid. Omit punctuation and unnecessary stop words; choose a shorter summary if the normalized slug exceeds the bound.
 - **Standalone fallback**: Work items with no tracking issue use `<category>/<short-slug>`.
