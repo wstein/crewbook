@@ -32,7 +32,7 @@ profile adopts its matching role identity, including `crewbook/platform`,
 
 Claude pins are Sonnet for desk/dispatch and issue/research workers, Opus for
 design and security/code review, Haiku for helpers. crewbook-docs-reviewer uses
-Sonnet only for policy-classified ordinary documentation or the Sonnet landing review of a SHA rebased onto `landing` (range-diff equality plus tests only, see [landing pointer](git-history.md#landing-pointer)). Codex mappings are
+Sonnet only for policy-classified ordinary documentation or, in the old landing flow until the migration finishes, the Sonnet review of a SHA rebased onto `landing` (range-diff equality plus tests only, see [landing pointer](git-history.md#landing-pointer)). Codex mappings are
 explicit in [README](../README.md). Never inherit a child model implicitly.
 An independent reviewer must meet the configured review-strength requirement.
 
@@ -218,21 +218,12 @@ Topic approval alone does not clear a merge result.
 <a id="batch-integration"></a>
 ### Batch integration
 
-When more than `batch_threshold` ([project-config](project-config.md#generic-configuration)) reviewed or authored branches wait on the same base, an assigned integration author, with the human's explicit authorization, prepares one local `integration/batch-<n>` branch under the [target history policy](git-history.md): original commits kept, no squash, conflict-free branches first, landing tooling last. Without that authorization for rewriting other authors' commits the author stops and reports. The integration author runs the full checks and resolves conflicts within scope; the dispatcher only routes the reviews. Two independent Opus reviews of the batch tip split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, and one narrowed Opus re-review covers the fix commits; if that re-review is NOT CLEAR, [`review_rounds_max`](#review-rounds) applies to the batch like to any item (kept as separate commits, the only exception to [commit hygiene](git-history.md#commit-hygiene)). Lows go to one batched follow-up issue only when accepted per the [stamp freeze](#stamp-freeze) (reviewer acceptance, owner, evidence). The human lands the batch SHA once with the CLEARs the [pre-land gate](#pre-land-gate) requires for that SHA. A single branch after a rebase follows the [rebase re-review rule](git-history.md#rebase-re-review). Reviewed work can instead be stacked on the [`landing` pointer](git-history.md#landing-pointer) without copying branches.
+When more than `batch_threshold` ([project-config](project-config.md#generic-configuration)) reviewed or authored branches wait on the same base, an assigned integration author, with the human's explicit authorization, prepares one local `integration/batch-<n>` branch under the [target history policy](git-history.md): original commits kept, no squash, conflict-free branches first, landing tooling last. Without that authorization for rewriting other authors' commits the author stops and reports. The integration author runs the full checks and resolves conflicts within scope; the dispatcher only routes the reviews. Two independent Opus reviews of the batch tip split focus (security-relevant paths; the rest plus integration correctness). One author round fixes Medium+ findings, and one narrowed Opus re-review covers the fix commits; if that re-review is NOT CLEAR, [`review_rounds_max`](#review-rounds) applies to the batch like to any item (kept as separate commits, the only exception to [commit hygiene](git-history.md#commit-hygiene)). Lows go to one batched follow-up issue only when accepted per the [stamp freeze](#stamp-freeze) (reviewer acceptance, owner, evidence). The human merges the batch PR (old flow: lands the batch SHA) once with the CLEARs the [pre-land gate](#pre-land-gate) requires for that SHA. A single branch after a rebase follows the [rebase re-review rule](git-history.md#rebase-re-review). Reviewed work can instead be stacked as pull requests ([pull request flow](git-history.md#pull-request-flow)) without copying branches; the old `landing` pointer applies only until the migration finishes.
 
 <a id="landing-stack-flow-trial"></a>
-### Landing-stack flow (trial)
+### Landing-stack flow (trial, retired)
 
-Experimental, loaded only by `/crewbook-x-landing` (source-only, not distributed); `/crewbook-land` and the [land procedure](#land-procedure) are unchanged. Trial rules, stated here once:
-
-- New work starts on `landing` and stacks optimistically on the newest CLEAR tip; it does not wait for the human to land.
-- Review, rebase and forwarding follow the [landing pointer](git-history.md#landing-pointer) and [rebase re-review rule](git-history.md#rebase-re-review), including the landing pointer's validity condition. The trial only adds: rebase onto `landing` before any review.
-- Human-authorized trial override (human decision 2026-10-07): fixes folded into stack commits get one Sonnet review of the whole stack, repeated until all findings are fixed (within [review rounds](#review-rounds)). This relaxes the required-tier review of that fix content ([stamp rules](#stamp-freeze), [rebase re-review rule](git-history.md#rebase-re-review)) and, for those fixes only, the landing pointer's condition that every original already has its required-tier CLEAR at its own SHA. Security-relevant paths keep the required tier (for example Opus); the desk routes such fixes to the required tier (the pre-land gate checks model tiers, not paths); original never-reviewed content, conflicts and overlap stay at the required tier. The override ends or graduates with [#73](https://github.com/wstein/crewbook/issues/73).
-- Batch integration stays the rare exception: the `batch_threshold` trigger in [Batch integration](#batch-integration) still fires during the trial.
-
-A project whose tier rule does not accept `sonnet` beyond the single landing review sees the pre-land gate fail closed on Sonnet CLEARs for override fixes; note it in the trial evidence.
-
-Graduation: if the human judges the trial evidence good, move these rules into the [land procedure](#land-procedure), delete the `x-` command and remove its symlink from `~/.claude/commands` (created by the source-checkout install glob).
+The trial of stacking on the `landing` pointer (command `/crewbook-x-landing`, human override of 2026-10-07 for Sonnet reviews of folded stack fixes, [#73](https://github.com/wstein/crewbook/issues/73)) is replaced by the [pull request flow](git-history.md#pull-request-flow): stacked PRs, one status per head SHA, re-posted with a range-diff proof after a rebase. The command is removed. The Sonnet-stack-review override is not carried over; decide it again under #73 if still wanted (open). Landing must go through a pull request: the live ruleset requires a PR with no bypass, so the human `git merge --ff-only` push of the old [land procedure](#land-procedure) is refused. That old fallback is unverified and removed; the `landing` pointer remains only as described in [git-history](git-history.md#landing-pointer).
 
 ## Coordinator modes
 
@@ -467,7 +458,7 @@ coordinator, and an author only under an explicit user-authorized role change;
 independent review is reported unavailable and there is no self-review. With subagents but no wait or resume capability, write the
 registry, tell the human the exact resume step and stop.
 
-Desk's temporary coordination notes (for example `TO_LAND.md`) live in the
+Desk's temporary coordination notes (for example a stack-status worksheet; `TO_LAND.md` retires with the old landing flow) live in the
 gitignored `/.work/` folder of the coordinator checkout; never put secrets or
 decisions of record there (those stay in the [decision log](project-config.md#decision-log)).
 
@@ -895,7 +886,8 @@ that needs an independent reviewer agent of the configured strength (see
 note that the exact SHA has no open findings. The reviewer may dispose of a
 Low as an accepted follow-up only with its owner, evidence and recorded
 acceptance under supplied target policy; close that finding before clean
-exact-SHA clearance. Unresolved Lows block a stamp. After a stamp, land that
+exact-SHA clearance. Unresolved Lows block a stamp. In the pull request flow the stamp is
+the desk's commit status `review/<tier>` on the PR head plus an evidence comment; the status is lost when the head changes. After a stamp, land (merge) that
 unchanged SHA only when integration is authorized and the target's required
 gates pass. Accepted follow-ups go to their recorded issues, never to new
 commits on the stamped branch. A Medium or higher finding discovered after a
@@ -907,6 +899,8 @@ under the [target Git history policy](git-history.md) and
 
 <a id="pre-land-gate"></a>
 ### Pre-land gate
+
+In the [pull request flow](git-history.md#pull-request-flow) the same requirements are met by the `review/sonnet` or `review/opus` status, the `gate` check (carve-out paths need `review/opus`) and the required checks of the PR. Crewbook has no `gate` workflow yet: until it exists, desk and human check the tier by hand (carve-out paths need `review/opus`) before merging; the human merge is the consent. How the registry review lines map to those statuses is an open decision (see `tools/review_lines.py`); until it is made, the line-based gate below applies to the old flow.
 
 Before a landing line is offered, the stamp brief and landing line require
 passing results for the supplied target policy's required checks on the exact
@@ -933,7 +927,7 @@ project, not here.
 
 Use the integration branch, station layout and history procedure supplied by
 the target under the [target Git history policy](git-history.md). The following
-station rules apply only where the target supplies a detached landing station,
+station rules (old landing flow, retired with it) apply only where the target supplies a detached landing station,
 `main` as its integration branch and fast-forward-only history; they do not
 select those policies for a generic target.
 
