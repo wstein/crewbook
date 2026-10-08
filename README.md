@@ -26,14 +26,14 @@ native runtime behaviour.
 
 ## Codex
 
-Install (one step; see [installation](docs/installation.md)):
+Install (see [installation](docs/installation.md)):
 
 ```sh
 mkdir -p ~/.agents/skills
 ln -s /absolute/path/crewbook ~/.agents/skills/crewbook
 ```
 
-Restart Codex or open a new session. Then, in your target repository:
+Inspect an existing destination before replacing it. Restart Codex or open a new session. Then, in your target repository:
 
 ```sh
 codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_threads_per_session=8 '$crewbook'
@@ -57,7 +57,7 @@ What the repo files show:
 
 ## Claude Code
 
-Claude has no `$` skill syntax: the packaged entrypoint is the slash command
+CrewBook documents `$` for Codex only; for Claude the packaged entrypoint is the slash command
 `/crewbook-desk`. Registration is a proposal, not a proven installation
 ([details](docs/installation.md#claude-code-registration-unverified)):
 
@@ -71,11 +71,11 @@ The guide also links the skill at `~/.claude/skills/crewbook` (also unverified).
 Then, in your target repository:
 
 ```sh
-claude --model sonnet '/crewbook-desk'
+CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=8 CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=2 claude --model sonnet '/crewbook-desk'
 ```
 
-The installation guide documents extra environment variables for subagent
-concurrency and depth.
+The variables set subagent concurrency and nesting depth (documented in the
+installation guide, not measured; split mode needs depth 3).
 
 What the repo files show:
 
@@ -96,9 +96,9 @@ What the repo files show:
 | Team roles, review and handoffs | [docs/team.md](docs/team.md) |
 | Project setup | [docs/project-config.md](docs/project-config.md) |
 | Instructions, trust, permissions | [docs/policy-composition.md](docs/policy-composition.md) |
-| Maintenance commands and tests | [tools/README.md](tools/README.md) |
+| Maintenance commands and tests | [tools/README.md](https://github.com/wstein/crewbook/blob/main/tools/README.md) |
 | Antigravity (`agy`): no approved entrypoint | [docs/antigravity.md](docs/antigravity.md) |
 
-Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Licence: EUPL-1.2
-([LICENSE](LICENSE)); imported from historical workharbor source, see
+Contributing: [CONTRIBUTING.md](https://github.com/wstein/crewbook/blob/main/CONTRIBUTING.md), [code of conduct](https://github.com/wstein/crewbook/blob/main/.github/CODE_OF_CONDUCT.md). Licence: EUPL-1.2
+([LICENSE](LICENSE)); imported from historical WorkHarbor source, see
 [PROVENANCE.md](PROVENANCE.md).
