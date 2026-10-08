@@ -86,7 +86,7 @@ Append only: `add -f`, `remove`, `edit`, `copy` and `merge` are in no role's ins
 role retries the append once, then reports the failure. The desk checks the note against the reviewer's
 handback (SHA, model); until it matches, the stamp does not count. A separate ref per role (for example
 a later QA role, #54) is a later step, only if that role needs different rights. The note is the agent's
-self-report, not a signature.
+self-report, not a signature. In the [pull request flow](git-history.md#pull-request-flow) the PR commit status and evidence comment replace the review note (mapping open, see #78); the note stays valid for the old landing flow until the migration finishes.
 
 Write ahead of a claim or start (`start requested`) and update on the confirmed
 outcome; an uncertain outcome stays uncertain. Before writing, check that the
@@ -401,7 +401,7 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 | Board operation | Explicit destination, field/status mapping, authorized adapter and any required approval |
 | Concurrent editing | Assigned separate checkouts and disjoint file scopes |
 | Independent review | Eligible reviewer in fresh context, exact revision/diff, scope and checks |
-| Landing/publication | Real project procedure, target and user authorization; unavailable by default |
+| Landing/publication | Real project procedure (merge of a reviewed pull request where the target uses the [pull request flow](git-history.md#pull-request-flow)), target and user authorization; unavailable by default |
 | External measurement | Explicit authorized setup and evidence destination |
 
 ## Consumer review fixtures

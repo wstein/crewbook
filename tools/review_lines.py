@@ -1,4 +1,4 @@
-"""Model of the registry review-line grammar and the pre-land model gate (no I/O)."""
+"""Model of the registry review-line grammar and the pre-land model gate (no I/O). Mapping to PR statuses review/sonnet and review/opus is an open decision (#78)."""
 import re
 
 SEPARATOR = '; '
