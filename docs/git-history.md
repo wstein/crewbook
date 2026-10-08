@@ -37,22 +37,35 @@ clearance.
 <a id="rebase-re-review"></a>
 ### Rebase re-review rule
 
-After a rebase the old stamp does not carry over silently. A rebase that is
+After a rebase the old review does not carry over silently. A rebase that is
 conflict-free, shows identical commits in `git range-diff` (all `=`) and touches
 no file the rebase base change touched needs, unless the [landing pointer rule](#landing-pointer) applies, one narrowed Opus review of the new
 exact SHA (range-diff equality plus tests at the new SHA). A rebase with
-conflicts or file overlap needs a full review. The CLEARs the
+conflicts or file overlap needs a full review. In the [pull request flow](#pull-request-flow)
+a commit status sits on one head SHA and is lost when the head changes, so the
+desk re-posts it on the new head only together with a range-diff proof that all
+patches are unchanged; a changed patch needs a new review. The CLEARs the
 [pre-land gate](team.md#pre-land-gate) requires still apply to the new SHA.
 
-<a id="landing-pointer"></a>
-### Landing pointer branch
+<a id="pull-request-flow"></a>
+### Pull request flow
 
-`landing` is a pointer branch to the newest reviewed stack tip. Nobody commits on it, and it neither replaces nor copies the original branches (unlike [`integration/batch-<n>`](team.md#batch-integration)). After every CLEAR the desk moves it fast-forward-only to that tip (merged mode: the desk; split mode: the dispatcher routes, the desk moves the ref). The next branch is rebased onto `landing` before its landing review, and dependent new work bases on `landing`. Such a rebase follows the [rebase re-review rule](#rebase-re-review) with a Sonnet landing review of the rewritten SHA (range-diff against the original plus tests); originals and conflict or overlap rebases keep the required-tier review. The human lands the target by fast-forward to the full tip SHA of `landing` (`git merge --ff-only <full sha>`). Landing tooling must enforce the stack order (oldest CLEAR first, never a tip that skips earlier stack commits). This Sonnet review is valid only when every original already has its required-tier CLEAR at its own SHA (Opus for rule and security paths); it checks only range-diff equality and tests, and the desk checks every original SHA has its required-tier CLEAR note before it counts the Sonnet CLEAR. The pre-land gate's tier check needs no code exception, but the project's tier rule must accept `sonnet` for this review, otherwise the gate fails closed.
+Design source: workharbor `docs/content/docs/design/pr-flow-landing.md` (workharbor #407, #414). Unverified here: the workharbor files were read, not run against this repository, and the issue references #407, #414 and #421 were not checked.
+
+- One pull request per branch, merged by rebase and merge only, so the atomic conventional commits survive. The human merging is the consent; agents never merge. The PR body carries `Closes #N`; commits carry `Refs:` only.
+- The dispatcher (PR author) opens a draft PR and marks it ready after the review is CLEAR (the design says the human marks it ready, the manual says the dispatcher; workharbor #429 corrects it: the PR author/dispatcher marks ready). The desk posts the commit status `review/sonnet` or `review/opus` on the PR head plus an evidence comment naming the head SHA and the tier. The status creator must be the human account.
+- A `gate` check derives the path class from the changed files with the base branch's path script (ordinary or carve-out) and requires `review/opus` for carve-out paths. Crewbook has no `gate` workflow yet; its `main` ruleset requires a PR, rebase merge and the checks `package (ubuntu-latest)`, `package (macos-15)` and `secrets`.
+- Large work is a stack of PRs (`gh stack`, workharbor #421, unverified). The atomic stack merge enforces required statuses per PR. After a merge below a PR the head moves and its statuses are gone: re-post them with a range-diff proof (see the [rebase re-review rule](#rebase-re-review)).
+
+<a id="landing-pointer"></a>
+### Landing pointer branch (retiring)
+
+Until the migration finishes (exit: the first crewbook PR merged by rebase), the old flow stays valid where crewbook still depends on it: `landing` is a pointer branch to the newest reviewed stack tip, nobody commits on it, the desk moves it fast-forward-only after every CLEAR, the next branch is rebased onto it, and the human lands the full tip SHA. Landing must go through a pull request: the live ruleset requires a PR with no bypass, so a direct `git merge --ff-only` push is refused. The old direct-push fallback is unverified and removed. Review and tier rules are those of the [rebase re-review rule](#rebase-re-review) and the [pre-land gate](team.md#pre-land-gate). The Sonnet landing review of a rebased original (range-diff against the original plus tests) is valid only when every original already has its required-tier CLEAR at its own SHA (Opus for rule and security paths); the desk checks that before it counts the Sonnet CLEAR, and landing tooling must enforce the stack order (oldest CLEAR first, never a tip that skips earlier stack commits). Originals and conflict or overlap rebases keep the required-tier review. New work in the PR flow does not use the pointer; the pointer, `TO_LAND.md` and `refs/notes/review` are retired together with workharbor `make land` (#414).
 
 <a id="commit-hygiene"></a>
 ### Commit hygiene
 
-One concern per commit (one behaviour, fix or docs change); a change that needs a test carries it. The subject is a Conventional Commit, `type(scope): imperative summary`, at most 72 characters; the body says why, then `Refs: #n` and the agent co-author trailer. Individual commits need not build or pass tests on their own; the landing tip must. The full test suite never runs per commit: one full run happens once on the stack tip before review, and its result is tied to the exact reviewed SHA (no re-run while the SHA is unchanged; see the [pre-land gate](team.md#pre-land-gate)). Fold fixes of an earlier commit of the branch into it before review, and after a review round fold each fix into the commit it fixes; the rewritten SHA needs a fresh review of the exact new SHA (narrowed only per the [rebase re-review rule](#rebase-re-review)). The final history has no fixup or "address review" commits; review rounds live in notes. Exception: the [batch integration](team.md#batch-integration) fix round keeps its fix commits separate for the narrowed re-review. A branch with several concerns is several commits in review order, small first. The reviewer reports a violating commit as a Medium finding (NOT CLEAR) unless the human waived it. Before dispatching a review the desk reads `git log --oneline <target>..<branch>` (for example `main`) for subject and scope.
+One concern per commit (one behaviour, fix or docs change); a change that needs a test carries it. The subject is a Conventional Commit, `type(scope): imperative summary`, at most 72 characters; the body says why, then `Refs: #n` and the agent co-author trailer. Individual commits need not build or pass tests on their own; the PR head must. The full test suite never runs per commit: one full run happens once on the stack tip before review, and its result is tied to the exact reviewed SHA (no re-run while the SHA is unchanged; see the [pre-land gate](team.md#pre-land-gate)). Fold fixes of an earlier commit of the branch into it before review, and after a review round fold each fix into the commit it fixes; the rewritten SHA needs a fresh review of the exact new SHA (narrowed only per the [rebase re-review rule](#rebase-re-review)). The final history has no fixup or "address review" commits; review rounds live in the PR evidence comments (the review note in the old flow). Exception: the [batch integration](team.md#batch-integration) fix round keeps its fix commits separate for the narrowed re-review. A branch with several concerns is several commits in review order, small first. The reviewer reports a violating commit as a Medium finding (NOT CLEAR) unless the human waived it. Before dispatching a review the desk reads `git log --oneline <target>..<branch>` (for example `main`) for subject and scope.
 
 ## Non-linear target with authorized merges
 
