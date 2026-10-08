@@ -1,6 +1,6 @@
 # Installation and client support
 
-Use `crewbook` as the package and skill identifier; “Crew Book” is the
+Use `crewbook` as the package and skill identifier; “CrewBook” is the
 reader-facing name. This guide covers installation, client entrypoints and
 requested model mappings. The [README](../README.md) introduces first use.
 
@@ -181,7 +181,7 @@ Current resources and client selectors use `crewbook-*`: for example,
 `.agents/crewbook-desk.md`, `.claude/agents/crewbook-dispatch.md`, Claude
 `/crewbook-desk` and the optional Codex `$crewbook-desk` skill. Role identities
 use `crewbook/<role>`; the execution profiles are `crewbook-generic` and
-`crewbook-workharbor`. Human-facing titles and display names use “Crew Book”.
+`crewbook-workharbor`. Human-facing titles and display names use “CrewBook”.
 The root package directory, repository URL and `$crewbook` entrypoint keep
 their machine identifier. Paths contain no literal spaces.
 

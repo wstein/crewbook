@@ -39,7 +39,7 @@ separates designated coordinators from directly executing leaves. Role identitie
 Resource filenames, client profile selectors and commands use `crewbook-*`;
 execution profiles are `crewbook-generic` and `crewbook-workharbor`. The skill
 entrypoint is `crewbook`, invoked as `$crewbook`. The package and skill
-identifiers remain `crewbook`; the reader-facing name is “Crew Book”.
+identifiers remain `crewbook`; the reader-facing name is “CrewBook”.
 
 ## Current content artifact
 

@@ -1,4 +1,4 @@
-# Crew Book repository guidance
+# CrewBook repository guidance
 
 This file applies only to development in this source repository. It is host
 project guidance, excluded from the distributed skill and exported package;
@@ -6,6 +6,12 @@ it supplies no authority in a consuming repository. Follow system/developer
 instructions, actual host controls and the user's authorized scope first.
 Read scoped instructions before editing their files. Package roles remain
 resources under the [policy composition contract](docs/policy-composition.md).
+
+## Name
+
+Prose, titles, display names and docs say **CrewBook**. Code, paths, URLs,
+packages, file names, config keys and the skill id stay `crewbook` (`$crewbook`).
+Never write "Crew Book" or "Crewbook".
 
 ## Practical test-first changes
 

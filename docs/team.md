@@ -11,7 +11,7 @@ uses these same roles and lifecycle; provider compatibility needs separate evide
 
 Role identities use `crewbook/<role>`, such as `crewbook/desk` and
 `crewbook/dispatch`. The linked `crewbook-*` names below are resource and
-client selectors; display names use “Crew Book”. Each specialized client
+client selectors; display names use “CrewBook”. Each specialized client
 profile adopts its matching role identity, including `crewbook/platform`,
 `crewbook/runtime`, `crewbook/reviewer`, `crewbook/docs-reviewer`,
 `crewbook/helper-edit` and `crewbook/worker`. Execution profile selectors are

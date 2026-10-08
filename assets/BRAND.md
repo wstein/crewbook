@@ -7,8 +7,7 @@ geometry, with a different mark.
 
 Name: the product is named **CrewBook**, one word, in prose, titles and the
 wordmark. Identifiers stay lowercase: the package and skill `crewbook`
-(`$crewbook`), paths, URLs, the repository and file names. Existing text still
-says "Crew Book" until the rename lands; that rename is tracked in #93.
+(`$crewbook`), paths, URLs, the repository and file names. The name rule is in `AGENTS.md`.
 
 ## The mark
 
