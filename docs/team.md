@@ -466,6 +466,21 @@ Desk's temporary coordination notes (for example a stack-status worksheet; `TO_L
 gitignored `/.work/` folder of the coordinator checkout; never put secrets or
 decisions of record there (those stay in the [decision log](project-config.md#decision-log)).
 
+<a id="desk-cleanup"></a>
+### Desk cleanup
+
+Cleanup is housekeeping and creates no authority beyond [Git history](git-history.md#pull-request-flow) and the [auto-push trial](git-history.md#auto-push-trial).
+
+1. **When.** After each merge that closes something and once at session end. The desk runs it, not the authors.
+2. **Local branches.** Run `git fetch --prune` first. Delete a branch only when `git cherry origin/main <branch>` shows no missing commits (rebase merge rewrites SHAs, so `-D` only after that proof). Keep `spike/*` and branches with unreviewed content, for example parked issues.
+3. **Worktrees.** A freed worktree is detached on `origin/main` and reused under the [delegated authoring worktree rule](#delegated-authoring-worktrees), not removed. Remove one worktree per call.
+4. **Issues.** The desk hands the human a list of "number + commit on main"; the human closes. `Closes #N` goes in the PR body of every level of a stack, because closing keywords act only on a merge into the default branch.
+5. **Cards.** The desk moves Todo, Blocked and In review; Done comes only from a merge or a close. Never close or mark a card from a commit SHA quoted in a comment without checking that the commit subject fits the issue (wrong matches were seen for #311 and #315).
+6. **Audits.** Audits are read-only (Sonnet) with one piece of evidence per entry (sha, blocker or PR). Unverified entries go in their own column and never into the close list.
+7. **Old flow.** References to retired steps (`make land`, "Ready to push") after a migration become an issue and are removed, not left standing.
+
+Postponed decision (#98): an allow rule for a bulk `gh issue close`. Revisit when the standard flow works well and only about 10 to 20 percent of issues are closed by hand, and then with an overview of hand-closed issues in the dashboard.
+
 ### Completion gate and desk safety net
 
 Before declaring drained, verify the registry has **no eligible queued work,
