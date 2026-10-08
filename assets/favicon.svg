@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" role="img" aria-labelledby="t">
+  <title id="t">crewbook</title>
+  <rect x="0.8" y="0.8" width="62.4" height="62.4" rx="13.28" fill="#0b2545" stroke="#2a4a7a" stroke-width="1.6"/>
+  <g transform="translate(1.498 1.975) scale(0.95319)">
+    <g fill="none" stroke="#5eead4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M32 41Q21 37 10 39V51Q21 49 32 53Q43 49 54 51V39Q43 37 32 41Z"/>
+      <path d="M32 41V53"/>
+    </g>
+    <path fill="#5eead4" d="M32 8L35.8 19.2L48 23L35.8 26.8L32 35L28.2 26.8L16 23L28.2 19.2Z"/>
+  </g>
+</svg>
