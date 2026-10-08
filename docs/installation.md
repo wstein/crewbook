@@ -17,7 +17,7 @@ ln -s /absolute/path/crewbook ~/.agents/skills/crewbook
 If that destination already exists, inspect it before replacing anything.
 Keep one installation under the canonical `crewbook` name.
 Restart Codex or open a new session to refresh discovery. `agents/openai.yaml`
-enables implicit invocation: ordinary repository requests can select Crew Book
+enables implicit invocation: ordinary repository requests can select CrewBook
 automatically without switching roles. Explicit `$crewbook` starts desk
 as the coordinator (a persistent dispatcher only in split mode); it is not a load-only command. The host's
 loaded skill uses relative links; no launcher or environment variable is
@@ -35,7 +35,7 @@ Keep the prompt single-quoted so the shell passes the skill name literally.
 Desk is the primary session; eight is the recommended subagent capacity,
 excluding desk. Six covers a split-mode dispatcher, two authors, two reviewers (the defaults) and design
 (five without a dispatcher in merged mode); the extra slots allow bounded helpers. This is a ceiling, not a request
-to start eight agents. Crew Book's default is two concurrent code
+to start eight agents. CrewBook's default is two concurrent code
 authors, configurable up to three
 ([caps](team.md#author-and-reviewer-caps)). See [dynamic allocation](team.md#dynamic-agent-allocation).
 Keep desk (and in split mode its one dispatcher) persistent. Start each new work item, design
@@ -101,7 +101,7 @@ The [nesting documentation](https://code.claude.com/docs/en/sub-agents#let-subag
 describes version-dependent defaults, including depth one in v2.1.217–2.1.218;
 set the required depth explicitly rather than rely on a version default.
 
-These are documented setup settings, **unverified** for native Crew Book
+These are documented setup settings, **unverified** for native CrewBook
 loading and enforcement. They do not authorize extra code authors or change
 independent review. Antigravity has no documented equivalent numeric
 concurrency setting in the reviewed native documentation; see its
@@ -111,7 +111,7 @@ concurrency setting in the reviewed native documentation; see its
 
 The dedicated Codex desk skill is
 [.agents/skills/crewbook-desk/SKILL.md](../.agents/skills/crewbook-desk/SKILL.md). Its repository skill location
-is intended for Codex discovery when launched in the Crew Book repository;
+is intended for Codex discovery when launched in the CrewBook repository;
 native discovery under the renamed selector remains unverified. To make `$crewbook-desk` available in
 other repositories, install its folder in a user skill location too:
 
@@ -159,7 +159,7 @@ session before relying on it. No plugin layout, settings key or hook is supplied
 
 helper-edit keeps Bash for the checks the requester names, and its Bash
 restrictions in [crewbook-helper](../.agents/crewbook-helper.md) are prompt text,
-not enforcement. Crewbook ships no settings or permission files. Consider
+not enforcement. CrewBook ships no settings or permission files. Consider
 pairing it with host-side deny rules in your own Claude settings for redirects,
 in-place editors, deletes, direct network and package-manager commands and Git
 state changes. This is a recommendation only: the rule syntax, whether a rule
@@ -224,7 +224,7 @@ contract, not a claim that all three clients currently support it:
   apply to Claude/Codex; no Antigravity binding is approved. Do not infer one
   from another provider's names or silently inherit a model.
 - Review the exact immutable revision independently and follow the target's
-  integration policy. Crew Book's own repository requires reviewed linear
+  integration policy. CrewBook's own repository requires reviewed linear
   fast-forward integration; other targets supply their own policy. Local
   integration and human push/publication remain separate operations.
 - Track criterion checklists and, when configured and authorized, Kanban status

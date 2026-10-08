@@ -1,7 +1,7 @@
-# Crew Book managed profile (`crewbook-workharbor`)
+# CrewBook managed profile (`crewbook-workharbor`)
 
 Use this profile when the agent runs inside a workharbor-managed container.
-The target can be any repository, including the Crew Book or workharbor repository itself.
+The target can be any repository, including the CrewBook or workharbor repository itself.
 The profile selects execution context, never repository identity or endpoints.
 For an ordinary native session, use [crewbook-generic](profile-generic.md).
 

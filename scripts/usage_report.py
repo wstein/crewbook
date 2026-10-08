@@ -475,7 +475,7 @@ def hidden_text(rep):
 
 def render_text(rep):
     s = rep["summary"]
-    lines = ["Crew Book usage report (read-only, local). " + rep["notice"], ""]
+    lines = ["CrewBook usage report (read-only, local). " + rep["notice"], ""]
     cols = ("agent", "model", "role", "reqs", "input", "output", "cache_read", "cache_write",
             "cost~", "share", "ctx_last", "resumes~")
     table = [cols]
@@ -524,7 +524,7 @@ def render_html(rep):
     return """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crew Book usage report</title>
+<title>CrewBook usage report</title>
 <style>
 :root{color-scheme:light dark;font-family:system-ui,sans-serif}
 body{margin:1rem auto;max-width:72rem;padding:0 1rem}
@@ -533,7 +533,7 @@ th,td{border-bottom:1px solid #8884;padding:.25rem .5rem;text-align:right}
 th:nth-child(-n+3),td:nth-child(-n+3){text-align:left}
 .note{padding:.5rem;border:1px solid #8886}
 </style></head><body>
-<h1>Crew Book usage report</h1>
+<h1>CrewBook usage report</h1>
 <p class="note">%s Read locally and passively; contains counts and ids only.</p>
 <p>Total: %s requests, input %s, output %s, cache read %s, cache write %s, cost %s</p>
 <table><thead><tr>%s</tr></thead><tbody>

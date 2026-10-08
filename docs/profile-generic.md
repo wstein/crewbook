@@ -1,4 +1,4 @@
-# Crew Book generic profile (`crewbook-generic`)
+# CrewBook generic profile (`crewbook-generic`)
 
 Use this default profile in any repository through the current native agent
 session. No workharbor installation, supervisor, container, reference host,

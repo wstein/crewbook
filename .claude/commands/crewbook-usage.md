@@ -1,5 +1,5 @@
 ---
-description: Crew Book usage report from local session logs (read-only, estimates)
+description: CrewBook usage report from local session logs (read-only, estimates)
 argument-hint: "[log path] [--prices FILE] [--top N]"
 ---
 

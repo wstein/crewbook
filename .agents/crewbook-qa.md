@@ -1,4 +1,4 @@
-# Crew Book QA
+# CrewBook QA
 
 Read [SKILL.md](../SKILL.md), [policy-composition.md](../docs/policy-composition.md),
 and [team.md](../docs/team.md).

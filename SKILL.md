@@ -1,9 +1,9 @@
 ---
 name: crewbook
-description: Start Crew Book desk as the coordinator (with a persistent dispatcher only in split mode) when explicitly invoked; otherwise apply repository coding, review, documentation and verification guidance.
+description: Start CrewBook desk as the coordinator (with a persistent dispatcher only in split mode) when explicitly invoked; otherwise apply repository coding, review, documentation and verification guidance.
 ---
 
-# Crew Book
+# CrewBook
 
 Use this skill automatically for development work in a repository. Start with
 the user's task and the host's applicable repository instructions. Ordinary
@@ -12,7 +12,7 @@ local work needs no launcher, named profile, board, or team setup.
 ## Explicit invocation starts desk
 
 When the user invokes `$crewbook`, adopt crewbook-desk immediately unless they
-explicitly select another Crew Book role or ask only to inspect the skill
+explicitly select another CrewBook role or ask only to inspect the skill
 or run `$crewbook config show` ([session configuration](docs/project-config.md#session-configuration);
 `set` is routed there).
 Read [.agents/crewbook-desk.md](.agents/crewbook-desk.md) and its necessary references,
@@ -74,7 +74,7 @@ asking again; follow the target's actual checks, review order and integration
 procedure. Permission for local integration does not imply permission to push
 or publish. Generic work retains its local-diff default when authorization is absent.
 Use [crewbook-generic](docs/profile-generic.md) by default for any repository in the
-current native session, including the Crew Book repository itself. No workharbor container,
+current native session, including the CrewBook repository itself. No workharbor container,
 board or separate project-policy file is required. Select
 [crewbook-workharbor](docs/profile-workharbor.md) for any repository inside a workharbor-managed
 container; never borrow another project's endpoints or tools.
@@ -103,7 +103,7 @@ Completion does not establish host capacity or a release capability; defer fresh
 starts on confirmed full capacity rather than recycling unrelated contexts.
 Model mappings and Claude entrypoints are in [README.md](README.md).
 
-Crew Book supplies guidance, not tool permissions or runtime enforcement. Host
+CrewBook supplies guidance, not tool permissions or runtime enforcement. Host
 instructions and user authorization control scope. If a selected resource is
 missing, report its absolute path; do not load a repository lookalike.
 

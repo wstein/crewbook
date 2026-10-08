@@ -749,7 +749,7 @@ concurrency and nesting settings, and Antigravity's documented limits, follow
 Codex counts open spawned threads excluding primary; Claude's documented
 Agent-tool limit counts running subagents and has bypasses. Neither a list of
 retained handles nor a nesting-depth setting establishes free capacity.
-These client settings remain **unverified** for Crew Book runtime enforcement;
+These client settings remain **unverified** for CrewBook runtime enforcement;
 sequence work according to the actual host's admission result.
 
 ### Author and reviewer caps
@@ -906,7 +906,7 @@ under the [target Git history policy](git-history.md) and
 <a id="pre-land-gate"></a>
 ### Pre-land gate
 
-In the [pull request flow](git-history.md#pull-request-flow) the same requirements are met by the `review/sonnet` or `review/opus` status, the `gate` check (carve-out paths need `review/opus`) and the required checks of the PR. Crewbook has no `gate` workflow yet: until it exists, desk and human check the tier by hand (carve-out paths need `review/opus`) before merging; the human merge is the consent. How the registry review lines map to those statuses is an open decision (see `tools/review_lines.py`); until it is made, the line-based gate below applies to the old flow.
+In the [pull request flow](git-history.md#pull-request-flow) the same requirements are met by the `review/sonnet` or `review/opus` status, the `gate` check (carve-out paths need `review/opus`) and the required checks of the PR. CrewBook has no `gate` workflow yet: until it exists, desk and human check the tier by hand (carve-out paths need `review/opus`) before merging; the human merge is the consent. How the registry review lines map to those statuses is an open decision (see `tools/review_lines.py`); until it is made, the line-based gate below applies to the old flow.
 
 Before a landing line is offered, the stamp brief and landing line require
 passing results for the supplied target policy's required checks on the exact

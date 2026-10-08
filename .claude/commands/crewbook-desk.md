@@ -1,5 +1,5 @@
 ---
-description: Crew Book desk workflow for the current project
+description: CrewBook desk workflow for the current project
 ---
 
 Read [SKILL.md](../../SKILL.md) and apply the canonical

@@ -1,6 +1,6 @@
 ---
 name: crewbook-helper-edit
-description: Crew Book helper-edit for the configured project; one bounded helper task.
+description: CrewBook helper-edit for the configured project; one bounded helper task.
 model: haiku
 tools: Read, Grep, Glob, Edit, Bash
 ---

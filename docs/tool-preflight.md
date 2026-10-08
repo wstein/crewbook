@@ -9,7 +9,7 @@ credentials, retry controller or runtime enforcement.
 Confirm the target checkout, task scope, applicable instructions, actual tool
 availability and documented paths. Read the tool schema/help when arguments
 are uncertain. Use bounded `rg --files` or `rg` searches within relevant roots;
-do not scan the filesystem to guess a missing resource. In Crew Book source,
+do not scan the filesystem to guess a missing resource. In CrewBook source,
 the maintenance policy is `tools/package-policy.json`, not a root-level policy.
 An exported skill deliberately has no maintenance tools; validation uses the
 external policy/inventory paths described in [distribution](distribution.md).
@@ -36,7 +36,7 @@ and failure handling stated there.
 ## Scan outgoing payloads
 
 Before an authorized issue-body, comment or other external write, resolve the
-target's actual scanning requirements and available scanner. Crew Book does not
+target's actual scanning requirements and available scanner. CrewBook does not
 mandate a universal scanner or install one. Prepare the exact outgoing content
 in a regular non-symlink file in an authorized private location; reject unsafe
 file or parent links. Run the target-required scanner against those bytes with

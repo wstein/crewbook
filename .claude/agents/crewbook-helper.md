@@ -1,6 +1,6 @@
 ---
 name: crewbook-helper
-description: Crew Book helper for the configured project; one bounded helper task.
+description: CrewBook helper for the configured project; one bounded helper task.
 model: haiku
 tools: Read, Grep, Glob, WebSearch, WebFetch
 ---

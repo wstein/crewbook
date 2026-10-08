@@ -134,7 +134,7 @@ decision.
 
 ## Optional source main guard
 
-Crew Book's own source `AGENTS.md` selects linear, fast-forward-only integration.
+CrewBook's own source `AGENTS.md` selects linear, fast-forward-only integration.
 The optional `source_linear_history.py` and `git-hooks/reference-transaction`
 enforce that source maintenance choice at Git's prepared reference transaction:
 main updates must descend from its current direct commit and introduce no merge

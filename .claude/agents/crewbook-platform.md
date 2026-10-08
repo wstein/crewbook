@@ -1,6 +1,6 @@
 ---
 name: crewbook-platform
-description: Crew Book platform for the configured project; one bounded issue or research/decision batch.
+description: CrewBook platform for the configured project; one bounded issue or research/decision batch.
 model: sonnet
 ---
 

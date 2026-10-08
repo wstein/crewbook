@@ -1,10 +1,10 @@
-# Crew Book
+# CrewBook
 
 [![License: EUPL-1.2](https://img.shields.io/badge/license-EUPL--1.2-blue.svg)](LICENSE)
 [![Package checks](https://github.com/wstein/crewbook/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/check.yml)
 [![CodeQL](https://github.com/wstein/crewbook/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/codeql.yml)
 
-Crew Book helps a coding agent work through software tasks: understand the
+CrewBook helps a coding agent work through software tasks: understand the
 request, make a focused change, check it, and explain the result. It supplies
 reusable guidance for coding, review, documentation and verification, plus a
 coordinated workflow for larger tasks with authors and independent reviewers.
@@ -36,7 +36,7 @@ Open your target repository in Codex and ask for a concrete change, for example:
 
 > Fix the failing date-format test, run the relevant checks, and explain what changed.
 
-Crew Book can apply automatically to ordinary repository work. This uses the
+CrewBook can apply automatically to ordinary repository work. This uses the
 current session and your project's instructions; it does not start desk or a
 dispatcher. You do not need a board, container or full team setup.
 
@@ -66,7 +66,7 @@ codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_th
 
 Keep the single quotes so the shell passes `$crewbook` literally. Eight is the
 recommended **subagent capacity**, excluding desk; it is a ceiling, not a
-request to start eight agents. Crew Book permits up to two authors and two
+request to start eight agents. CrewBook permits up to two authors and two
 independent reviewers by default (configurable to at most three each, see
 [caps](docs/team.md#author-and-reviewer-caps)) within the host's actual capacity. Desk (and a split-mode
 dispatcher) use `gpt-6.1-sol` with low reasoning effort in Codex.
@@ -109,7 +109,7 @@ requested [model mappings](docs/installation.md#entrypoints-and-support) and
 | Source maintenance commands and tests | [Maintenance guide](tools/README.md) |
 | Antigravity support limits | [Readiness matrix](docs/antigravity.md) |
 
-Crew Book is intended to be workharbor's default replaceable skill set,
+CrewBook is intended to be workharbor's default replaceable skill set,
 installed outside work repositories. Workharbor production runtime integration
 still awaits a supported binding; the [distribution contract](docs/distribution.md)
 records that boundary. Generic native-session use does not require that integration.

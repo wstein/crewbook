@@ -1,6 +1,6 @@
 ---
 name: crewbook-reviewer
-description: Crew Book reviewer for the configured project; one bounded independent review.
+description: CrewBook reviewer for the configured project; one bounded independent review.
 model: opus
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
