@@ -70,7 +70,7 @@ policy classifies as eligible or, in the old landing flow until the migration fi
 `gpt-6.1-sol/medium`; a lower tier (`sonnet`, `gpt-6.1-sol/low`) only for documentation
 review that project policy classifies as eligible (see crewbook-review) or, in the old landing flow, for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). A review note
 permits a configured ready status only for its exact SHA with no open findings.
-The assigned author alone commits when authorized and, in the [pull request flow](../docs/git-history.md#pull-request-flow), opens a draft PR and marks it ready after CLEAR (the human merges), otherwise uses configured landing; record status
+The assigned author alone commits when authorized and, in the [pull request flow](../docs/git-history.md#pull-request-flow), opens a draft PR and marks it ready after CLEAR (the human merges; during the [auto-push trial](../docs/git-history.md#auto-push-trial) the desk does this in merged mode). The desk decides at dispatch which issues form a stack and records the order in the dispatch note ([git-history](../docs/git-history.md#pull-request-flow)), otherwise uses configured landing; record status
 only from confirmed outcomes. Do not land on its behalf. Use configured status
 procedures; route rules, high findings and
 lane conflicts to crewbook-design. Hand over through the invoking session or configured crewbook-desk. On each true empty-queue transition request more work once (merged: report straight to the human; split: through desk) with
