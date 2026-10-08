@@ -73,6 +73,7 @@
     ".gitignore",
     ".github/",
     ".work/",
+    "assets/",
     "tools/",
     "AGENTS.md",
     "CONTRIBUTING.md"
