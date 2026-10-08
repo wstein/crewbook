@@ -1,13 +1,14 @@
-# crewbook brand rule
+# CrewBook brand rule
 
 One rule for every asset, so the logo, the icons, the README banner and the
 social preview look like one product (#88). The rule is derived from
 workharbor's `assets/BRAND.md`: the same tile, colours, type and lockup
 geometry, with a different mark.
 
-Name: the product is **crewbook**, lowercase, in prose, code, paths and
-packages. Only the wordmark (banner, social preview) sets it as **CrewBook**,
-one word like workharbor's "WorkHarbor".
+Name: the product is named **CrewBook**, one word, in prose, titles and the
+wordmark. Identifiers stay lowercase: the package and skill `crewbook`
+(`$crewbook`), paths, URLs, the repository and file names. Existing text still
+says "Crew Book" until the rename lands; that rename is tracked in #93.
 
 ## The mark
 
