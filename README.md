@@ -6,129 +6,99 @@
 [![Package checks](https://github.com/wstein/crewbook/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/check.yml)
 [![CodeQL](https://github.com/wstein/crewbook/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/codeql.yml)
 
-CrewBook helps a coding agent work through software tasks: understand the
-request, make a focused change, check it, and explain the result. It supplies
-reusable guidance for coding, review, documentation and verification, plus a
-coordinated workflow for larger tasks with authors and independent reviewers.
+## What it is
 
-The package and skill are named `crewbook`; invoke the skill as `$crewbook`.
-It contains text, metadata and one read-only usage report script
-(`scripts/usage_report.py`, with an example price JSON) that only reads local
-logs; no settings, hooks or permission allowlists ship. Your agent client supplies the tools, and your
+CrewBook helps a coding agent work through software tasks: understand the
+request, make a focused change, check it, and explain the result. It is plain
+text and metadata (plus one read-only usage report script,
+`scripts/usage_report.py`); no settings, hooks or permission allowlists ship.
+The package and skill id is `crewbook`. Your client supplies the tools, and your
 repository instructions and authorization govern the work.
 
-## Install in Codex
+Without a command, CrewBook guidance applies to ordinary repository work. To
+start the coordinated workflow (desk, with authors and independent reviewers
+for larger tasks), invoke it explicitly. A bare invocation starts desk; it is
+not a load-only command ([SKILL.md](SKILL.md)).
 
-From a local source checkout, link the skill into your user skill directory:
+Client behaviour below is **unverified** unless stated: native loading has not
+been measured (issue #41 is postponed). Static package checks do not establish
+native runtime behaviour.
+
+## Codex
+
+Install (one step; see [installation](docs/installation.md)):
 
 ```sh
 mkdir -p ~/.agents/skills
 ln -s /absolute/path/crewbook ~/.agents/skills/crewbook
 ```
 
-Inspect an existing destination before replacing it. Keep one installation
-under the canonical `crewbook` name.
-Restart Codex or open a new session to refresh skill discovery.
-See [installation and client support](docs/installation.md) for fixed copies,
-updates, uninstalling, Claude Code entrypoints and the optional `$crewbook-desk` alias.
-
-## Try a first task
-
-Open your target repository in Codex and ask for a concrete change, for example:
-
-> Fix the failing date-format test, run the relevant checks, and explain what changed.
-
-CrewBook can apply automatically to ordinary repository work. This uses the
-current session and your project's instructions; it does not start desk or a
-dispatcher. You do not need a board, container or full team setup.
-
-To start the coordinated workflow explicitly, enter:
-
-```text
-$crewbook
-```
-
-This starts **crewbook/desk**: desk stays your point of contact and, by default,
-also coordinates assignments and reviews itself (merged mode). Only when your
-project configures a board or claim gate, or you ask for a separate dispatcher,
-desk starts or reuses one persistent dispatcher (split mode). Add your
-task to the same message, or give it next. A bare invocation starts desk; it is
-not a load-only command. Split mode requires the client's subagent and resume
-support; merged mode can run as a same-session desk without subagents
-(independent review is unavailable on
-[tool-limited hosts](docs/team.md#merged-mode-supervision)). Startup reports the selected mode and any actual tool limits. It does not create a background daemon.
-
-## Start Codex with desk
-
-From the target repository, with the skill installed and model available:
+Restart Codex or open a new session. Then, in your target repository:
 
 ```sh
 codex -m gpt-6.1-sol -c model_reasoning_effort="low" -c agents.max_concurrent_threads_per_session=8 '$crewbook'
 ```
 
-Keep the single quotes so the shell passes `$crewbook` literally. Eight is the
-recommended **subagent capacity**, excluding desk; it is a ceiling, not a
-request to start eight agents. CrewBook permits up to two authors and two
-independent reviewers by default (configurable to at most three each, see
-[caps](docs/team.md#author-and-reviewer-caps)) within the host's actual capacity. Desk (and a split-mode
-dispatcher) use `gpt-6.1-sol` with low reasoning effort in Codex.
+Keep the single quotes so the shell passes `$crewbook` literally. Add a task to
+the same message, for example: `$crewbook Fix the failing date-format test, run
+the relevant checks, and explain what changed.`
 
-The requested role mappings are Sonnet → `gpt-6.1-sol`/low,
-Opus → `gpt-6.1-sol`/medium and Haiku → `gpt-6-luna`/medium.
-See [client support and model mappings](docs/installation.md#entrypoints-and-support)
-for the full table and availability limits, and the
-[team manual](docs/team.md#dynamic-agent-allocation) for allocation and context lifetimes.
-These settings and static package checks do not establish native runtime behavior.
+What the repo files show:
 
-## Clients
+- `agents/openai.yaml` sets the display name, a default prompt and
+  `allow_implicit_invocation: true`, so ordinary requests can select CrewBook
+  without `$crewbook`.
+- `.agents/` holds the role files (`crewbook-desk.md`, `crewbook-code.md`,
+  `crewbook-review.md` and others) and the optional `$crewbook-desk` alias skill
+  in `.agents/skills/crewbook-desk`, installed separately.
+- Unverified: installed native startup, the alias discovery and managed
+  execution. A desk/dispatch delegation was observed once in a Codex session;
+  merged mode, the default, has no observed trace in any client.
 
-- **Codex:** use `$crewbook`; `$crewbook-desk` is an optional separately installed
-  alias. Desk/dispatch delegation (the former default, now split mode) has been observed in a Codex session;
-  merged mode (the default) has no observed trace in any client;
-  installed native startup and managed execution remain unverified.
-- **Claude Code:** `/crewbook-desk` and role wrappers are packaged, but the client
-  must register/load them. Native loading and external-mount discovery remain
-  unverified; shipping the files does not register commands automatically.
-- **Antigravity (`agy`):** there is no approved production entrypoint or binding.
-  See the [readiness matrix](docs/antigravity.md) for evidence and admission
-  requirements; full support is not established.
+## Claude Code
 
-See [installation and client support](docs/installation.md) for entrypoints,
-requested [model mappings](docs/installation.md#entrypoints-and-support) and
-[role selection](SKILL.md#specialized-workflows).
+Claude has no `$` skill syntax: the packaged entrypoint is the slash command
+`/crewbook-desk`. Registration is a proposal, not a proven installation
+([details](docs/installation.md#claude-code-registration-unverified)):
 
-## Find the details
+```sh
+mkdir -p ~/.claude/agents ~/.claude/commands
+ln -s /absolute/path/crewbook/.claude/agents/crewbook-*.md ~/.claude/agents/
+ln -s /absolute/path/crewbook/.claude/commands/crewbook-*.md ~/.claude/commands/
+```
+
+The guide also links the skill at `~/.claude/skills/crewbook` (also unverified).
+Then, in your target repository:
+
+```sh
+claude --model sonnet '/crewbook-desk'
+```
+
+The installation guide documents extra environment variables for subagent
+concurrency and depth.
+
+What the repo files show:
+
+- `.claude/commands/` holds the slash commands (`crewbook-desk`,
+  `crewbook-review`, `crewbook-code`, `crewbook-docs` and others);
+  `.claude/agents/` holds the role profiles (worker, reviewer, dispatch and
+  others).
+- Shipping these files does not register them. Whether Claude lists them, and
+  whether relative links in them resolve from `~/.claude`, is unverified.
+- `$crewbook` is documented for Codex only; its use in Claude is not claimed.
+
+## Read more
 
 | Need | Read |
 | --- | --- |
-| Skill behavior and role selection | [Skill entrypoint](SKILL.md) |
-| Installation, updates and client support | [Installation guide](docs/installation.md) |
-| Team roles, independent review and handoffs | [Team manual](docs/team.md) |
-| Local or managed project setup | [Project configuration](docs/project-config.md) |
-| Instructions, trust and permissions | [Policy composition](docs/policy-composition.md) |
-| Git integration and review evidence | [Git history guidance](docs/git-history.md) |
-| Package manifest, exports and runtime pins | [Distribution contract](docs/distribution.md) |
-| Source maintenance commands and tests | [Maintenance guide](tools/README.md) |
-| Antigravity support limits | [Readiness matrix](docs/antigravity.md) |
+| Skill behaviour and role selection | [SKILL.md](SKILL.md) |
+| Installation, updates, client support | [docs/installation.md](docs/installation.md) |
+| Team roles, review and handoffs | [docs/team.md](docs/team.md) |
+| Project setup | [docs/project-config.md](docs/project-config.md) |
+| Instructions, trust, permissions | [docs/policy-composition.md](docs/policy-composition.md) |
+| Maintenance commands and tests | [tools/README.md](tools/README.md) |
+| Antigravity (`agy`): no approved entrypoint | [docs/antigravity.md](docs/antigravity.md) |
 
-CrewBook is intended to be workharbor's default replaceable skill set,
-installed outside work repositories. Workharbor production runtime integration
-still awaits a supported binding; the [distribution contract](docs/distribution.md)
-records that boundary. Generic native-session use does not require that integration.
-
-## Contributing
-
-For source changes, issues and pull requests, see the
-[contributor guide](https://github.com/wstein/crewbook/blob/main/CONTRIBUTING.md).
-It links the source checks, review process and private security reporting route.
-Participation follows the
-[code of conduct](https://github.com/wstein/crewbook/blob/main/.github/CODE_OF_CONDUCT.md).
-
-## Licence and provenance
-
-This EUPL-1.2 package was imported from
-[historical workharbor source](https://github.com/wstein/workharbor/tree/c6bbb7bcd903ea3027285baa9237f4ad179a9bb7).
-[PROVENANCE.md](PROVENANCE.md) records the original import and later transformations.
-[LICENSE](LICENSE) retains EUPL-1.2 and its existing notices. Keep the licence,
-provenance and attribution when redistributing or updating; do not relabel
-imported material as newly authored. New package documentation uses the same licence.
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Licence: EUPL-1.2
+([LICENSE](LICENSE)); imported from historical workharbor source, see
+[PROVENANCE.md](PROVENANCE.md).
