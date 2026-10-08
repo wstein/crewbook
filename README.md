@@ -81,7 +81,7 @@ installation guide, not measured; split mode needs depth 3).
 What the repo files show:
 
 - `.claude/commands/` holds the slash commands (`crewbook-desk`,
-  `crewbook-review`, `crewbook-code`, `crewbook-docs`, `crewbook-ui` and others);
+  `crewbook-review`, `crewbook-code`, `crewbook-docs`, `crewbook-ui`, `crewbook-release` and others);
   `.claude/agents/` holds the role profiles (worker, reviewer, dispatch and
   others).
 - Shipping these files does not register them. Whether Claude lists them, and

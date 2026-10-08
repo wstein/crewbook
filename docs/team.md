@@ -54,6 +54,14 @@ standing role or model mapping of its own (Sonnet author). Review follows
 or carve-out paths, Sonnet for mocks and docs. Rules, architecture and threats stay with crewbook-design, and
 the lane reports its pre-review checklist with evidence.
 
+## Release lane
+
+[crewbook-release](../.agents/crewbook-release.md) (`/crewbook-release <tag>`) is
+started by the coordinator per release. It writes the notes file through the normal
+PR flow and prints the tag commands with the merge SHA. It never tags, pushes,
+merges, publishes or edits a release; the human does. Sonnet author and review,
+Opus for carve-out paths. Project values come from the profile.
+
 ## Setup and routing
 
 Use crewbook-generic by default: resolve needed configuration from the user task,
