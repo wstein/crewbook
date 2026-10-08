@@ -5,6 +5,7 @@
 [![License: EUPL-1.2](https://img.shields.io/badge/license-EUPL--1.2-blue.svg)](LICENSE)
 [![Package checks](https://github.com/wstein/crewbook/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/check.yml)
 [![CodeQL](https://github.com/wstein/crewbook/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/wstein/crewbook/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/wstein/crewbook/badge)](https://scorecard.dev/viewer/?uri=github.com/wstein/crewbook)
 
 ## What it is
 
