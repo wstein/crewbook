@@ -56,6 +56,11 @@ copy host tools or run a host fallback implicitly. If the agent is outside a
 managed container, use crewbook-generic; do not claim managed execution from a
 repository name or the presence of workharbor files.
 
+## UI values
+
+For workharbor web UI work, crewbook-ui uses the mock directory `design/mock/`
+and WCAG 2.2 AA. Other targets supply their own values.
+
 ## Evidence
 
 Report target checks with their actual execution context and results.

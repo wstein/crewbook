@@ -13,6 +13,7 @@
       ".agents/crewbook-helper.md",
       ".agents/crewbook-qa.md",
       ".agents/crewbook-review.md",
+      ".agents/crewbook-ui.md",
       ".agents/crewbook-verify.md",
       ".agents/crewbook-worker.md"
     ],
@@ -44,6 +45,7 @@
       ".claude/commands/crewbook-qa.md",
       ".claude/commands/crewbook-review.md",
       ".claude/commands/crewbook-usage.md",
+      ".claude/commands/crewbook-ui.md",
       ".claude/commands/crewbook-verify.md"
     ]
   },
