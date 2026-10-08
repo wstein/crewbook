@@ -88,6 +88,7 @@ Read only the selected packaged prompt and its necessary references:
 | Design ownership / independent review | [.agents/crewbook-design.md](.agents/crewbook-design.md) / [.agents/crewbook-review.md](.agents/crewbook-review.md) |
 | Documentation lane / measurement | [.agents/crewbook-docs.md](.agents/crewbook-docs.md) / [.agents/crewbook-verify.md](.agents/crewbook-verify.md) |
 | GUI layouts, states, accessibility | [.agents/crewbook-ui.md](.agents/crewbook-ui.md) |
+| Release notes, tag hand-over | [.agents/crewbook-release.md](.agents/crewbook-release.md) |
 | Behavior QA | [.agents/crewbook-qa.md](.agents/crewbook-qa.md) |
 | Assigned bounded helper / research worker | [.agents/crewbook-helper.md](.agents/crewbook-helper.md) / [.agents/crewbook-worker.md](.agents/crewbook-worker.md) |
 

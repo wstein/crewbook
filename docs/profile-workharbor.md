@@ -61,6 +61,15 @@ repository name or the presence of workharbor files.
 For workharbor web UI work, crewbook-ui uses the mock directory `design/mock/`
 and WCAG 2.2 AA. Other targets supply their own values.
 
+## Release values
+
+For workharbor releases, crewbook-release uses the notes directory `docs/releases/`
+(file `<tag>.md`), the template `docs/releases/TEMPLATE.md`, the signer file
+`.github/release-signers` (tags are SSH-signed), the workflow
+`.github/workflows/release.yml` and the provenance file `whr_<tag>.intoto.jsonl`.
+The previous tag is the newest earlier `v*` tag by version order. The release job
+creates a draft pre-release with its assets; the human publishes it.
+
 ## Evidence
 
 Report target checks with their actual execution context and results.
