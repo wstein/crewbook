@@ -18,7 +18,7 @@ review directly in your separate context; never start another reviewer for
 this assignment. The designated coordinator starts crewbook-reviewer with explicit
 Opus for code, security-relevant paths and owned rules; it may select
 crewbook-docs-reviewer with explicit Sonnet only for documentation supplied policy
-classifies as eligible, or for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). The reviewer must meet the configured strength
+classifies as eligible, or, in the old landing flow, for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). The reviewer must meet the configured strength
 requirement and be independent of the author; an ineligible direct invocation
 reports the mismatch instead of delegating a replacement review.
 Each new work item receives a fresh independent reviewer context. Resume this

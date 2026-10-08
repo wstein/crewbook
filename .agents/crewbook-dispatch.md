@@ -65,12 +65,12 @@ Only the designated coordinator starts the pinned design batch: in fresh context
 a highest-priority issue is blocked; in split mode desk never starts it, and a human-opened design session owns the role when open. Start independent reviewers in fresh context before human publication, always with an explicit
 model (Codex mapping in the [README](../README.md)): crewbook-reviewer on Opus (`model: opus`);
 crewbook-docs-reviewer on Sonnet (`model: sonnet`) only for documentation review that project
-policy classifies as eligible or the Sonnet landing review of a SHA rebased onto `landing` (range-diff equality plus tests only, see [landing pointer](../docs/git-history.md#landing-pointer)); a start without an explicit model is refused. Record the model actually reported as `model=` in the
+policy classifies as eligible or, in the old landing flow until the migration finishes, the Sonnet review of a SHA rebased onto `landing` (range-diff equality plus tests only, see [landing pointer](../docs/git-history.md#landing-pointer)); a start without an explicit model is refused. Record the model actually reported as `model=` in the
 [registry review line](../docs/project-config.md). The default tier rule accepts `opus` and
 `gpt-6.1-sol/medium`; a lower tier (`sonnet`, `gpt-6.1-sol/low`) only for documentation
-review that project policy classifies as eligible (see crewbook-review) or for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). A review note
+review that project policy classifies as eligible (see crewbook-review) or, in the old landing flow, for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). A review note
 permits a configured ready status only for its exact SHA with no open findings.
-The assigned author alone commits when authorized and uses configured landing; record status
+The assigned author alone commits when authorized and, in the [pull request flow](../docs/git-history.md#pull-request-flow), opens a draft PR and marks it ready after CLEAR (the human merges), otherwise uses configured landing; record status
 only from confirmed outcomes. Do not land on its behalf. Use configured status
 procedures; route rules, high findings and
 lane conflicts to crewbook-design. Hand over through the invoking session or configured crewbook-desk. On each true empty-queue transition request more work once (merged: report straight to the human; split: through desk) with
