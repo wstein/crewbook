@@ -55,9 +55,14 @@ Design source: workharbor `docs/content/docs/design/pr-flow-landing.md` (workhar
 - One pull request per branch, merged by rebase and merge only, so the atomic conventional commits survive. The human merging is the consent; agents never merge. The PR body carries `Closes #N`; commits carry `Refs:` only.
 - The dispatcher (PR author) opens a draft PR and marks it ready after the review is CLEAR (the design says the human marks it ready, the manual says the dispatcher; workharbor #429 corrects it: the PR author/dispatcher marks ready). The desk posts the commit status `review/sonnet` or `review/opus` on the PR head plus an evidence comment naming the head SHA and the tier. The status creator must be the human account.
 - A `gate` check derives the path class from the changed files with the base branch's path script (ordinary or carve-out) and requires `review/opus` for carve-out paths. Crewbook has no `gate` workflow yet; its `main` ruleset requires a PR, rebase merge and the checks `package (ubuntu-latest)`, `package (macos-15)` and `secrets`.
-- PR size budget: at most 10 commits and about 500 changed lines per PR and review; the fast lane stays at 3 commits. Split larger work into a stack.
-- Auto-delete after merge covers finished work branches only (`fix/`, `feat/`, `docs/`, `chore/`, `ci/`); `spike/*` is never deleted automatically. GitHub deletes the remote head branch (enabled); local cleanup uses `git branch -d`, and `-D` only with `git cherry` or patch-id proof.
-- Large work is a stack of PRs (`gh stack`, workharbor #421, unverified). The atomic stack merge enforces required statuses per PR. After a merge below a PR the head moves and its statuses are gone: re-post them with a range-diff proof (see the [rebase re-review rule](#rebase-re-review)).
+- PR size budget: at most 10 commits and about 500 changed lines per PR and review; the fast lane (documentation that policy classifies as Sonnet-eligible, see [crewbook-review](../.agents/crewbook-review.md); proposal, Werner to confirm) stays at 3 commits. Split larger work into a stack. The budget applies per PR, also to every PR of a stack; the batch PR of [batch integration](team.md#batch-integration) is exempt from the size budget; each original branch keeps its own budget (proposal, Werner to confirm).
+- Auto-delete after merge covers finished work branches only (`fix/`, `feat/`, `docs/`, `chore/`, `ci/`, `refactor/`, `test/`); `spike/*` is never deleted automatically, which holds only while spike PRs are not merged by the human (GitHub deletes the head of any merged PR). This is the authorization the [dispatch rule](../.agents/crewbook-dispatch.md) on branch cleanup asks for, only for branches merged through a PR (proposal, Werner to confirm). GitHub deletes the remote head branch (enabled); local cleanup uses `git branch -d`, and `-D` only with `git cherry` or patch-id proof.
+- Large work and related work form a stack of PRs (`gh stack`, workharbor #421, unverified). The desk decides automatically at dispatch time which issues form a stack (thematic relation or dependency, no explicit hint needed) and records the stack order in the dispatch note; independent topics stay single PRs. Agents never run `gh stack merge`; the human merges with rebase. The desk posts `review/<tier>` on every PR head in the stack after a range-diff proof. Mechanics: `gh stack init`/`add` build the stack, `gh stack submit --auto` opens the PRs as drafts, `gh stack sync`/`rebase` keep it current (unverified). The atomic stack merge enforces required statuses per PR. After a merge below a PR the head moves and its statuses are gone: re-post them with a range-diff proof (see the [rebase re-review rule](#rebase-re-review)).
+
+<a id="auto-push-trial"></a>
+### Auto-push trial
+
+Trial (#83), revisit after a few PRs. After the required CLEAR on the exact head SHA (and after any rebase the range-diff proof), during the trial the desk takes over push, PR open and ready from the author/dispatcher in merged mode: it may push that topic branch (never force), open the PR as a draft with `Closes #N`, post `review/<tier>` plus the evidence comment, hand check watching to a background Haiku helper and mark the PR ready when the checks are green. Carve-out paths still need `review/opus`; the human merges (rebase). Never: merge, push `main` or tags, force-push, change rulesets or repository settings, or push a branch without the required CLEAR.
 
 <a id="landing-pointer"></a>
 ### Landing pointer branch (retiring)
@@ -103,7 +108,7 @@ conflict scope and any pending operation. Local integration never implies push,
 tag, release or publication authorization; retain the configured human owner.
 
 Crew Book's source repository currently requires linear, fast-forward-only
-integration under its source-only AGENTS.md; the human owns push. This example
+integration under its source-only AGENTS.md; the human owns push (except the [auto-push trial](#auto-push-trial)). This example
 supplies no policy or authority to another target.
 
 ## Static decision walkthroughs
