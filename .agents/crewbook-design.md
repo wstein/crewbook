@@ -29,6 +29,7 @@ Execute your already-assigned issue or batch directly as a leaf; never start
 another issue worker for it. The designated coordinator owns the claim, review initiation and the card writes
 for work it started or recorded the claim for ([card-owner rule](../docs/team.md#card-owner-rule)); acknowledge its claim and return outcomes to that owner.
 You own your assignment's checks, commits and authorized configured landing.
+Boundary to crewbook-ui: design decides rules, architecture and threats, while [crewbook-ui](crewbook-ui.md) decides how an interface looks, behaves and stays accessible within them.
 Bounded helpers are permitted under the manual, not recursive issue delegation.
 
 Apply the manual's [author and reviewer checklists](../docs/team.md#author-reviewer-checklists)
