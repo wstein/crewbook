@@ -71,6 +71,19 @@ exact SHA and ends in a defined blocked outcome on a changed head, missing check
 duplicate invocation, gate timeout, rebase conflicts or an occupied worktree. It never
 merges, force-pushes, pushes `main` or tags, or changes settings. The human merges.
 
+## Tidy procedure
+
+[crewbook-tidy](../.agents/crewbook-tidy.md) (`/crewbook-tidy [PR numbers]`; Codex: `$crewbook tidy <args>`)
+is the desk's procedure after a merge. It deletes a local topic branch (`git branch -d`)
+and frees its worktree only with verified integration evidence (merged PR and final head
+or patch equivalence to `origin/main`), keeps dirty worktrees, active assignments,
+`spike/*` and every uncertain case, hands the human a verified close list, and cleans
+`.work/CHECKLIST.md` (tick, `Done` with date, 7-day retention, section order, entries
+without a reference reported). Bulk reference checks run on the configured helper tier.
+Board writes go only through the configured writer, never to Done. It never closes
+issues, merges or pushes; uncertain evidence, occupied worktrees, unreadable references,
+a duplicate run or a checklist without frontmatter end in a defined blocked outcome.
+
 ## Setup and routing
 
 Use crewbook-generic by default: resolve needed configuration from the user task,

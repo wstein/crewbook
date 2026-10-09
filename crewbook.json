@@ -15,6 +15,7 @@
       ".agents/crewbook-release.md",
       ".agents/crewbook-review.md",
       ".agents/crewbook-ship.md",
+      ".agents/crewbook-tidy.md",
       ".agents/crewbook-ui.md",
       ".agents/crewbook-verify.md",
       ".agents/crewbook-worker.md"
@@ -48,6 +49,7 @@
       ".claude/commands/crewbook-release.md",
       ".claude/commands/crewbook-review.md",
       ".claude/commands/crewbook-ship.md",
+      ".claude/commands/crewbook-tidy.md",
       ".claude/commands/crewbook-ui.md",
       ".claude/commands/crewbook-usage.md",
       ".claude/commands/crewbook-verify.md"

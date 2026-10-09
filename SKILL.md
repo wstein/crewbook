@@ -90,6 +90,7 @@ Read only the selected packaged prompt and its necessary references:
 | GUI layouts, states, accessibility | [.agents/crewbook-ui.md](.agents/crewbook-ui.md) |
 | Release notes, tag hand-over | [.agents/crewbook-release.md](.agents/crewbook-release.md) |
 | Ship a CLEARed SHA as a draft PR | [.agents/crewbook-ship.md](.agents/crewbook-ship.md) |
+| Post-merge cleanup, close list, checklist | [.agents/crewbook-tidy.md](.agents/crewbook-tidy.md) |
 | Behavior QA | [.agents/crewbook-qa.md](.agents/crewbook-qa.md) |
 | Assigned bounded helper / research worker | [.agents/crewbook-helper.md](.agents/crewbook-helper.md) / [.agents/crewbook-worker.md](.agents/crewbook-worker.md) |
 
