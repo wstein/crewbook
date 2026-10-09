@@ -50,22 +50,37 @@ Steps:
    Hand the list to the human as exact `gh issue close <n> -R <o>/<r> --reason completed`
    commands; run none.
 4. Checklist `.work/CHECKLIST.md` (format: [#107](https://github.com/wstein/crewbook/issues/107)).
-   Read the frontmatter first: `type: checklist`, `schema: 1`, `updated`, `owner`. Then:
-   - Tick: for each open entry read its reference (PR, issue, commit or tag) against `M`
-     and GitHub. Done means the PR is merged or the issue is closed or the commit/tag is
-     reachable from `M`. A done entry becomes `- [x]` and moves to `Done`. Dates sit in
-     the trailing parenthetical: `(who: desk, added: 2026-10-09)`, in Done `(who: desk,
-     added: 2026-10-09, done: 2026-10-10)` with `done:` set to today. A missing `added:`
-     is reported.
-   - Retention: `Done` entries with `done:` more than 7 days ago are dropped, first
+   Read the frontmatter first: `type: checklist`, `schema`, `updated`, `owner`. Schema 2
+   is current; schema 1 (no emoji, `who:` in the parenthetical) is still accepted: process
+   it as below with `who: human` read as 🧑 and `who: desk` as 🤖 (a missing `who:` counts as no emoji), change no format and
+   report once that the file should be migrated to schema 2; never fail on it.
+   Schema 2 entry: `- [ ] <emoji> **Title** [#N](url): sentence (prio: P2, kind: do,
+   waits: #28, added: 2026-10-09)`.
+   - Actor: the emoji after the checkbox is mandatory on every entry, `Done` included:
+     🧑 human, 🤖 desk/LLM. An entry without one is reported (`defect: no emoji`), never
+     guessed and never fixed by tidy. Tidy acts only on 🤖 entries (tick, move, drop). 🧑
+     entries are never changed; report their state (for example a ticked human entry, or
+     a reference already done) and respect the human's ticks and their position.
+   - Attributes in the trailing parenthetical: `prio` (P1-P3), `kind` (do, decide, wait,
+     review), `waits`, `added`, `done`. Unknown attributes are kept as they are. A missing
+     `added:` is reported.
+   - Tick (🤖 entries): for each open entry read its reference (PR, issue, commit or tag)
+     against `M` and GitHub. Done means the PR is merged or the issue is closed or the
+     commit/tag is reachable from `M`. A done entry becomes `- [x]` and moves to `Done`
+     keeping its emoji. Dates sit in the parenthetical as `added: 2026-10-09`; in Done
+     `added: 2026-10-09, done: 2026-10-10` with `done:` set to today (same date format).
+   - Retention: `Done` 🤖 entries with `done:` more than 7 days ago are dropped, first
      appending one line (`- <date> <title> <ref>`) to `.work/LOGBOOK.md` under its own
      heading `## <date> tidy` (never inside an existing session entry) if that file exists; without it, the entry is kept and reported instead of dropped.
+     🧑 `Done` entries are never dropped: report those with `done:` more than 7 days ago as
+     `retention due` (the human removes them).
    - Order: sections `Now`, `Decide`, `Later`, `Close`, `Settings`, `Done`, in this order.
-     `Now` holds only `who: human` entries; a `who: desk` entry found there moves to
-     `Later`. Desk-owned tasks live in `Later`. `Close` entries verified in step 3 are
-     ticked and moved; unverified ones stay unticked in place and are listed under
+     `Now` holds only 🧑 entries; a 🤖 entry found there (or a schema-1 `who: desk`
+     one) moves to `Later` and is listed in the report. Desk tasks live in `Later`. `Close`
+     entries verified in step 3 are ticked and moved if 🤖; a verified 🧑 entry stays
+     unchanged and is reported as closable with its close command. Unverified ones stay unticked in place and are listed under
      "not verified". Never replace `Close` by the verified list.
-     Keep each entry's title, link, sentence, `who` and indented command block
+     Keep each entry's title, link, sentence, emoji (or `who`) and indented command block
      unchanged; commands carry no `#` lines.
    - Report, never delete: entries without a reference, without a creation date, or whose
      reference cannot be read.
@@ -97,7 +112,7 @@ run continues unless noted; report item, observed state and next human action):
 - unreadable reference (PR, issue, commit or tag not found or the call failed): the entry
   keeps its place, unticked, marked in the report as `blocked: reference unreadable`;
   an uncertain read is retried once as its own command, never guessed.
-- checklist without valid frontmatter or with an unknown `schema`: `blocked: checklist
+- checklist without valid frontmatter or with a `schema` other than 1 or 2: `blocked: checklist
   format`, checklist untouched; steps 2, 3, 5 and 6 still run.
 - `origin/main` unreadable or fetch failed: `blocked: main unknown`, stop the whole run.
 
