@@ -62,6 +62,15 @@ PR flow and prints the tag commands with the merge SHA. It never tags, pushes,
 merges, publishes or edits a release; the human does. Sonnet author and review,
 Opus for carve-out paths. Project values come from the profile.
 
+## Ship procedure
+
+[crewbook-ship](../.agents/crewbook-ship.md) (`/crewbook-ship <branch> <sha> <issue> <clear-evidence> [base]`; Codex: `$crewbook ship <args>`)
+is the desk's procedure after a CLEAR: push, draft PR, `review/<tier>` status, evidence
+comment, background watcher, direct `statusCheckRollup` check, then ready. It binds one
+exact SHA and ends in a defined blocked outcome on a changed head, missing checks,
+duplicate invocation, gate timeout, rebase conflicts or an occupied worktree. It never
+merges, force-pushes, pushes `main` or tags, or changes settings. The human merges.
+
 ## Setup and routing
 
 Use crewbook-generic by default: resolve needed configuration from the user task,
