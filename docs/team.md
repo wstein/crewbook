@@ -104,7 +104,9 @@ and frees its worktree only with verified integration evidence (merged PR and fi
 or patch equivalence to `origin/main`), keeps dirty worktrees, active assignments,
 `spike/*` and every uncertain case, hands the human a verified close list, and cleans
 `.work/CHECKLIST.md` (tick, `Done` with date, 7-day retention, section order, entries
-without a reference reported). Bulk reference checks run on the configured helper tier.
+without a reference reported; schema 1 and 2 are read, the emoji after the checkbox is the
+actor and mandatory, tidy acts only on 🤖 entries and reports a missing emoji, moves a 🤖 entry
+from `Now` to `Later`). Bulk reference checks run on the configured helper tier.
 Board writes go only through the configured writer, never to Done. It never closes
 issues, merges or pushes; uncertain evidence, occupied worktrees, unreadable references,
 a duplicate run or a checklist without frontmatter end in a defined blocked outcome.
