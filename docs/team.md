@@ -109,6 +109,21 @@ Board writes go only through the configured writer, never to Done. It never clos
 issues, merges or pushes; uncertain evidence, occupied worktrees, unreadable references,
 a duplicate run or a checklist without frontmatter end in a defined blocked outcome.
 
+## Restack procedure
+
+[crewbook-restack](../.agents/crewbook-restack.md) (`/crewbook-restack [branch names]`; Codex: `$crewbook restack <args>`)
+is the desk's procedure after a merge. It rebases the open topic branches onto the new
+default branch in dependency order (a stack's parent first), proves with `git range-diff`
+that every patch is unchanged (all `=`), and runs the repo checks on the helper tier
+before a rewritten head counts as ready; ready means ready for the review the
+[rebase re-review rule](git-history.md#rebase-re-review) requires, since all `=` proves
+the patches unchanged but is not a review, and the old review does not carry over. It resolves no conflicts, never
+pushes and never merges. For a branch whose remote has the old head it hands the human
+`git push --force-with-lease=<ref>:<observed remote sha> origin <branch>` bound to the
+SHA read with `git ls-remote`. A conflict, changed patch, failed check, occupied worktree,
+moved remote, duplicate run or unknown base ends in a defined blocked outcome. Motivation:
+a push chained after a failed rebase (2026-10-09).
+
 ## Setup and routing
 
 Use crewbook-generic by default: resolve needed configuration from the user task,
