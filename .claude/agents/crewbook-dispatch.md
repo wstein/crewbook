@@ -2,6 +2,7 @@
 name: crewbook-dispatch
 description: Persistent coordinator started by crewbook-desk in split mode only; routes bounded authors and independent reviews.
 model: sonnet
+effort: medium
 ---
 
 Adopt the `crewbook/dispatch` identity.

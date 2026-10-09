@@ -31,10 +31,32 @@ profile adopts its matching role identity, including `crewbook/platform`,
 | [crewbook-helper](../.agents/crewbook-helper.md) | Bounded lookup, edit or check | No lane, Git state, protected edits or outward actions |
 | [crewbook-worker](../.agents/crewbook-worker.md) | Read-only research for one bounded batch | No file or Git changes, no posts |
 
+<a id="model-effort-matrix"></a>
 Claude pins are Sonnet for desk/dispatch and issue/research workers, Opus for
 design and security/code review, Haiku for helpers. crewbook-docs-reviewer uses
 Sonnet only for policy-classified ordinary documentation or, in the old landing flow until the migration finishes, the Sonnet review of a SHA rebased onto `landing` (range-diff equality plus tests only, see [landing pointer](git-history.md#landing-pointer)). Codex mappings are
 explicit in [README](../README.md). Never inherit a child model implicitly.
+
+Model and effort per role (Claude values from the 2026-10-09 session, #108; revise from
+[run records](#run-records)). Agent files pin `model` and, where a role has one fixed
+value, `effort`; the desk passes the per-run override where the table differs.
+
+| Role | Model | Effort |
+| --- | --- | --- |
+| desk, dispatch | Sonnet | medium |
+| author, default | Sonnet | medium |
+| author, state logic shared by several steps (setup, doctor, Reach, Fix) | Sonnet | high |
+| author, docs only or mechanical rebase | Sonnet | low |
+| reviewer, code in setup/doctor/install/security | Opus | high |
+| reviewer, docs conflict, rebase delta, docs-only | Sonnet | medium |
+| design lane | Opus | high |
+| helper, watcher, lookups, [tidy](../.agents/crewbook-tidy.md) checks | Haiku | none; never judgments |
+
+Opus as author is not recommended: two Opus runs cost more than one Sonnet run plus one
+Opus review, which catches the defects. Send corrections to the same author and the same
+reviewer (context kept). Codex values are a starting point, **unmeasured**: see
+[README](../README.md#model-and-effort-mapping).
+
 An independent reviewer must meet the configured review-strength requirement.
 
 Except for the assignment from the designated coordinator or requester, which
@@ -1131,6 +1153,30 @@ example). Without a table the report shows tokens only and cost `n/a`. Resume
 counts and loop/cron tick cost are heuristics and **unverified**. The command
 does not change loop cadence or any rule; whether a given client loads it
 natively is unverified, and the Codex pendant is tracked in #41.
+
+<a id="run-records"></a>
+## Run records
+
+Decisions on model and effort rest on data. The desk (merged or dispatch-split
+coordinator) records one line per delegated run (author, reviewer, design, docs,
+helper) at hand-back, from the hand-back usage line, before it reports the
+outcome; a resumed run gets a new line with its own delta, since resumed agents
+report cumulative usage. Record tokens and minutes as deltas (this run minus the
+previous cumulative value), never as cumulative totals. Rounds, findings, `ci_first_try` and `clear` are
+known only at CLEAR or merge: the desk records them on the final author line
+and the CLEAR reviewer line of that PR.
+
+`scripts/runs_report.py record ...` appends to `.work/RUNS.tsv` (local,
+git-ignored, created with `# crewbook-runs schema=1` and a fixed header). Fields:
+`date ref role model effort tokens minutes rounds high medium low ci_first_try clear`.
+Only validated values are stored (no free text, paths or secrets). `runs_report.py
+report` summarises per role, model and effort: tokens and minutes per CLEAR, review
+rounds per PR, findings per PR (high, medium, low) and CI first-try rate. A group with fewer than 10
+distinct PRs is marked `not enough data`; do not change the matrix on it. It
+complements `scripts/usage_report.py`, which reads session logs for where tokens go;
+this file records what a PR cost to reach CLEAR. Tokens per CLEAR also count the cost of PRs
+not yet cleared; a PR whose runs span two efforts has its CLEAR in only one group, so that
+group carries the whole cost of the other. Numbers are indicative, not verified.
 
 ## Evidence and portability
 

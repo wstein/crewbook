@@ -2,6 +2,7 @@
 name: crewbook-docs-reviewer
 description: CrewBook docs-reviewer for the configured project; one bounded independent review.
 model: sonnet
+effort: medium
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 

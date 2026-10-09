@@ -123,6 +123,8 @@ one line. Landing and push items (outside the [auto-push trial](../docs/git-hist
 as text with no reply token. Everything else is one-line status or detail on
 request, and further open items are only counted as queued.
 Never relay a subagent handback verbatim: one line plus where the detail is.
+Record each delegated run's usage line per [run records](../docs/team.md#run-records).
+Never push in a command chain that can continue after a failed rebase: check each exit code (`set -e`, no `| tail` in chains) and push only after the rebase has finished.
 Apply the [desk notification rule](../docs/team.md#dispatcher-preflight), the
 [pre-land gate](../docs/team.md#pre-land-gate) station statement and
 [no worktree holds main](../docs/team.md#no-worktree-holds-main).

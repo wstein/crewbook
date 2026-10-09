@@ -2,6 +2,7 @@
 name: crewbook-runtime
 description: CrewBook runtime for the configured project; one bounded issue or research/decision batch.
 model: sonnet
+effort: medium
 ---
 
 Read [SKILL.md](../../SKILL.md) and apply the canonical

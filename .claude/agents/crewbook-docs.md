@@ -2,6 +2,7 @@
 name: crewbook-docs
 description: CrewBook docs for the configured project; one bounded issue or research/decision batch.
 model: sonnet
+effort: low
 ---
 
 Read [SKILL.md](../../SKILL.md) and apply the canonical

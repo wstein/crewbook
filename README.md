@@ -52,6 +52,22 @@ What the repo files show:
 - `.agents/` holds the role files (`crewbook-desk.md`, `crewbook-code.md`,
   `crewbook-review.md` and others) and the optional `$crewbook-desk` alias skill
   in `.agents/skills/crewbook-desk`, installed separately.
+<a id="model-and-effort-mapping"></a>
+- Model and effort mapping. Codex values are a starting point, **unmeasured**; revise
+  them from the run records (`scripts/runs_report.py`) after the first ten PRs.
+  The helper tier (`gpt-6.1-sol`, low) is the helper model that `crewbook-ship`
+  and the [tidy](.agents/crewbook-tidy.md) checks resolve; Claude values are in [team.md](docs/team.md#model-effort-matrix).
+
+  | Role | Model | Reasoning effort |
+  | --- | --- | --- |
+  | desk, dispatch | gpt-6.1-sol | low |
+  | author, default | gpt-6.1-sol | medium |
+  | author, shared state logic | gpt-6.1-sol | high |
+  | author, docs only / rebase | gpt-6.1-sol | low |
+  | reviewer, code | gpt-6.1-sol | medium; high for security paths |
+  | reviewer, docs / delta | gpt-6.1-sol | low |
+  | helper, watcher | gpt-6.1-sol | low |
+
 - Unverified: installed native startup, the alias discovery and managed
   execution. A desk/dispatch delegation was observed once in a Codex session;
   merged mode, the default, has no observed trace in any client.

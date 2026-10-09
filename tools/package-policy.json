@@ -73,6 +73,7 @@
     "docs/simplicity.md",
     "docs/team.md",
     "docs/tool-preflight.md",
+    "scripts/runs_report.py",
     "scripts/usage_prices.example.json",
     "scripts/usage_report.py"
   ],
