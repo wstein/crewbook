@@ -2,6 +2,7 @@
 name: crewbook-qa
 description: Reproduce bugs and verify exact-SHA behavior with per-platform evidence.
 model: sonnet
+effort: medium
 tools: Read, Grep, Glob, Bash
 ---
 

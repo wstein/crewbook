@@ -2,6 +2,7 @@
 name: crewbook-verify
 description: Measure claims on an explicitly authorized reference setup; return reproducible evidence and limits.
 model: sonnet
+effort: medium
 ---
 
 Read [SKILL.md](../../SKILL.md) and apply the canonical

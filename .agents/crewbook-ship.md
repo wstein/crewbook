@@ -72,7 +72,7 @@ Steps:
    every required check present on `S` with conclusion `SUCCESS`, and `review/<tier>`
    present and `success`.
 8. Only then `gh pr ready <pr>`; read back `isDraft == false` and `headRefOid == S`.
-9. Report to the human: PR URL, `S`, tier, checks with conclusions, and that merging by
+9. Record the run per [run records](../docs/team.md#run-records), then report to the human: PR URL, `S`, tier, checks with conclusions, and that merging by
    rebase is the human's action.
 
 Blocked outcomes (the PR stays draft, no retry loop, no workaround; report the blocker,

@@ -82,6 +82,7 @@
     "docs/git-history.md",
     "docs/installation.md",
     "scripts/usage_report.py",
+    "scripts/runs_report.py",
     "scripts/usage_prices.example.json",
     ".agents/skills/crewbook-qa/SKILL.md",
     ".agents/skills/crewbook-qa/agents/openai.yaml"

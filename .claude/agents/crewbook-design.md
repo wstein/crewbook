@@ -2,6 +2,7 @@
 name: crewbook-design
 description: CrewBook design for the configured project; one bounded issue or research/decision batch.
 model: opus
+effort: high
 ---
 
 Read [SKILL.md](../../SKILL.md) and apply the canonical

@@ -2,6 +2,7 @@
 name: crewbook-worker
 description: Read-only research for one bounded batch; return dated sources and evidence.
 model: sonnet
+effort: medium
 tools: Read, Grep, Glob, WebSearch, WebFetch
 ---
 
