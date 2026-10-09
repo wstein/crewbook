@@ -107,6 +107,9 @@ or patch equivalence to `origin/main`), keeps dirty worktrees, active assignment
 without a reference reported; schema 1 and 2 are read, the emoji after the checkbox is the
 actor and mandatory, tidy acts only on 🤖 entries and reports a missing emoji, moves a 🤖 entry
 from `Now` to `Later`). Bulk reference checks run on the configured helper tier.
+It also reports stray test processes (`scripts/stray_processes.py`: orphaned or long-busy
+processes in temp test directories, with copy-paste `kill` commands for the human, nothing killed;
+the full-run launcher helper runs it once after each full test run).
 Board writes go only through the configured writer, never to Done. It never closes
 issues, merges or pushes; uncertain evidence, occupied worktrees, unreadable references,
 a duplicate run or a checklist without frontmatter end in a defined blocked outcome.
@@ -393,7 +396,7 @@ The dispatcher runs no long-running tasks (full test suites, builds) itself; it 
 
 Monitoring never blocks desk or dispatch: no foreground sleep or poll loops. CI and check watching goes to a read-only background Haiku watcher (model set explicitly) that reports once. A failure report has the check name, the job URL and the first failing test line (for example Go `--- FAIL:` plus the next line, Python `FAIL: test_x`); the watcher never judges, reruns or comments. Red CI not caused by the PR becomes a defect issue, never a "known failure", and the desk reruns the failed jobs.
 
-Haiku helpers (model set explicitly, read-only) serve CI and run status lookups, range-diff proofs, consistency greps, short summaries and the launch of the full run (exit codes plus the last failing lines). Never use them for reviews, security judgement, decisions or destructive Git.
+Haiku helpers (model set explicitly, read-only) serve CI and run status lookups, range-diff proofs, consistency greps, short summaries and the launch of the full run (exit codes plus the last failing lines; afterwards `scripts/stray_processes.py` once, report only). Never use them for reviews, security judgement, decisions or destructive Git.
 
 On every resume, consume all available handbacks before waiting or selecting
 new work. Preserve each result separately, validate assignment identity, owned

@@ -94,10 +94,20 @@ Steps:
 5. Board. Only through the configured authorized writer (project config), only for cards
    whose merge or review state step 2/3 verified, and never to `Done`. Without a
    configured writer or with board mode none, skip and say so.
-6. Report to the human (in the project language): deleted branches (`git branch -d` exit
+6. Stray processes (report only). Run `python3 -B ../scripts/stray_processes.py` (path relative to this file; read-only `ps`;
+   without the script: `ps -axo pid=,ppid=,etime=,pcpu=,command=`). It lists processes whose command
+   line names a temp test directory (a path under `/tmp`, `/var/tmp`, `/var/folders` or `$TMPDIR` with
+   `/Test<Name>` or `pytest-of-<user>`) and that are orphaned (ppid 1) or older than 10 minutes
+   at more than 80% CPU. Per process one block: pid, age, CPU, ppid, temp directory, test name
+   if derivable, its child pids, one plain-English "why this looks stray" line and the copy-paste `kill <pid>`
+   (and `kill -KILL <pid>` fallback) for the human; then "nothing was killed". None found: one
+   line `no stray test processes`. The launcher of a full test run (see team.md, Haiku helpers) also runs it once after it. Tidy never kills anything. False positive: a legitimate long `make check-ci` or
+   `go test -race` still running; check elapsed time and parent before reporting, a process
+   with a live parent shell younger than the longest expected run is not stray.
+7. Report to the human (in the project language): deleted branches (`git branch -d` exit
    codes), freed worktrees, kept items with the reason each, the close list with commands,
    the checklist diff in counts (ticked, moved, dropped, reordered, reported), board
-   writes, and every blocked outcome.
+   writes, the stray-process blocks (or `no stray test processes`), and every blocked outcome.
 
 Blocked outcomes (nothing is deleted or rewritten for the affected item; the rest of the
 run continues unless noted; report item, observed state and next human action):
@@ -116,7 +126,7 @@ run continues unless noted; report item, observed state and next human action):
   keeps its place, unticked, marked in the report as `blocked: reference unreadable`;
   an uncertain read is retried once as its own command, never guessed.
 - checklist without valid frontmatter or with a `schema` other than 1 or 2: `blocked: checklist
-  format`, checklist untouched; steps 2, 3, 5 and 6 still run.
+  format`, checklist untouched; steps 2, 3, 5, 6 and 7 still run.
 - `origin/main` unreadable or fetch failed: `blocked: main unknown`, stop the whole run.
 
 Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports).

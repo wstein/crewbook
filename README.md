@@ -11,8 +11,8 @@
 
 CrewBook helps a coding agent work through software tasks: understand the
 request, make a focused change, check it, and explain the result. It is plain
-text and metadata (plus one read-only usage report script,
-`scripts/usage_report.py`); no settings, hooks or permission allowlists ship.
+text and metadata (plus read-only report scripts:
+`scripts/usage_report.py`, `scripts/runs_report.py`, `scripts/stray_processes.py`); no settings, hooks or permission allowlists ship.
 The package and skill id is `crewbook`. Your client supplies the tools, and your
 repository instructions and authorization govern the work.
 

@@ -63,6 +63,7 @@ The unittest command runs every `tools/test_*.py` file: `test_package.py`
 `test_board.py` (`board.py` move/sync with a fake `gh`; rules in
 [team.md](../docs/team.md#board-sync)), `test_review_lines.py` (review-line grammar and model gate, modelled in
 `review_lines.py`) `test_parser_properties.py` (seeded, bounded property tests for the review-line, confirmation-record and recovery-state parsers),
+`test_stray_processes.py` (canned `ps` output for `scripts/stray_processes.py`),
 and `test_usage_report.py` (synthetic-fixture and redaction tests for the
 distributed `scripts/usage_report.py`).
 
