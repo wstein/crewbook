@@ -25,7 +25,10 @@ coordinator; never pick one (gap tracked under #108). Helpers are read-only and 
 facts per reference; the desk decides and acts.
 
 Steps:
-1. `git fetch origin` as its own command. Read `git worktree list`, the registry/claim
+1. `git fetch --prune origin` as its own command (the prune only removes stale remote-tracking
+   refs of branches deleted on the remote, for example after a merge; it never deletes local
+   branches or commits, so the `git branch -d` only rule and "`spike/*` is never deleted" are
+   unchanged, and a pruned `origin/spike/*` ref is no reason to delete the local branch). Read `git worktree list`, the registry/claim
    records and the open assignments. Record `origin/main` SHA `M`; every check below
    names `M`, not the local `main`.
 2. Branches and worktrees. For each local topic branch (never `main`, `landing`, the
