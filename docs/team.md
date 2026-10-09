@@ -126,6 +126,20 @@ SHA read with `git ls-remote`. A conflict, changed patch, failed check, occupied
 moved remote, duplicate run or unknown base ends in a defined blocked outcome. Motivation:
 a push chained after a failed rebase (2026-10-09).
 
+## Briefing procedure
+
+[crewbook-briefing](../.agents/crewbook-briefing.md) (`/crewbook-briefing <action> [detail]`; Codex: `$crewbook briefing <action>`)
+is the desk's read-only preparation for a named action such as `release v0.1.0-alpha.5`,
+`merge PR 118` (human action, preconditions only) or `restack <branch>`: goal, preconditions (which hard stops or checks of
+that procedure would apply today, judged from local refs without `git fetch`, naming the
+ref time it saw), decisions already made, risks and the next step. It answers in chat,
+polls nothing, starts no helper, never performs the action and grants no board, issue or
+Git write authority; the desk tier of the [model and effort matrix](#model-effort-matrix)
+suffices. Without an action it reports `blocked: no action named` and lists the known
+actions. Boundaries: `status` is the current state and prepares nothing, the
+[handover](#handover-procedure) is its own procedure, and the logbook is history, neither
+a current-state source nor an authorization.
+
 ## Setup and routing
 
 Use crewbook-generic by default: resolve needed configuration from the user task,
