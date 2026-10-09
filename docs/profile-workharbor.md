@@ -66,9 +66,16 @@ and WCAG 2.2 AA. Other targets supply their own values.
 For workharbor releases, crewbook-release uses the notes directory `docs/releases/`
 (file `<tag>.md`), the template `docs/releases/TEMPLATE.md`, the signer file
 `.github/release-signers` (tags are SSH-signed), the workflow
-`.github/workflows/release.yml` and the provenance file `whr_<tag>.intoto.jsonl`.
-The previous tag is the newest earlier `v*` tag by version order. The release job
-creates a draft pre-release with its assets; the human publishes it.
+`.github/workflows/release.yml`, the build config `.config/goreleaser.yaml` and the
+provenance file `whr_<tag>.intoto.jsonl`. The archive is `whr_<tag without v>_darwin_arm64.tar.gz`,
+with `checksums.txt`; the SBOM name is read from the workflow and build config.
+Local checks: `make check-local` and `make release-snapshot` (the latter builds
+without SBOM or publishing). `make release-prep VERSION=<tag>` (git-cliff, rewrites
+`CHANGELOG.md`, own `chore(release)` commit) is the human's step; the lane does not run
+it. Tags are SSH-signed with the release key listed in the signer file. The previous
+tag is the newest earlier `v*` tag by version order. Tags with a prerelease suffix are
+prereleases and leave the tap untouched. The release job creates a draft
+(pre-)release with its assets; the human publishes it.
 
 ## Evidence
 

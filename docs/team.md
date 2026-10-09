@@ -78,11 +78,14 @@ the lane reports its pre-review checklist with evidence.
 
 ## Release lane
 
-[crewbook-release](../.agents/crewbook-release.md) (`/crewbook-release <tag>`) is
+[crewbook-release](../.agents/crewbook-release.md) (`/crewbook-release <tag>`; Codex: `$crewbook release <tag>`) is
 started by the coordinator per release. It writes the notes file through the normal
-PR flow and prints the tag commands with the merge SHA. It never tags, pushes,
-merges, publishes or edits a release; the human does. Sonnet author and review,
-Opus for carve-out paths. Project values come from the profile.
+PR flow after a local-only verification and prints the tag commands (with the pre-push
+`tag -v`) and the merge SHA. It never tags, pushes, merges, publishes or edits a release;
+the human does. Preconditions, a changed head, a duplicate run, a changed workflow or
+template and an unresolved previous tag end in a named `blocked:` outcome. After the
+release run it verifies the assets and attestation. Models follow the configured model
+mapping. Project values come from the profile.
 
 ## Ship procedure
 
