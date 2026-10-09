@@ -1,6 +1,7 @@
 {
   "version": 1,
   "distributed": [
+    ".agents/crewbook-briefing.md",
     ".agents/crewbook-code.md",
     ".agents/crewbook-design.md",
     ".agents/crewbook-desk.md",
@@ -33,6 +34,7 @@
     ".claude/agents/crewbook-verify.md",
     ".claude/agents/crewbook-worker.md",
     ".claude/commands/crewbook-board.md",
+    ".claude/commands/crewbook-briefing.md",
     ".claude/commands/crewbook-code.md",
     ".claude/commands/crewbook-config.md",
     ".claude/commands/crewbook-delegate.md",
