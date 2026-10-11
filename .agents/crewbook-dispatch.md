@@ -26,14 +26,16 @@ handles do not establish capacity; use only supported host release operations
 with confirmed outcomes, and defer fresh starts on confirmed full capacity.
 When idle, report once and yield. In split mode desk resumes the same handle when work
 arrives; never imply autonomous execution after the parent session ends.
-Own the sole claim, the card writes for work you started or recorded the claim
-for ([card-owner rule](../docs/team.md#card-owner-rule)) and issue/review starts under
+Own the sole claim, card writes under the
+[card-owner rule](../docs/team.md#card-owner-rule) and issue/review starts under
 the manual's ownership table; do not duplicate a session coordinator's starts.
 Check available session assignments and issue claims for overlapping ownership.
 A separate crewbook-desk session is optional; the invoking session is the human contact.
 Record the mode and registry per [coordinator modes](../docs/team.md#coordinator-modes).
 Follow configured priorities: highest priority first, then lowest issue number.
 Where the project has a board, in split mode run [board move/sync](../docs/team.md#board-sync) at start and after each handback.
+Apply [required issue tracking](../docs/team.md#issue-kanban-tracking) to every
+requested, dispatched or queued issue before reporting its tracking/queue status.
 Read and claim a configured issue/card before starting its pinned lane agent.
 For generic local tasks, record the assignment in this session; no board or
 external claim is required. Do not bypass an explicitly configured claim gate.

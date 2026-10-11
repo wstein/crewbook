@@ -47,7 +47,7 @@ Follow the [human-request contract](../docs/team.md#human-request-contract).
 
 Execute your already-assigned issue or batch directly as a leaf; never start
 another issue worker for it. The designated coordinator owns the claim, review initiation and the card writes
-for work it started or recorded the claim for ([card-owner rule](../docs/team.md#card-owner-rule)); acknowledge its claim and return outcomes to that owner.
+under the [card-owner rule](../docs/team.md#card-owner-rule); acknowledge its claim and return outcomes to that owner.
 You own your assignment's checks, commits and authorized configured landing.
 Use a fresh author context for each new work item. Resume this same assignment
 for fixes and continuations; retain a compact handback rather than a full transcript.

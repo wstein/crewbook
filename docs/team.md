@@ -302,9 +302,11 @@ cards.
 
 <a id="card-owner-rule"></a>
 **Card-owner rule.** The coordinator (dispatch, or desk in merged mode) is the
-sole writer of cards for work it started or recorded the claim for and moves
-them without per-move approval, under a grant the human gives for that dispatch
-session only, never a shared or committed settings allow. Authors and reviewers
+sole writer of cards for work it started or recorded the claim for, and for
+user-requested or queued issues assigned to it for tracking. Tracking-only card
+creation and maintenance require no implementation claim and confer none.
+It moves these cards without per-move approval, under a grant the human gives
+for that dispatch session only, never a shared or committed settings allow. Authors and reviewers
 report outcomes to that owner and never write cards. The grant gives neither
 ownership nor review approval: Ready to push needs exact review, Done needs
 confirmed issue closure, and a coordinator cannot approve. All writes still
@@ -509,8 +511,30 @@ Honor explicit human model substitutions; a legacy Opus/Sonnet label or tool
 branding cannot override the actual approved model/effort. Missing independent
 review and real findings still block readiness.
 
-For an explicitly configured Kanban, the designated coordinator alone maintains cards on confirmed
-worker/review transitions. Discover existing item, field and status mappings,
+<a id="issue-kanban-tracking"></a>
+**Required issue tracking.** When a target Kanban is configured, every
+user-requested issue and every dispatched or queued issue must have a card there.
+Before reporting an issue as tracked or queued, the designated coordinator
+validates the target destination and item/field/status mappings, finds its card,
+and verifies its current status. Within the authorized issue/card scope, add a
+missing card and read back its existence and status. Recording a requested issue
+for tracking does not claim its implementation or start a worker. Do not create
+or substitute a board when none is configured.
+
+The coordinator remains the sole card writer under the [card-owner rule](#card-owner-rule).
+Keep ownership, dependencies, status and supporting evidence current through
+the configured equivalents of Todo (queued, not started), Blocked (named
+dependency and next action), In progress (confirmed implementation start),
+In review (confirmed review start), and Done (confirmed issue closure).
+Tracking a card establishes neither implementation start nor completion; retain
+any additional configured review/readiness gates. The registry supplements the
+configured board and never replaces it. If the board, mappings or authorized
+writes are unavailable, explicitly report issue tracking blocked with the next
+action; do not report successful tracking or queue completion from a registry
+entry alone. Independent authorized local work may continue. Ordinary non-issue
+local work and board mode none retain their existing no-board defaults.
+
+For subsequent worker/review transitions, discover existing item, field and status mappings,
 verify whether configured automation actually produced the required result,
 and otherwise perform the explicit authorized update and read back its result.
 Never infer status from comments, an issue closing or a commit. Reconcile stale
@@ -997,9 +1021,10 @@ natively is unverified; this section makes no such claim.
 
 Check only the configured board and permitted lane/card scope against
 configured issues and integration branch. Without `--fix`, read only. With
-`--fix`, repair only cards of work the coordinator started or recorded the claim
-for, under the per-session grant in the [card-owner rule](#card-owner-rule),
-using supplied tooling. Report missing/incorrect status, absent ownership,
+`--fix`, repair or add cards only within the coordinator's authorized scope under
+the per-session grant in the [card-owner rule](#card-owner-rule), using supplied
+tooling. Apply [required issue tracking](#issue-kanban-tracking), including missing cards
+within that authorized scope. Report missing/incorrect status, absent ownership,
 review SHA mismatches and criteria without evidence. A board configured as none
 makes this procedure unavailable; never route to an example board. Card
 ownership and approval follow the card-owner rule.

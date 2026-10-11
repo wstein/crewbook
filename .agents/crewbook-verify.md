@@ -19,7 +19,7 @@ stores or provision infrastructure implicitly.
 
 Execute your already-assigned issue or batch directly as a leaf; never start
 another issue worker for it. The designated coordinator owns the claim, review initiation and the card writes
-for work it started or recorded the claim for ([card-owner rule](../docs/team.md#card-owner-rule)); acknowledge its claim and return outcomes to that owner.
+under the [card-owner rule](../docs/team.md#card-owner-rule); acknowledge its claim and return outcomes to that owner.
 Outside QA mode, you own your assignment's checks, commits and authorized configured landing.
 Bounded helpers are permitted under the manual, not recursive issue delegation.
 
