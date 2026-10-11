@@ -132,6 +132,23 @@ class ReviewLineTests(unittest.TestCase):
         self.assertEqual(rl.split_evidence(rl.join_evidence(iter(lines))), lines)
         self.assertEqual(rl.join_evidence([]), '')
 
+    def test_obfuscated_not_clear_without_sha_blocks(self):
+        clear = 'CLEAR %s model=opus' % SHA
+        for separator in ('', '-', '_', '\u200b', '\u200c', '\u200d',
+                          '\u2060', '\ufeff', '\u2010', '\u2011', '\u2013',
+                          '\u2014', '\uff0d', ';', '-;', ' ;'):
+            with self.subTest(separator=separator):
+                gaps = rl.gate([clear, 'NOT%sCLEAR model=opus' % separator],
+                               SHA, {'opus'})
+                self.assertTrue(any('NOT CLEAR' in gap for gap in gaps))
+
+    def test_obfuscated_not_clear_with_foreign_sha_is_ignored(self):
+        clear = 'CLEAR %s model=opus' % SHA
+        for separator in ('\u200b', '\u2010', '\uff0d', ';'):
+            with self.subTest(separator=separator):
+                foreign = 'NOT%sCLEAR %s model=opus' % (separator, 'b' * 40)
+                self.assertEqual(rl.gate([clear, foreign], SHA, {'opus'}), [])
+
     def test_review_started_is_not_a_stamp(self):
         self.assertTrue(rl.gate(['review started %s model=opus' % SHA], SHA, {'opus'}, 1))
 
