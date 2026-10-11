@@ -71,6 +71,9 @@ formal handoff, or landing, read [docs/policy-composition.md](docs/policy-compos
 and [docs/project-config.md](docs/project-config.md), then the relevant portions
 of [docs/team.md](docs/team.md). Require only the inputs needed by that operation;
 reuse trusted session/project configuration instead of asking for it again.
+For user-requested, dispatched or queued issues with a configured target Kanban,
+follow [required issue tracking](docs/team.md#issue-kanban-tracking) before
+reporting them tracked or queued; the registry does not replace that board.
 Missing board or landing tools block that operation, not an unrelated local edit.
 Local commits, local target integration and publication are separate operations.
 Reuse established user/host authorization for its unchanged scope instead of

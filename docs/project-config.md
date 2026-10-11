@@ -22,6 +22,9 @@ Inspect repository metadata and conventions before asking for facts that can
 be resolved locally. Ask for unresolved destinations or ownership only before
 the dependent operation. A local task can use a session assignment without
 an issue, board claim, external comment, commit or landing operation.
+When issue work has a configured target Kanban, apply
+[required issue tracking](team.md#issue-kanban-tracking); a session assignment or
+registry entry cannot replace its card.
 
 The applicable project policy may name the review-note identity that
 [crewbook-review](../.agents/crewbook-review.md) reports as `Reviewed by <identity> at <sha>`
