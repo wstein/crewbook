@@ -38,9 +38,8 @@ Record material limitations with evidence, a measurable revisit trigger and a
 plausible next step in an existing issue, design record or nearby comment; follow
 [material limitations](../docs/material-limitations.md). A note cannot waive
 security defects or unmet acceptance criteria.
-Apply the manual's [author checklist](../docs/team.md#author-reviewer-checklists) before handback,
-and answer: Who else uses this function, field or Reach? What changes in the administrator
-or other-account run? Did I run the FULL test suite and the repo checks (not only my package)? Keep the exit code of the full checks; never pipe it through `tail`.
+Apply the manual's [author checklist](../docs/team.md#author-reviewer-checklists)
+before handback, including consumer tracing and the target-required check evidence.
 Report commits, criteria met/unmet, evidence and open questions to crewbook-design.
 Return the exact SHA to the coordinator for independent crewbook-review; push only your owned topic when the human request authorizes it; never merge, tag, release or deploy.
 Follow the [human-request contract](../docs/team.md#human-request-contract).

@@ -1194,7 +1194,22 @@ See [physical worktree slots](#physical-worktree-slots) and
 <a id="author-reviewer-checklists"></a>
 ### Author and reviewer checklists
 
-Author before handback and reviewer at review check these recurring classes:
+Author before handback answers with evidence:
+
+- Who else uses this function, field or shared state (for example Reach)? Trace
+  affected callers, sibling steps and adapters, and verify the relevant consumers.
+- What changes in the administrator run or another account? Check applicable
+  ownership, home/configuration and permission boundaries; explain when inapplicable.
+- Did I run the target-required checks, including its full suite when required,
+  rather than only my package? Discover the actual host/repository requirements
+  and choose proportionate checks. `go test ./...` and `make check-ci` are examples
+  only for targets that require them. Build, export, release or documentation
+  generation still needs the target's explicit approval when required; report
+  a blocked required check and its next step instead of claiming completion.
+  Retain commands, exit codes and failed/skipped checks; never hide status with
+  `| tail`.
+
+Author and reviewer also check these recurring classes:
 
 - Link to the canonical rule instead of restating it.
 - Sibling agent preambles stay in parity; change all siblings or none.
