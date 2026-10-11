@@ -20,3 +20,5 @@ user scope. If subagent/resume tools are absent, state the concrete limit.
 
 This is Codex's `$crewbook-desk` skill, independently discovered from a SKILL.md
 file. Claude Code's `/crewbook-desk` command uses the same canonical desk role.
+
+Apply [required issue tracking](../../../docs/team.md#issue-kanban-tracking) for configured Kanban issue work.
