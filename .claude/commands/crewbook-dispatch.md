@@ -14,3 +14,5 @@ Read [crewbook-dispatch.md](../../.agents/crewbook-dispatch.md) and follow the s
 
 Apply the role's explicit coordinator designation and the manual's ownership
 table. Do not create overlapping coordinators or duplicate worker starts.
+
+Apply [required issue tracking](../../docs/team.md#issue-kanban-tracking) for configured Kanban issue work.

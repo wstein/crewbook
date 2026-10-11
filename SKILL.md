@@ -41,6 +41,10 @@ optional dedicated skill in [.agents/skills/crewbook-desk/SKILL.md](.agents/skil
 when discovered/installed. `/crewbook-desk` is a Claude Code command; shipping its
 Markdown file does not register that slash command in Codex.
 
+Follow the [human-request contract](docs/team.md#human-request-contract) for
+operation scope, agent topic pushes and issue/card updates, human merge and
+run lifecycle. Host controls and explicit local-only limits still apply.
+
 ## Start working
 
 1. Follow this skill's relative links from the file containing each link.
@@ -67,6 +71,9 @@ formal handoff, or landing, read [docs/policy-composition.md](docs/policy-compos
 and [docs/project-config.md](docs/project-config.md), then the relevant portions
 of [docs/team.md](docs/team.md). Require only the inputs needed by that operation;
 reuse trusted session/project configuration instead of asking for it again.
+For user-requested, dispatched or queued issues with a configured target Kanban,
+follow [required issue tracking](docs/team.md#issue-kanban-tracking) before
+reporting them tracked or queued; the registry does not replace that board.
 Missing board or landing tools block that operation, not an unrelated local edit.
 Local commits, local target integration and publication are separate operations.
 Reuse established user/host authorization for its unchanged scope instead of

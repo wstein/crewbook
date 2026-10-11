@@ -41,7 +41,9 @@ preserve other contributors' work. The team manual explains
 [independent review and local integration](docs/team.md#local-integration-and-publication),
 and [precise handovers](docs/team.md#precise-issues-handovers-and-review-reports).
 This repository integrates independently reviewed exact revisions by fast-forward;
-push and publication remain with the human maintainer.
+authorized topic pushes and PR/issue updates follow the
+[human-request contract](docs/team.md#human-request-contract). The human merges;
+agents never tag, release or deploy. Local-only work remains local.
 
 Include the problem, change, verification and remaining limitations in a pull
 request. Use minimal sanitized examples in public issues and reviews: omit

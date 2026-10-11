@@ -25,6 +25,10 @@ Client behaviour below is **unverified** unless stated: native loading has not
 been measured (issue #41 is postponed). Static package checks do not establish
 native runtime behaviour.
 
+Follow the [human-request contract](docs/team.md#human-request-contract) for
+operation scope, agent topic pushes and issue/card updates, human merge and
+run lifecycle. Host controls and explicit local-only limits still apply.
+
 ## Codex
 
 Install (see [installation](docs/installation.md)):

@@ -14,10 +14,11 @@ procedure of the coordinator, not a lane: it starts no issue worker. Assignment:
 branch names (default: every local branch with an open PR or an unmerged reviewed head)
 and the checkout.
 
-Never: push (not even with a lease), merge, touch `main`, `landing`, tags or `spike/*`,
+Never: merge, release, deploy, push without an explicit lease, touch `main`, `landing`, tags or `spike/*`,
 resolve a conflict, edit file content, close or comment on an issue, mark a card Done, or
 change settings. Local topic branches and their free worktrees are the only things it
-changes. The push is a command for the human (step 6).
+changes, with an authorized owned-topic lease push after new exact-SHA review
+(step 6). Follow the [human-request contract](../docs/team.md#human-request-contract).
 
 Run git one command at a time with `set -e` semantics: check the exit code of every
 command, never chain a later command after a rebase or fetch, never pipe a git command
@@ -71,13 +72,19 @@ Steps:
    report the overlap: the files in both `git diff --name-only B <new base>` and
    `git diff --name-only B O`.
    A CLEAR or status on `O` does not carry over.
-6. Push hand-over. Never push. For a branch whose remote already has a head, read it
-   with `git ls-remote origin refs/heads/<b>` as its own command. Equal to `O`: give the
-   human `git push --force-with-lease=refs/heads/<b>:<observed remote sha> origin <b>`
-   bound to that SHA. Different from `O`: `blocked: remote moved`, no command. Read it
-   again right before handing the command over and apply the same test. No remote branch:
-   nothing to push (the normal ship flow applies). Several branches get one command each,
-   parent first.
+6. Reviewed lease push. Before pushing, obtain the independent exact-`N` review
+   required by step 5; all `=` alone is insufficient. Push only an owned topic
+   within the authorized request. Observe its remote with
+   `git ls-remote origin refs/heads/<b>` as a separate command. Require the remote
+   to equal recorded old head `O`, and recheck immediately before the push.
+   Run `git push --force-with-lease=refs/heads/<b>:<O> origin <N>:refs/heads/<b>`
+   as a separate checked command. Never plain `--force`, implicit leases or a
+   retry with a newer expected head. A concurrent remote change causes lease
+   refusal: report `blocked: remote moved` and preserve both heads. Read back
+   the successful remote tip as `N`. No remote branch uses normal ship instead.
+   Without authority or capability, return the exact lease command and evidence
+   for the human. Several branches run parent first.
+
 7. Report to the human (in the project language), per branch: old head `O`, new head `N`,
    base, range-diff result, checks result, the push command or the blocked outcome with
    its reason and next human action, and skipped branches with the reason.

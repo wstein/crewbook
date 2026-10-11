@@ -157,6 +157,19 @@ class MoveTests(unittest.TestCase):
             self.run_move(fake, 5, 'Done')
         self.assertEqual(fake.writes, [])
 
+    def test_closed_issue_can_move_to_done_and_is_idempotent(self):
+        fake = FakeGh({5: ['In review', 'CLOSED'], 6: ['Todo', 'OPEN']})
+        self.assertEqual(self.run_move(fake, 5, 'Done'), 'In review')
+        self.assertEqual(self.run_move(fake, 5, 'Done'), 'Done')
+        self.assertEqual(fake.writes, [('item-5', 'Done')])
+        self.assertEqual(fake.cards[6][0], 'Todo')
+
+    def test_unverified_issue_state_cannot_move_to_done(self):
+        fake = FakeGh({5: ['In review', None]})
+        with self.assertRaisesRegex(board.BoardError, 'closed issue'):
+            self.run_move(fake, 5, 'Done')
+        self.assertEqual(fake.writes, [])
+
     def test_unknown_status_and_missing_card(self):
         fake = FakeGh({5: ['Todo', 'OPEN']})
         with self.assertRaises(board.BoardError):

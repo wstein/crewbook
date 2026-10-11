@@ -7,6 +7,54 @@ It does not install tools or measure native client loading. The
 [shared desired provider behavior](installation.md#shared-desired-behavior-across-providers)
 uses these same roles and lifecycle; provider compatibility needs separate evidence.
 
+<a id="human-request-contract"></a>
+## Human-request contract
+
+WorkHarbor requirements v3 describe hours of interactive work within one human
+request: “fix issues 1, 2 and 3 and open a pull request” authorizes the assigned
+agents to commit, push their own topic branches, open/update PRs and update
+issues and configured project cards as part of that work. Reuse this scope
+without routine per-action approval questions. Confirm destinations, ownership
+and actual capabilities first. A local-only task does not authorize outward
+writes; generic sessions retain their actual user and host controls.
+
+The human initiates and resumes a run (D57 remains unchanged). CrewBook supplies
+no scheduler, queue-driven launch or API-key automation mode. Work routed during
+an active request stays within it; retained child handles and handbacks do not
+prove survival or autonomous execution after the parent ends. Remote progress,
+instructions, stop and lifecycle control belong to WorkHarbor's measured runtime
+capabilities, not to these prompts.
+
+Agents never merge PRs, tag, release or deploy. The human owns merge and its
+responsibility. Forge token scope and branch protection should enforce this
+boundary; prompts do not. Whether a write-scoped token is blocked from merging
+its own PR remains unmeasured. Requirements labeled built are maintainer reports,
+not native capability measurements. Docker supervision, watchdog events and
+notification delivery must retain their own evidence and unverified status.
+Artifact, image and documentation builds, including release snapshots, require
+explicit human approval under the applicable umbrella policy; source checks
+remain routine. A request to push or open a PR is not build authorization.
+
+The designated coordinator remains the sole issue/card writer for assigned
+work. Check criteria against evidence, preserve unrelated issue content, and
+close an issue only when every criterion is fulfilled (including required exact
+review and integration). A merged PR that supplies only part of an issue leaves
+it open. Use `Refs #N` for partial work and `Closes #N` only for complete work.
+After closure, read back the issue's CLOSED state before moving its card to
+Done. OPEN or unknown state blocks Done, including an idempotent request.
+Review, ready, merge, closure and Done are separate confirmed outcomes.
+
+Static review scenarios (guidance, not measured native execution):
+
+| Request or observed state | Required outcome |
+| --- | --- |
+| Human requests three issue fixes and a PR | Assigned authors commit/push owned topics and open PRs; coordinator updates issues/cards within scope without routine approval asks; human merges |
+| Reviewed restack O→N; remote moves after observation | Explicit O lease refuses; preserve remote work, report the changed head, never retry with a refreshed lease |
+| PR merged but one issue criterion remains unmet | Issue stays open; card cannot become Done |
+| Issue closure read back CLOSED | Authorized coordinator may move its card to Done and verify readback |
+| Child returns after parent turn ends | Preserve handback and resume action; no claim of autonomous survival or restart; remote runtime behavior needs WorkHarbor evidence |
+| Docker/watchdog requirements read from v3 | Keep next/unverified boundaries; do not claim CLI or native runtime support |
+
 ## Roles and boundaries
 
 Role identities use `crewbook/<role>`, such as `crewbook/desk` and
@@ -102,7 +150,7 @@ merges, force-pushes, pushes `main` or tags, or changes settings. The human merg
 is the desk's procedure after a merge. It deletes a local topic branch (`git branch -d`)
 and frees its worktree only with verified integration evidence (merged PR and final head
 or patch equivalence to `origin/main`), keeps dirty worktrees, active assignments,
-`spike/*` and every uncertain case, hands the human a verified close list, and cleans
+`spike/*` and every uncertain case, closes fully verified issues within authorized scope (otherwise returns a close list), and cleans
 `.work/CHECKLIST.md` (tick, `Done` with date, 7-day retention, section order, entries
 without a reference reported; schema 1 and 2 are read, the emoji after the checkbox is the
 actor and mandatory, tidy acts only on 🤖 entries and reports a missing emoji, moves a 🤖 entry
@@ -110,8 +158,8 @@ from `Now` to `Later`). Bulk reference checks run on the configured helper tier.
 It also reports stray test processes (`scripts/stray_processes.py`: orphaned or long-busy
 processes in temp test directories, with copy-paste `kill` commands for the human, nothing killed;
 the full-run launcher helper runs it once after each full test run).
-Board writes go only through the configured writer, never to Done. It never closes
-issues, merges or pushes; uncertain evidence, occupied worktrees, unreadable references,
+Board writes go only through the configured writer; Done requires confirmed CLOSED
+issue state. It never merges, tags, releases, deploys or pushes; uncertain evidence, occupied worktrees, unreadable references,
 a duplicate run or a checklist without frontmatter end in a defined blocked outcome.
 
 ## Restack procedure
@@ -122,10 +170,10 @@ default branch in dependency order (a stack's parent first), proves with `git ra
 that every patch is unchanged (all `=`), and runs the repo checks on the helper tier
 before a rewritten head counts as ready; ready means ready for the review the
 [rebase re-review rule](git-history.md#rebase-re-review) requires, since all `=` proves
-the patches unchanged but is not a review, and the old review does not carry over. It resolves no conflicts, never
-pushes and never merges. For a branch whose remote has the old head it hands the human
-`git push --force-with-lease=<ref>:<observed remote sha> origin <branch>` bound to the
-SHA read with `git ls-remote`. A conflict, changed patch, failed check, occupied worktree,
+the patches unchanged but is not a review, and the old review does not carry over. It resolves no conflicts and never merges. After exact-new-SHA review, an authorized
+owned topic may be pushed with an explicit old-head lease, bound to `O` observed
+with `git ls-remote`; a concurrent remote change refuses the push without retry.
+Without authority it returns that command and evidence for the human. A conflict, changed patch, failed check, occupied worktree,
 moved remote, duplicate run or unknown base ends in a defined blocked outcome. Motivation:
 a push chained after a failed rebase (2026-10-09).
 
@@ -245,7 +293,8 @@ overlapping execution. These are guidance, not a runtime lock or permission gran
 | Initiate independent review | Coordinator | Start one eligible reviewer in separate context for exact SHA after author handoff |
 | Review execution and review record | Assigned reviewer leaf | Authorized isolated checks and review-comment adapter; findings and exact reviewed SHA |
 | Ready to push card transition | Coordinator, recording reviewer approval | Board adapter only after reviewer reports no open findings for unchanged SHA; coordinator cannot approve |
-| Done / publication | Configured human or issue-close procedure | Never inferred from a local commit or unavailable landing |
+| Issue closure / Done | Designated coordinator within authorized scope | All issue criteria verified, closure read back as CLOSED before Done; never inferred from a local commit or merge alone |
+| Forge PR merge / tag / release / deploy | Human | Agents never perform these operations; managed agents never merge. Generic host-authorized local merge candidates follow the [immutable-candidate procedure](git-history.md#non-linear-target-with-authorized-merges) |
 
 A leaf reports claim acknowledgement, completion and criteria through the
 configured issue procedure without creating another ownership claim or moving
@@ -253,19 +302,21 @@ cards.
 
 <a id="card-owner-rule"></a>
 **Card-owner rule.** The coordinator (dispatch, or desk in merged mode) is the
-sole writer of cards for work it started or recorded the claim for and moves
-them without per-move approval, under a grant the human gives for that dispatch
-session only, never a shared or committed settings allow. Authors and reviewers
+sole writer of cards for work it started or recorded the claim for, and for
+user-requested or queued issues assigned to it for tracking. Tracking-only card
+creation and maintenance require no implementation claim and confer none.
+It moves these cards without per-move approval, under a grant the human gives
+for that dispatch session only, never a shared or committed settings allow. Authors and reviewers
 report outcomes to that owner and never write cards. The grant gives neither
-ownership nor review approval: Ready to push, Done and approvals stay human- or
-review-gated as above, and a coordinator cannot approve. All writes still
+ownership nor review approval: Ready to push needs exact review, Done needs
+confirmed issue closure, and a coordinator cannot approve. All writes still
 require local policy and authorization.
 
 <a id="board-sync"></a>
 **Board move and sync.** Where the project has a board and ships
 `tools/board.py`, cards are written by two deterministic commands, not by an LLM
 step: `python3 tools/board.py move <issue> <status>` moves one card, reads it
-back and fails (exit 1) on a mismatch, refuses Done and is idempotent;
+back and fails (exit 1) on a mismatch, permits Done only for a confirmed CLOSED issue (including idempotency);
 `board.py sync [--dry-run]` reconciles open cards and prints `#n old -> new
 (reason)` for each change as it happens. Both read the Status option ids from
 the project. The move's read-back covers the read-back part of #7. Sync only
@@ -280,7 +331,8 @@ acts on positive evidence and never lowers a card without it:
 
 In review and Ready to push are never set or lowered by sync: the desk moves a
 card to In review at review start and to Ready to push with `board move` only
-after a CLEAR note. Never Done; closed issues and Done cards are left alone.
+after a CLEAR note. Sync leaves closed issues and Done cards alone; the
+coordinator explicitly moves a card to Done after confirmed issue closure.
 Lines after `Resume:` in the registry are ignored; sync stops without changes
 when the grammar-valid part is unreadable. A reused worktree still on a stale
 `<n>-` branch counts as a signal, so detach an idle worktree. Call points: the
@@ -345,7 +397,7 @@ accounting and the empty-queue report straight to the human. Desk still writes
 no feature code (except under the explicit user-authorized role change in
 [merged-mode supervision](#merged-mode-supervision)), makes no rule decision,
 performs no review or self-review, never lands on the author's behalf, never
-pushes or publishes (except under the [auto-push trial](git-history.md#auto-push-trial)), and writes board cards only under the
+merges, tags, releases or deploys, or writes outward outside the human request, and writes board cards only under the
 [card-owner rule](#card-owner-rule) and when policy authorizes the coordinator.
 
 **Split mode.** Desk starts or adopts one persistent dispatcher (a peer
@@ -459,14 +511,36 @@ Honor explicit human model substitutions; a legacy Opus/Sonnet label or tool
 branding cannot override the actual approved model/effort. Missing independent
 review and real findings still block readiness.
 
-For an explicitly configured Kanban, the designated coordinator alone maintains cards on confirmed
-worker/review transitions. Discover existing item, field and status mappings,
+<a id="issue-kanban-tracking"></a>
+**Required issue tracking.** When a target Kanban is configured, every
+user-requested issue and every dispatched or queued issue must have a card there.
+Before reporting an issue as tracked or queued, the designated coordinator
+validates the target destination and item/field/status mappings, finds its card,
+and verifies its current status. Within the authorized issue/card scope, add a
+missing card and read back its existence and status. Recording a requested issue
+for tracking does not claim its implementation or start a worker. Do not create
+or substitute a board when none is configured.
+
+The coordinator remains the sole card writer under the [card-owner rule](#card-owner-rule).
+Keep ownership, dependencies, status and supporting evidence current through
+the configured equivalents of Todo (queued, not started), Blocked (named
+dependency and next action), In progress (confirmed implementation start),
+In review (confirmed review start), and Done (confirmed issue closure).
+Tracking a card establishes neither implementation start nor completion; retain
+any additional configured review/readiness gates. The registry supplements the
+configured board and never replaces it. If the board, mappings or authorized
+writes are unavailable, explicitly report issue tracking blocked with the next
+action; do not report successful tracking or queue completion from a registry
+entry alone. Independent authorized local work may continue. Ordinary non-issue
+local work and board mode none retain their existing no-board defaults.
+
+For subsequent worker/review transitions, discover existing item, field and status mappings,
 verify whether configured automation actually produced the required result,
 and otherwise perform the explicit authorized update and read back its result.
 Never infer status from comments, an issue closing or a commit. Reconcile stale
 In progress or provisional Todo only after confirming ownership; Ready to push
 requires the exact independent clean review evidence and required landing/checks;
-Done requires the established close/publication flow. Unknown mappings or denied
+Done requires confirmed CLOSED issue state under the human-request contract. Unknown mappings or denied
 writes block the board operation, not independent local work. Board mode none
 uses the registry without writes.
 
@@ -503,7 +577,7 @@ for material review findings, ownership, decisions, blockers or audit evidence.
 Missing issue-write authorization or tooling blocks the outward update, not
 independent local work; preserve the verified criterion and next action privately.
 
-Within an active human-authorized coordination session, start one nonempty
+On resume within an active human-authorized coordination session, start one nonempty
 design batch when an hour has elapsed since its last start, preserving the
 single owner and blocked-highest-priority exception. Record start/due times.
 Design returns ranked existing tasks, lanes, concrete disjoint file boundaries
@@ -568,17 +642,17 @@ decisions of record there (those stay in the [decision log](project-config.md#de
 <a id="desk-cleanup"></a>
 ### Desk cleanup
 
-Cleanup is housekeeping and creates no authority beyond [Git history](git-history.md#pull-request-flow) and the [auto-push trial](git-history.md#auto-push-trial).
+Cleanup stays within the [human-request contract](#human-request-contract) and target [Git history policy](git-history.md#pull-request-flow).
 
 1. **When.** After each merge that closes something and once at session end. The desk runs it, not the authors.
 2. **Local branches.** Run `git fetch --prune` first. Delete a branch only when `git cherry origin/main <branch>` shows no missing commits (rebase merge rewrites SHAs, so `-D` only after that proof). Keep `spike/*` and branches with unreviewed content, for example parked issues.
 3. **Worktrees.** A freed worktree is detached on `origin/main` and reused under the [delegated authoring worktree rule](#delegated-authoring-worktrees), not removed. Remove one worktree per call.
-4. **Issues.** The desk hands the human a list of "number + commit on main"; the human closes. `Closes #N` goes in the PR body of every level of a stack, because closing keywords act only on a merge into the default branch.
-5. **Cards.** The desk moves Todo, Blocked and In review; Done comes only from a merge or a close. Never close or mark a card from a commit SHA quoted in a comment without checking that the commit subject fits the issue (wrong matches were seen for #311 and #315).
+4. **Issues.** The coordinator verifies every acceptance criterion and closes only complete issues within the human request, then reads back CLOSED. Partial merged work leaves the issue open and uses `Refs #N`; only complete work uses `Closes #N`. Closing keywords act only on a merge into the default branch.
+5. **Cards.** The desk moves Todo, Blocked and In review; Done requires a confirmed CLOSED issue, not merely a merged PR. Never close or mark a card from a commit SHA quoted in a comment without checking that the commit subject fits the issue (wrong matches were seen for #311 and #315).
 6. **Audits.** Audits are read-only (Sonnet) with one piece of evidence per entry (sha, blocker or PR). Unverified entries go in their own column and never into the close list.
 7. **Old flow.** References to retired steps (`make land`, "Ready to push") after a migration become an issue and are removed, not left standing.
 
-Postponed decision (#98): an allow rule for a bulk `gh issue close`. Revisit when the standard flow works well and only about 10 to 20 percent of issues are closed by hand, and then with an overview of hand-closed issues in the dashboard.
+Bulk closure (#98) remains a separate tooling question; the human-request contract permits criterion-verified individual closure, not an unchecked bulk close.
 
 ### Completion gate and desk safety net
 
@@ -814,7 +888,7 @@ subagents. Independent read-only lookups may run in parallel.
 
 Design runs in short batches, writes decisions and a resume note, then ends.
 Only the designated coordinator (merged desk or split dispatcher) starts the pinned
-design subagent, at most once an hour unless a highest-priority issue is blocked;
+design subagent on resume within the active human request, at most once an hour unless a highest-priority issue is blocked;
 in split mode desk never starts it, and a human-opened design session owns the
 role when open. Do not hand running agents to a new session or ask the human to
 clear context. An idle lane reports an empty queue once and waits.
@@ -898,7 +972,7 @@ Static example, not a live client test: a trusted generic project supplies real
 issue/board/check/landing adapters, one coordinator C, author A (crewbook-platform)
 and eligible independent reviewer R (crewbook-reviewer, explicitly pinned Opus).
 For this example the supplied target authorizes local commits and requires
-exact-revision review before local fast-forward integration; the human owns push.
+exact-revision review before local fast-forward integration; topic pushes require their own authorized request scope.
 For crewbook-generic, use a session assignment and exclusive checkout (a delegated author's is its dedicated worktree); a board is
 optional and landing/publication remain unavailable unless authorized.
 
@@ -910,7 +984,7 @@ optional and landing/publication remain unavailable unless authorized.
 | Review assignment | C starts R in separate context on S; records only a target-permitted review status | 1 | 1 |
 | Review completion | R reviews S directly, optionally uses a read-only helper, and records its findings | 1 | 1 |
 | Local integration | A fast-forwards the authorized local target to unchanged approved S; a diverged candidate is rebased, checked and re-reviewed at its new SHA first ([rebase re-review](git-history.md#rebase-re-review)) | 1 | 1 |
-| Handoff | C records Ready to push only after clean exact review and confirmed required integration/checks; human owns push | 1 | 1 |
+| Handoff | C records Ready to push only after clean exact review and confirmed required integration/checks; authorized topic pushes follow the human request | 1 | 1 |
 
 Walk through actions, not repeated wording: count only C's two worker-start
 events (zero dispatcher starts in merged mode; reject a dispatcher start there); neither following A's role/profile/command nor following R's
@@ -947,9 +1021,10 @@ natively is unverified; this section makes no such claim.
 
 Check only the configured board and permitted lane/card scope against
 configured issues and integration branch. Without `--fix`, read only. With
-`--fix`, repair only cards of work the coordinator started or recorded the claim
-for, under the per-session grant in the [card-owner rule](#card-owner-rule),
-using supplied tooling. Report missing/incorrect status, absent ownership,
+`--fix`, repair or add cards only within the coordinator's authorized scope under
+the per-session grant in the [card-owner rule](#card-owner-rule), using supplied
+tooling. Apply [required issue tracking](#issue-kanban-tracking), including missing cards
+within that authorized scope. Report missing/incorrect status, absent ownership,
 review SHA mismatches and criteria without evidence. A board configured as none
 makes this procedure unavailable; never route to an example board. Card
 ownership and approval follow the card-owner rule.
@@ -1102,7 +1177,7 @@ the repeat should become a link. The lint is exact-text only, not semantic.
 ### Dispatcher preflight and desk notifications
 
 Before each spawn the dispatcher checks free disk space (`df`, at least about
-15 GB), uses one shared build cache per repository with a scheduled cleanup, and
+15 GB), uses one shared build cache per repository with cleanup during the authorized active request (no timer or scheduled job), and
 tells authors to commit a WIP commit or report early so a stop loses nothing.
 A failed preflight defers the spawn and is reported. Command detail:
 [tool preflight](tool-preflight.md#dispatcher-spawn-preflight).

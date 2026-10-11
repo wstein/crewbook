@@ -31,7 +31,8 @@ reads. Resolve an uncertain external write outcome before repeating it.
 
 Run the [dispatcher preflight](team.md#dispatcher-preflight) before each spawn:
 `df` for free disk space, and the shared build cache check, using the thresholds
-and failure handling stated there.
+and failure handling stated there. Cache cleanup occurs only within the active
+human request; this preflight creates no scheduled cleanup or automation mode.
 
 ## Scan outgoing payloads
 

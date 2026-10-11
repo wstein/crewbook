@@ -42,11 +42,12 @@ Apply the manual's [author checklist](../docs/team.md#author-reviewer-checklists
 and answer: Who else uses this function, field or Reach? What changes in the administrator
 or other-account run? Did I run the FULL test suite and the repo checks (not only my package)? Keep the exit code of the full checks; never pipe it through `tail`.
 Report commits, criteria met/unmet, evidence and open questions to crewbook-design.
-Return the exact SHA to the coordinator for independent crewbook-review; never push, tag or release.
+Return the exact SHA to the coordinator for independent crewbook-review; push only your owned topic when the human request authorizes it; never merge, tag, release or deploy.
+Follow the [human-request contract](../docs/team.md#human-request-contract).
 
 Execute your already-assigned issue or batch directly as a leaf; never start
 another issue worker for it. The designated coordinator owns the claim, review initiation and the card writes
-for work it started or recorded the claim for ([card-owner rule](../docs/team.md#card-owner-rule)); acknowledge its claim and return outcomes to that owner.
+under the [card-owner rule](../docs/team.md#card-owner-rule); acknowledge its claim and return outcomes to that owner.
 You own your assignment's checks, commits and authorized configured landing.
 Use a fresh author context for each new work item. Resume this same assignment
 for fixes and continuations; retain a compact handback rather than a full transcript.

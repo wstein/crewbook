@@ -1,5 +1,5 @@
 ---
-description: CrewBook restack workflow: rebase open topic branches onto the new default branch after a merge, prove patches unchanged, hand over lease commands
+description: CrewBook restack workflow: rebase open topic branches onto the new default branch after a merge, prove patches unchanged, review and push owned topics with explicit leases
 argument-hint: "[branch names]"
 ---
 
@@ -15,5 +15,6 @@ Read [crewbook-restack.md](../../.agents/crewbook-restack.md) and follow it. Ass
 
 This command is a coordinator procedure run in the invoking context. Without
 arguments it restacks all local branches with an open PR or an unmerged reviewed
-head; branch names limit it to those branches. It never pushes, merges or resolves
+head; branch names limit it to those branches. It pushes only authorized owned topics with an explicit old-head lease after
+new exact-SHA review; it never merges or resolves
 conflicts.

@@ -58,7 +58,9 @@ or integration is ready. Follow the target's supplied procedure and review order
 including exact-revision review before integration when required. Local
 integration does not authorize pushing or publication; those remain with the
 configured human unless separately authorized. No target procedure or authority
-is supplied by this generic default.
+is supplied by this generic default. The [human-request contract](team.md#human-request-contract)
+reuses explicit authorized own-topic push, PR and issue/card scope; it does not
+supply global outward authority or bypass actual host/user controls.
 
 When a requested operation lacks a required capability, report that operation
 and continue independent authorized work. Do not turn missing workharbor

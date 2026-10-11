@@ -80,8 +80,11 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
 For an authorized repository assignment, the assigned author may create local commits
 and fast-forward independently reviewed exact revisions into local main under
 the procedure above. This established local authorization does not require a
-new permission question for each commit or fast-forward. Push and publication
-remain the human's responsibility (except the [auto-push trial](docs/git-history.md#auto-push-trial)); return the reviewed local result for that step.
+new permission question for each commit or fast-forward. Own-topic push, PR and issue updates follow the authorized
+[human-request contract](docs/team.md#human-request-contract); a local-only
+assignment still returns its reviewed local result. Agents never merge, tag,
+release or deploy. Artifact, image and documentation builds need explicit
+human approval, including release snapshots; routine source checks do not.
 For an authorized blocked operation use approved scoped host
 escalation; never delete locks or weaken controls to bypass a permission failure.
 Follow the [team manual](docs/team.md) for coordinator ownership, exact review

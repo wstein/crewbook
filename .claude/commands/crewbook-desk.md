@@ -21,3 +21,5 @@ the designated coordinator following the canonical crewbook-dispatch procedure a
 board/claim gate or user request) start or reuse one crewbook-dispatch subagent,
 retain its handle and route work through it; it then owns issue/review starts.
 Missing client subagent/resume/wait support is reported explicitly.
+
+Apply [required issue tracking](../../docs/team.md#issue-kanban-tracking) for configured Kanban issue work.

@@ -22,6 +22,9 @@ Inspect repository metadata and conventions before asking for facts that can
 be resolved locally. Ask for unresolved destinations or ownership only before
 the dependent operation. A local task can use a session assignment without
 an issue, board claim, external comment, commit or landing operation.
+When issue work has a configured target Kanban, apply
+[required issue tracking](team.md#issue-kanban-tracking); a session assignment or
+registry entry cannot replace its card.
 
 The applicable project policy may name the review-note identity that
 [crewbook-review](../.agents/crewbook-review.md) reports as `Reviewed by <identity> at <sha>`
@@ -276,9 +279,12 @@ mechanics, trailer wording under existing rules, model mapping per
 [README](../README.md), ordering within a priority, review routing, accepting
 Lows as documented limits and same-branch fixes inside authorized scope. Desk
 decides them, logs them `defaulted` and lists them on one veto line in each
-report. Never defaulted: push or landing, forge or board writes, loosening a
-rule or security control, release scope or order, money, product direction.
-These classes are always consequential and win over any standing default. A
+report. Never defaulted: new authority outside the human request, a merge, tag,
+release or deployment, loosening a rule or security control, release scope or
+order, money or product direction. These classes are consequential and win over
+standing defaults. Already-authorized own-topic pushes, PR and issue/card
+updates follow the [human-request contract](team.md#human-request-contract)
+without another decision item; a decision log never grants missing authority. A
 consequential item may carry a `[rec]`, but `H<n>:rec` (take the recommended
 option) applies to routine items only; a consequential item must be answered
 explicitly with an option letter or `y`/`n`.
@@ -306,7 +312,7 @@ typed by you (the consequential item); other valid forms, for example, are
 ````text
 NEEDS YOU (2 shown; 1 more queued)
 H7: Branch name for issue 44: a docs/44-desk-needs-you [rec], b docs/44-human-questions
-H8: Land the docs fix on main: a yes, b hold (push stays with you)
+H8: Expand the local-only task to open a PR: a yes, b hold
 H8 is consequential and needs your explicit answer; it is not pre-filled.
 Reply (paste, edit as needed):
 ```text
@@ -401,7 +407,8 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 | Board operation | Explicit destination, field/status mapping, authorized adapter and any required approval |
 | Concurrent editing | Assigned separate checkouts and disjoint file scopes |
 | Independent review | Eligible reviewer in fresh context, exact revision/diff, scope and checks |
-| Landing/publication | Real project procedure (merge of a reviewed pull request where the target uses the [pull request flow](git-history.md#pull-request-flow)), target and user authorization; unavailable by default |
+| Topic push / PR | Confirmed target, owned branch, authorized request and required exact review/checks; no repeat approval within scope |
+| Forge PR merge / tag / release / deploy | Human operation; agents never perform it. Managed agents never merge; generic host-authorized local merge candidates follow the [immutable-candidate procedure](git-history.md#non-linear-target-with-authorized-merges) |
 | External measurement | Explicit authorized setup and evidence destination |
 
 ## Consumer review fixtures
