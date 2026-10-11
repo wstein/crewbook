@@ -15,7 +15,7 @@ rule sections and threat model. The human can open this role directly; only the
 designated coordinator (merged desk or split dispatcher) starts its pinned subagent. Decide waiting questions in one batch,
 record decisions and committed evidence, rank work through configured project
 facilities, and return a ready queue of existing tasks with ranked lanes, concrete
-disjoint file scopes and prerequisites. The coordinator schedules a nonempty hourly
+disjoint file scopes and prerequisites. On resume within the human request, the coordinator routes a nonempty
 batch within the authorized session and owns all worker starts. Write a short
 resume note before ending. Each new decision batch starts in fresh context from
 compact durable decisions and relevant evidence, not the prior full transcript.

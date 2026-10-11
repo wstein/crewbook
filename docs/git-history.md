@@ -52,17 +52,29 @@ patches are unchanged; a changed patch needs a new review. The CLEARs the
 
 Design source: workharbor `docs/content/docs/design/pr-flow-landing.md` (workharbor #407, #414). Unverified here: the workharbor files were read, not run against this repository, and the issue references #407, #414 and #421 were not checked.
 
-- One pull request per branch, merged by rebase and merge only, so the atomic conventional commits survive. The human merging is the consent; agents never merge. The PR body carries `Closes #N`; commits carry `Refs:` only.
-- The dispatcher (PR author) opens a draft PR and marks it ready after the review is CLEAR (the design says the human marks it ready, the manual says the dispatcher; workharbor #429 corrects it: the PR author/dispatcher marks ready). The desk posts the commit status `review/sonnet` or `review/opus` on the PR head plus an evidence comment naming the head SHA and the tier. The status creator must be the human account.
+- One pull request per branch, merged by rebase and merge only, so the atomic conventional commits survive. The human merging is the consent; agents never merge. The PR body carries `Closes #N` only when all issue criteria are fulfilled; partial work uses `Refs #N`. Commits carry `Refs:` only.
+- The assigned author opens a draft PR and marks it ready after the review is CLEAR (the PR author marks ready; the human merges). The desk posts the commit status `review/sonnet` or `review/opus` on the PR head plus an evidence comment naming the head SHA and the tier. The status creator must be the human account.
 - A `gate` check derives the path class from the changed files with the base branch's path script (ordinary or carve-out) and requires `review/opus` for carve-out paths. CrewBook has no `gate` workflow yet; its `main` ruleset requires a PR, rebase merge and the checks `package (ubuntu-latest)`, `package (macos-15)` and `secrets`.
 - PR size budget: at most 10 commits and about 500 changed lines per PR and review; the fast lane (documentation that policy classifies as Sonnet-eligible, see [crewbook-review](../.agents/crewbook-review.md); proposal, Werner to confirm) stays at 3 commits. Split larger work into a stack. The budget applies per PR, also to every PR of a stack; the batch PR of [batch integration](team.md#batch-integration) is exempt from the size budget; each original branch keeps its own budget (proposal, Werner to confirm).
 - Auto-delete after merge covers finished work branches only (`fix/`, `feat/`, `docs/`, `chore/`, `ci/`, `refactor/`, `test/`); `spike/*` is never deleted automatically, which holds only while spike PRs are not merged by the human (GitHub deletes the head of any merged PR). This is the authorization the [dispatch rule](../.agents/crewbook-dispatch.md) on branch cleanup asks for, only for branches merged through a PR (proposal, Werner to confirm). GitHub deletes the remote head branch (enabled); local cleanup uses `git branch -d`, and `-D` only with `git cherry` or patch-id proof.
 - Large work and related work form a stack of PRs (`gh stack`, workharbor #421, unverified). The desk decides automatically at dispatch time which issues form a stack (thematic relation or dependency, no explicit hint needed) and records the stack order in the dispatch note; independent topics stay single PRs. Agents never run `gh stack merge`; the human merges with rebase. The desk posts `review/<tier>` on every PR head in the stack after a range-diff proof. Mechanics: `gh stack init`/`add` build the stack, `gh stack submit --auto` opens the PRs as drafts, `gh stack sync`/`rebase` keep it current (unverified). The atomic stack merge enforces required statuses per PR. After a merge below a PR the head moves and its statuses are gone: re-post them with a range-diff proof (see the [rebase re-review rule](#rebase-re-review)).
 
 <a id="auto-push-trial"></a>
-### Auto-push trial
+### Authorized topic pushes
 
-Trial (#83), revisit after a few PRs. After the required CLEAR on the exact head SHA (and after any rebase the range-diff proof), during the trial the desk takes over push, PR open and ready from the author/dispatcher in merged mode: it may push that topic branch (never force), open the PR as a draft with `Closes #N`, post `review/<tier>` plus the evidence comment, hand check watching to a background Haiku helper and mark the PR ready when the checks are green. Carve-out paths still need `review/opus`; the human merges (rebase). Never: merge, push `main` or tags, force-push, change rulesets or repository settings, or push a branch without the required CLEAR.
+The legacy `auto-push-trial` anchor remains for existing links; topic pushes are
+normal work within an authorized human request, not a trial exception. Follow
+[the human-request contract](team.md#human-request-contract). The assigned author
+commits and pushes its own topic branch and opens its PR; the coordinator can run
+[ship](../.agents/crewbook-ship.md) when assigned that procedure, without taking
+edit ownership. Required exact-SHA review, checks and target policy still apply.
+No routine approval question is needed when the request already covers these
+operations. A local-only assignment authorizes no push or PR.
+
+Never push the protected integration branch or tags, merge, release, deploy or
+change forge protections. Restacking an owned topic uses only the reviewed
+explicit-lease procedure in [restack](../.agents/crewbook-restack.md); ordinary
+shipping never forces a push. Human merge remains the PR review point.
 
 <a id="landing-pointer"></a>
 ### Landing pointer branch (retiring)
@@ -76,7 +88,10 @@ One concern per commit (one behaviour, fix or docs change); a change that needs 
 
 ## Non-linear target with authorized merges
 
-Merge only when the applicable target policy permits it and the user/session
+This generic local-candidate procedure does not authorize a forge PR merge.
+WorkHarbor-managed agents never merge; the human prepares and installs merge
+results there. In a generic session, prepare a local merge candidate only when
+the applicable host and target policy permit it and the user/session
 scope authorizes that integration operation. Follow the target's real procedure
 and review order, including any topic review required before preparing a merge.
 The assigned author prepares the final integration candidate in an authorized
@@ -108,7 +123,7 @@ conflict scope and any pending operation. Local integration never implies push,
 tag, release or publication authorization; retain the configured human owner.
 
 CrewBook's source repository currently requires linear, fast-forward-only
-integration under its source-only AGENTS.md; the human owns push (except the [auto-push trial](#auto-push-trial)). This example
+integration under its source-only AGENTS.md; authorized own-topic pushes follow the [human-request contract](team.md#human-request-contract). This example
 supplies no policy or authority to another target.
 
 ## Static decision walkthroughs
