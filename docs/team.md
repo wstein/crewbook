@@ -85,9 +85,13 @@ design and security/code review, Haiku for helpers. crewbook-docs-reviewer uses
 Sonnet only for policy-classified ordinary documentation or, in the old landing flow until the migration finishes, the Sonnet review of a SHA rebased onto `landing` (range-diff equality plus tests only, see [landing pointer](git-history.md#landing-pointer)). Codex mappings are
 explicit in [README](../README.md). Never inherit a child model implicitly.
 
-Model and effort per role (Claude values from the 2026-10-09 session, #108; revise from
-[run records](#run-records)). Agent files pin `model` and, where a role has one fixed
-value, `effort`; the desk passes the per-run override where the table differs.
+Configured model and effort per role (Claude choices proposed from the
+2026-10-09 session, #108; these are not measured provider comparisons). Agent
+files pin `model` and, where a role has one fixed value, `effort`; the coordinator
+passes the per-run override where the table differs. Use the selected provider
+mapping, never translate Claude tiers into assumed Codex performance. Record
+the actual model/effort and any host- or human-authorized substitution in the
+assignment and handback; host policy takes precedence over these defaults.
 
 | Role | Model | Effort |
 | --- | --- | --- |
@@ -100,9 +104,9 @@ value, `effort`; the desk passes the per-run override where the table differs.
 | design lane | Opus | high |
 | helper, watcher, lookups, [tidy](../.agents/crewbook-tidy.md) checks | Haiku | none; never judgments |
 
-Opus as author is not recommended: two Opus runs cost more than one Sonnet run plus one
-Opus review, which catches the defects. Send corrections to the same author and the same
-reviewer (context kept). Codex values are a starting point, **unmeasured**: see
+Sonnet is the configured default author; no measured cost advantage is established
+here. Send corrections to the same author and the same reviewer (context kept).
+Codex values are a starting point, **unmeasured**: see
 [README](../README.md#model-and-effort-mapping).
 
 An independent reviewer must meet the configured review-strength requirement.
