@@ -5,7 +5,7 @@ SEPARATOR = '; '
 LINE = re.compile(r'(review started|CLEAR|NOT CLEAR) ([0-9a-f]{40})(?: role=[a-z][a-z0-9-]*)? model=(?!model=)([!-:<-~]+)')
 CLAUDE_ID = re.compile(r'claude-(opus|sonnet|haiku)-[0-9]+(?:-[0-9]+)*')
 FULL_SHA = re.compile(r'(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])')
-NOT_CLEAR = re.compile(r'\bnot[ _-]clear\b')
+NOT_CLEAR = re.compile(r'\bnot[\W_]*clear\b')
 
 
 def parse(line):
@@ -47,7 +47,9 @@ def gate(lines, sha, tiers, required=1):
     tiers is the set of canonical tokens the project's tier rule accepts (a bare string is one value).
     A line "names" sha when it contains it (case-insensitive, whitespace-collapsed). Any NOT CLEAR
     naming sha blocks, even malformed; a malformed NOT CLEAR blocks unless it contains a different
-    full 40-hex sha. Any other unparsable line naming sha is a gap.
+    full 40-hex sha. Negative verdicts tolerate punctuation and invisible separators between
+    NOT and CLEAR; cross-alphabet letter lookalikes remain unresolved (#65). Any other
+    unparsable line naming sha is a gap.
     Counting key: (sha, canonical model); `opus` and `claude-opus-5-5` are one stamp. Reviewer
     identity is not modelled, so two reviewers recording the same model count once. Fail-closed:
     any CLEAR on sha whose canonical model is outside tiers is a gap, counted or not."""
