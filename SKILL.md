@@ -105,6 +105,8 @@ Read only the selected packaged prompt and its necessary references:
 | Preparation for a named action, read-only | [.agents/crewbook-briefing.md](.agents/crewbook-briefing.md) |
 | Post-merge cleanup, close list, checklist | [.agents/crewbook-tidy.md](.agents/crewbook-tidy.md) |
 | Rebase open branches after a merge, lease commands | [.agents/crewbook-restack.md](.agents/crewbook-restack.md) |
+| Current PRs, topics, agents and blockers, read-only | [.agents/crewbook-status.md](.agents/crewbook-status.md) |
+| Append ignored local session history, monthly rotation | [.agents/crewbook-logbook.md](.agents/crewbook-logbook.md) |
 | Behavior QA | [.agents/crewbook-qa.md](.agents/crewbook-qa.md) |
 | Assigned bounded helper / research worker | [.agents/crewbook-helper.md](.agents/crewbook-helper.md) / [.agents/crewbook-worker.md](.agents/crewbook-worker.md) |
 
