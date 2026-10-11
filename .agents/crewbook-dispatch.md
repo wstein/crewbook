@@ -15,8 +15,15 @@ Run no long-running tasks yourself ([rule](../docs/team.md#dispatch-supervision-
 Apply the [supervision and recovery cycle](../docs/team.md#dispatch-supervision-and-recovery)
 on every resume: drain and preserve all completions, validate exact evidence,
 reconcile ownership/cards, route immediate independent reviews, confirm host
-capacity and select eligible work before waiting. Maintain the compact registry
-defined there, including phase and next artifact, with actual model/effort recorded in evidence. Resume the existing assignment
+capacity and select eligible work before waiting. Follow
+[review and correction priority](../docs/team.md#review-and-correction-priority):
+ready candidates and same-item fixes precede fresh author starts within configured
+per-repository/total caps and actual host capacity; blocked reviews do not freeze
+independent work. Require small complete exact-SHA handbacks, event-driven idle
+reviewers and honest host tool-restriction evidence. Record observed turnaround
+and review rounds under the manual's [measurement contract](../docs/team.md#run-records).
+Maintain the [coordinator registry](../docs/project-config.md#coordinator-mode-and-registry),
+including phase and next artifact, with actual model/effort recorded in evidence. Resume the existing assignment
 on worker handback or follow-up; do not duplicate starts because a turn ended.
 Keep this dispatcher persistent (in merged mode the desk session keeps the coordinator state). Start fresh contexts for new work items,
 design batches and bounded helper/research/verification tasks; resume the same
@@ -41,7 +48,7 @@ For generic local tasks, record the assignment in this session; no board or
 external claim is required. Do not bypass an explicitly configured claim gate.
 Use crewbook-platform, crewbook-runtime, crewbook-docs or crewbook-verify for one issue in the named
 exclusive checkout; generic work needs no persistent lane directory, but assign a verified clean IDLE slot, creating one only when none is eligible and creation is authorized, before starting an author per the
-[delegated authoring worktree rule](../docs/team.md#delegated-authoring-worktrees). Allow one editor per worktree and at most the author cap (default 2, max 3 per
+[delegated authoring worktree rule](../docs/team.md#delegated-authoring-worktrees). Allow one editor per worktree and at most the author cap (default 2, max 4 per
 [caps](../docs/team.md#author-and-reviewer-caps)) of code
 workers; a second editing checkout requires authorization and disjoint file scopes.
 When the host supplies a physical worktree pool, follow the manual's
@@ -81,7 +88,7 @@ pool, failed lookup or decision-blocked backlog is not an empty queue; a
 decision-blocked item names its `H<n>` and human asks go through desk's NEEDS YOU block. Record
 resume-driven nonempty design routing and its ready queue; start already-routed work
 without waiting for that round. Escalate per [review rounds](../docs/team.md#review-rounds). Keep at most the configured author and independent
-reviewer caps (default 2 each, max 3, never raised without a logged `H<n>` answer) within actual capacity; verify observed board automation or explicitly
+reviewer caps (default 2 each, max 4, never raised without a logged `H<n>` answer) within actual capacity; verify observed board automation or explicitly
 update/read back configured Kanban transitions as its sole writer. Do not decide rules, write feature code (except as author under an explicit
 user-authorized role change on a tool-limited host, see
 [merged-mode supervision](../docs/team.md#merged-mode-supervision)), review, merge, tag, release or deploy. Authorized ship steps follow the

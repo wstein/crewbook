@@ -35,6 +35,19 @@ Project policy may set `batch_threshold` (default 5), the branch count above whi
 
 Project policy may set `review_rounds_max` (integer, default 4, hard maximum 5), the number of NOT CLEAR review rounds on the same item before the coordinator escalates; the rule is in [review rounds](team.md#review-rounds). Values outside 1 to 5 are clamped to that range.
 
+Trusted project policy or an explicit session allocation may supply separate
+per-repository author limits and total author/reviewer budgets. Record the value,
+source and affected repositories; apply every applicable budget together with
+[the caps and actual host capacity](team.md#author-and-reviewer-caps).
+Raising an applicable cap still requires the explicit consequential answer and
+logged entry; a repository allocation never raises the total budget implicitly.
+These values stay in existing assignment evidence or the session handoff, with
+no new registry keys or client-setting edits. The
+[review and correction priority](team.md#review-and-correction-priority) contract
+controls work selection, reviewer isolation and observed turnaround/rounds;
+its measurement destination is supplied by the target, not a fixed repository
+or issue number.
+
 New assignment branches follow the canonical [branch naming convention](team.md#branch-naming),
 including its short-slug bound, issue-less fallback and preservation of existing branches.
 
@@ -372,7 +385,7 @@ evidence, never authorization.
 
 Without a consequential answer, session configuration can only tighten limits
 or choose among approved options. A cap may be raised only with that answer,
-within the maximum of 3 stated in
+within the maximum of 4 stated in
 [caps](team.md#author-and-reviewer-caps); no answer relaxes another rule, and
 the one-editor-per-worktree limit cannot be raised through it at all. A
 tightening `set` (for example lowering a cap) is routine, may default and
