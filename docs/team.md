@@ -195,6 +195,22 @@ actions. Boundaries: `status` is the current state and prepares nothing, the
 [handover](#handover-procedure) is its own procedure, and the logbook is history, neither
 a current-state source nor an authorization.
 
+## Status and logbook procedures
+
+[crewbook-status](../.agents/crewbook-status.md) (`/crewbook-status [detail]`;
+Codex: `$crewbook status [detail]`) reports current PRs, local topics/worktrees,
+confirmed agent ownership and blockers through bounded read-only observations.
+It fetches nothing, starts no child and makes missing or stale evidence explicit.
+Use briefing to prepare an action and handover to transfer results/ownership.
+
+[crewbook-logbook](../.agents/crewbook-logbook.md) (`/crewbook-logbook [title]`;
+Codex: `$crewbook logbook [title]`) appends sanitized session history to the
+target's ignored `.work/LOGBOOK.md` within the active request. Existing entries
+are preserved, corrections append, repeated appends reconcile through session
+identity and readback, and monthly rotation never overwrites an archive. The
+logbook is history, not current-state proof or authorization. Neither procedure
+installs a native command, timer or autonomous runtime.
+
 ## Setup and routing
 
 Use crewbook-generic by default: resolve needed configuration from the user task,
