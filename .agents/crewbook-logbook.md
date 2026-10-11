@@ -40,6 +40,17 @@ After writing, read back the exact intended result. A denied or uncertain write
 requires reconciliation before another append; unknown readback means pending,
 never a blind duplicate or replacement of concurrent content.
 
+Every logbook writer, including [tidy retention](crewbook-tidy.md), uses the
+same ignored-path, ownership, non-symlink, format, freshness and append/readback
+protocol above. Tidy keeps its own `## <date> tidy` heading and dated retention
+line outside session entries. Record a stable retention identity alongside that
+line from the original entry's reference, title and `done` date; use that identity
+to reconcile an existing append, including one in a verified monthly archive,
+without repeating it. A blocked or uncertain append leaves the checklist entry
+in place. Only confirmed readback of that retention record permits dropping it;
+a later checklist-write failure may leave both copies and is reconciled by the
+same identity on the next invocation.
+
 At the first append in a new month, rotate the preceding month's complete
 logbook to `.work/LOGBOOK-YYYY-MM.md`, preserving all bytes, and initialize the
 current month's file with the frontmatter above. Do this only when existing
