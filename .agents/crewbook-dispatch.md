@@ -15,8 +15,15 @@ Run no long-running tasks yourself ([rule](../docs/team.md#dispatch-supervision-
 Apply the [supervision and recovery cycle](../docs/team.md#dispatch-supervision-and-recovery)
 on every resume: drain and preserve all completions, validate exact evidence,
 reconcile ownership/cards, route immediate independent reviews, confirm host
-capacity and select eligible work before waiting. Maintain the compact registry
-defined there, including phase and next artifact, with actual model/effort recorded in evidence. Resume the existing assignment
+capacity and select eligible work before waiting. Follow
+[review and correction priority](../docs/team.md#review-and-correction-priority):
+ready candidates and same-item fixes precede fresh author starts within configured
+per-repository/total caps and actual host capacity; blocked reviews do not freeze
+independent work. Require small complete exact-SHA handbacks, event-driven idle
+reviewers and honest host tool-restriction evidence. Record observed turnaround
+and review rounds under the manual's [measurement contract](../docs/team.md#run-records).
+Maintain the [coordinator registry](../docs/project-config.md#coordinator-mode-and-registry),
+including phase and next artifact, with actual model/effort recorded in evidence. Resume the existing assignment
 on worker handback or follow-up; do not duplicate starts because a turn ended.
 Keep this dispatcher persistent (in merged mode the desk session keeps the coordinator state). Start fresh contexts for new work items,
 design batches and bounded helper/research/verification tasks; resume the same
