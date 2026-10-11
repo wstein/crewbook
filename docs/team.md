@@ -1325,35 +1325,13 @@ natively is unverified, and the Codex pendant is tracked in #41.
 <a id="run-records"></a>
 ## Run records
 
-Decisions on model and effort rest on data. The desk (merged or dispatch-split
-coordinator) records one line per delegated run (author, reviewer, design, docs,
-helper) at hand-back, from the hand-back usage line, before it reports the
-outcome; a resumed run gets a new line with its own delta, since resumed agents
-report cumulative usage. Record tokens and minutes as deltas (this run minus the
-previous cumulative value), never as cumulative totals. Rounds, findings, `ci_first_try` and `clear` are
-known only at CLEAR or merge: the desk records them on the final author line
-and the CLEAR reviewer line of that PR.
-
-For turnaround, retain observed candidate-ready, review-start, findings-return,
-corrected-candidate and CLEAR timestamps with their exact revision and source
-at the configured evidence destination (or session handoff when none exists).
-Report elapsed intervals and correction rounds only when those observations
-exist; missing timestamps, model-reported estimates and synthetic traces leave
-turnaround unknown. This is a measurement contract, not an implemented timing
-collector; it adds no registry keys or `RUNS.tsv` fields. Compare like scopes and
-setups before attributing changes to worker allocation.
-
-`scripts/runs_report.py record ...` appends to `.work/RUNS.tsv` (local,
-git-ignored, created with `# crewbook-runs schema=1` and a fixed header). Fields:
-`date ref role model effort tokens minutes rounds high medium low ci_first_try clear`.
-Only validated values are stored (no free text, paths or secrets). `runs_report.py
-report` summarises per role, model and effort: tokens and minutes per CLEAR, review
-rounds per PR, findings per PR (high, medium, low) and CI first-try rate. A group with fewer than 10
-distinct PRs is marked `not enough data`; do not change the matrix on it. It
-complements `scripts/usage_report.py`, which reads session logs for where tokens go;
-this file records what a PR cost to reach CLEAR. Tokens per CLEAR also count the cost of PRs
-not yet cleared; a PR whose runs span two efforts has its CLEAR in only one group, so that
-group carries the whole cost of the other. Numbers are indicative, not verified.
+The coordinator records delegated-run evidence at handback under the
+[run metrics procedure](run-metrics.md). That procedure owns delta accounting,
+unknown values, optional ledger fields and the ten-PR follow-up gate; it uses the
+existing `scripts/runs_report.py` without claiming a native timing collector.
+Keep observed turnaround timestamps and exact revisions at the configured
+evidence destination (or session handoff when none exists), as described there.
+Compare like scopes and setups before attributing changes to worker allocation.
 
 ## Evidence and portability
 
