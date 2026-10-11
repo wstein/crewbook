@@ -492,7 +492,7 @@ an editing author; host controls determine its capacity use.
 
 | Confirmed event | Coordinator continuation |
 | --- | --- |
-| Author landed or returned review-ready snapshot | Preserve outcome; enqueue exact scoped review immediately; refill eligible author capacity independently |
+| Author landed or returned review-ready snapshot | Preserve outcome; route exact scoped review and eligible corrections before fresh author starts; refill remaining eligible author capacity independently |
 | Author paused or stalled | Retain owner; inspect actual tool/test state and request a narrow unblock artifact; do not interrupt healthy long checks |
 | Failed start with known no-child outcome | Keep sole claim; retry only after confirmed changed host capacity/prerequisites; preserve failed-call evidence |
 | Uncertain start or external write | Resolve actual outcome before retry; never duplicate starts or writes |
@@ -966,6 +966,43 @@ may be configured up to a maximum of **4**; nothing defaults above 2.
 - Platform, host instructions and `AGENTS.md` still win and may set a lower
   ceiling.
 
+<a id="review-and-correction-priority"></a>
+### Review and correction priority
+
+Before filling author slots, route completed candidates to independent review
+and resume actionable findings with the same author and reviewer. Keep each
+coding chunk small, atomic and complete enough to check and hand back at an
+exact SHA with scope, evidence and next action. A chunk still receives the
+required exact-revision review; splitting work never carries approval forward.
+
+Apply configured per-repository author limits, total author/reviewer limits and
+actual host slot capacity together. Record their values, sources and scope in
+the existing assignment evidence. A session allocation does not change project
+or package defaults. Reserve available capacity for ready reviews and fixes
+before fresh coding starts. A blocked or unready review holds only its dependent
+work: continue independent eligible work in remaining capacity and revisit
+waiting work on the next relevant event. Avoid starving either reviews or
+independent coding by waiting for an unrelated queue to empty.
+
+An idle reviewer waits for a named candidate or continuation event through
+supported bounded wait tools; it does not repeatedly poll Git, CI or the board.
+When no wait capability exists, return a handoff naming the candidate/event and
+resume action. Keep same-item finding corrections in the retained reviewer
+context; each unrelated item still needs a fresh independent reviewer.
+
+Request actual host tool restrictions for reviewers where supported, and isolate
+checks that generate output in a scratch checkout or temporary directory. If
+the host has no tool restriction control, report that the role's read-only limit
+is procedural; isolation and a role instruction do not establish enforcement.
+Reviewers own no author edits, commits, pushes, issues or cards. The existing
+[review contract](../.agents/crewbook-review.md) separately limits exact-SHA
+CLEAR notes and any explicitly authorized review comments/status writes.
+
+Assess these practices from observed turnaround and review rounds using the
+[run records](#run-records) and the configured evidence destination. Preserve
+unknowns; guidance and synthetic scenarios do not establish faster completion,
+quality gains or enforced read-only tools.
+
 ## Lifecycle example and walkthrough check
 
 Static example, not a live client test: a trusted generic project supplies real
@@ -1277,6 +1314,15 @@ report cumulative usage. Record tokens and minutes as deltas (this run minus the
 previous cumulative value), never as cumulative totals. Rounds, findings, `ci_first_try` and `clear` are
 known only at CLEAR or merge: the desk records them on the final author line
 and the CLEAR reviewer line of that PR.
+
+For turnaround, retain observed candidate-ready, review-start, findings-return,
+corrected-candidate and CLEAR timestamps with their exact revision and source
+at the configured evidence destination (or session handoff when none exists).
+Report elapsed intervals and correction rounds only when those observations
+exist; missing timestamps, model-reported estimates and synthetic traces leave
+turnaround unknown. This is a measurement contract, not an implemented timing
+collector; it adds no registry keys or `RUNS.tsv` fields. Compare like scopes and
+setups before attributing changes to worker allocation.
 
 `scripts/runs_report.py record ...` appends to `.work/RUNS.tsv` (local,
 git-ignored, created with `# crewbook-runs schema=1` and a fixed header). Fields:

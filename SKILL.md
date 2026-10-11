@@ -44,6 +44,9 @@ Markdown file does not register that slash command in Codex.
 Follow the [human-request contract](docs/team.md#human-request-contract) for
 operation scope, agent topic pushes and issue/card updates, human merge and
 run lifecycle. Host controls and explicit local-only limits still apply.
+For coordinated work, apply [review and correction priority](docs/team.md#review-and-correction-priority)
+before starting more authors; its allocation, reviewer isolation and measurement
+contract uses the current project/session limits.
 
 ## Start working
 
