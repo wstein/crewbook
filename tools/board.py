@@ -102,14 +102,14 @@ def load(project_id=PROJECT_ID, repo=REPO):
 def move(number, status, project_id=PROJECT_ID, repo=REPO):
     """Move one card, read it back, raise BoardError on any mismatch.
     Returns the previous status (equal to status when nothing changed)."""
-    if status == 'Done':
-        raise BoardError('refusing Done: project automation or the human')
     field_id, options, cards = load(project_id, repo)
     if status not in options:
         raise BoardError('unknown status %r' % status)
     card = cards.get(number)
     if card is None:
         raise BoardError('no card for #%d' % number)
+    if status == 'Done' and card['state'] != 'CLOSED':
+        raise BoardError('refusing Done: requires a confirmed closed issue')
     old = card['status']
     if old == status:
         return old
