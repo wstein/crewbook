@@ -372,7 +372,7 @@ evidence, never authorization.
 
 Without a consequential answer, session configuration can only tighten limits
 or choose among approved options. A cap may be raised only with that answer,
-within the maximum of 3 stated in
+within the maximum of 4 stated in
 [caps](team.md#author-and-reviewer-caps); no answer relaxes another rule, and
 the one-editor-per-worktree limit cannot be raised through it at all. A
 tightening `set` (for example lowering a cap) is routine, may default and

@@ -881,7 +881,7 @@ issue author or independent reviewer, and never inherits claim/commit/landing
 ownership. Only the designated coordinator starts issue/review workers.
 
 At most one editor runs per worktree, and at most the author cap
-([default two, max three](#author-and-reviewer-caps)) of code workers run at once.
+([default two, max four](#author-and-reviewer-caps)) of code workers run at once.
 A second lane worktree needs explicit project approval and disjoint file scopes,
 including generated/dependency/policy files. Parents do not edit during editing
 subagents. Independent read-only lookups may run in parallel.
@@ -902,8 +902,8 @@ leaves capacity for bounded helpers without crowding out coordination/review.
 | Role | Subagent slots |
 | --- | --- |
 | Persistent dispatch (split mode only) | 1 in split, 0 in merged |
-| Authors | Up to 2 (max 3 if configured, see below) |
-| Independent reviewers | Up to 2 (max 3 if configured, see below) |
+| Authors | Up to 2 (max 4 if configured, see below) |
+| Independent reviewers | Up to 2 (max 4 if configured, see below) |
 | Design batch | Up to 1 |
 | Optional bounded helpers | Up to 2 |
 | Recommended capacity | 8 |
@@ -943,21 +943,21 @@ sequence work according to the actual host's admission result.
 ### Author and reviewer caps
 
 The default cap is **2** for authors and **2** for independent reviewers. Each
-may be configured up to a maximum of **3**; nothing defaults above 2.
+may be configured up to a maximum of **4**; nothing defaults above 2.
 
 - Raising either cap is consequential: it needs an explicit human answer, is
   never defaulted, and is logged as an `H<n>` entry in the
   [decision log](project-config.md#decision-log) through
   [session configuration](project-config.md#session-configuration). A value
-  above 3 is clamped to 3; a lowered cap is a tightening and never goes below 1. The cap lasts
+  above 4 is clamped to 4; a lowered cap is a tightening and never goes below 1. The cap lasts
   for the session; the entry is evidence, never authorization.
 - A raised cap applies only while the host's actual capacity is verified
   (observed or read back, never assumed or obtained by releasing live agents).
   If capacity is lower, sequence work as above.
-- In split mode, dispatch stays at the default 2 unless desk passes the raised
+- In split mode, each cap stays at the default 2 unless desk passes that raised
   cap explicitly in its assignment.
 - One editor per worktree is unchanged and cannot be raised.
-- A third author additionally needs a verified clean IDLE worktree, disjoint
+- Each author above the default additionally needs a verified clean IDLE worktree, disjoint
   file scopes across all running authors (no two on the same package,
   Makefile area or generated/policy file) and actual capacity for it.
 - Independence is unchanged: every reviewer is fresh and independent of the

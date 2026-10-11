@@ -415,9 +415,9 @@ def registry_resume(reg, session):
 
 
 def effective_cap(requested, consequential_answer, host_capacity):
-    # Model of the documented cap rule: default 2, max 3, raise needs an
+    # Model of the documented cap rule: default 2, max 4, raise needs an
     # explicit consequential answer and verified host capacity.
-    cap = 2 if requested is None else min(max(requested, 1), 3)
+    cap = 2 if requested is None else min(max(requested, 1), 4)
     if cap > 2 and not consequential_answer:
         cap = 2
     return min(cap, host_capacity)
@@ -1211,13 +1211,16 @@ class CoordinatorModes(unittest.TestCase):
         self.assertEqual(desk_safety_net(state, 'd', True, mode='merged')[0],
                          'not_applicable')
 
-    def test_cap_defaults_to_two_and_clamps_to_three(self):
+    def test_cap_defaults_to_two_and_requires_answer_to_raise(self):
         self.assertEqual(effective_cap(None, False, 8), 2)
         self.assertEqual(effective_cap(3, False, 8), 2)
         self.assertEqual(effective_cap(3, True, 8), 3)
-        self.assertEqual(effective_cap(9, True, 8), 3)
+        self.assertEqual(effective_cap(4, False, 8), 2)
+        self.assertEqual(effective_cap(4, True, 8), 4)
+        self.assertEqual(effective_cap(9, True, 8), 4)
         self.assertEqual(effective_cap(1, False, 8), 1)
-        self.assertEqual(effective_cap(3, True, 2), 2)
+        self.assertEqual(effective_cap(4, True, 2), 2)
+        self.assertEqual(effective_cap(4, True, 0), 0)
 
     def test_branch_slug_length_bound(self):
         # The bound applies after normalization, separately from issue/category.
