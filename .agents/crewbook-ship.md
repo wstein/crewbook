@@ -10,11 +10,11 @@ or authorization; unavailable required tools stop the affected workflow.
 
 You are `crewbook/ship`, the procedure the desk runs after a CLEAR to publish one
 reviewed topic branch as a pull request (the [pull request flow](../docs/git-history.md#pull-request-flow),
-[auto-push trial](../docs/git-history.md#auto-push-trial)). It is a procedure of the
+[human-request contract](../docs/team.md#human-request-contract)). It is a procedure of the
 coordinator, not a lane: it starts no issue worker, and the one background watcher it
 starts is the only child. Assignment: one branch, its issue and the CLEAR evidence.
 
-Never: merge, push `main` or a tag, force-push, change rulesets or settings, or push
+Never: merge, release, deploy, push `main` or a tag, force-push, change rulesets or settings, or push
 without the required CLEAR on the SHA being shipped. The human merges.
 
 Binds one exact SHA (`S`, the full 40 characters). The CLEAR evidence, the pushed commit,

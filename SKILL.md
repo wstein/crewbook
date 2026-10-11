@@ -41,6 +41,10 @@ optional dedicated skill in [.agents/skills/crewbook-desk/SKILL.md](.agents/skil
 when discovered/installed. `/crewbook-desk` is a Claude Code command; shipping its
 Markdown file does not register that slash command in Codex.
 
+Follow the [human-request contract](docs/team.md#human-request-contract) for
+operation scope, agent topic pushes and issue/card updates, human merge and
+run lifecycle. Host controls and explicit local-only limits still apply.
+
 ## Start working
 
 1. Follow this skill's relative links from the file containing each link.

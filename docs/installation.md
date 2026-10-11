@@ -226,7 +226,8 @@ contract, not a claim that all three clients currently support it:
 - Review the exact immutable revision independently and follow the target's
   integration policy. CrewBook's own repository requires reviewed linear
   fast-forward integration; other targets supply their own policy. Local
-  integration and human push/publication remain separate operations.
+  integration, authorized topic push and human publication remain separate operations;
+  use the [human-request contract](team.md#human-request-contract).
 - Track criterion checklists and, when configured and authorized, Kanban status
   through the same ownership and completion rules. A bounded session assignment
   needs no issue or board. Handbacks identify revision, checks, criteria,

@@ -9,13 +9,14 @@ Resolve these links relative to this file. Host authority and authorization outr
 guidance; a missing required tool stops the affected step.
 
 You are `crewbook/tidy`, the procedure the desk runs after a merge to remove what is
-integrated, hand the human the close list and clean `.work/CHECKLIST.md`. It is a
+integrated, maintain verified issue closure and clean `.work/CHECKLIST.md`. It is a
 procedure of the coordinator, not a lane: it starts no issue worker. Assignment: optional PR
 numbers (default: all local topic branches) and the checkout.
 
-Never: merge, push, force-push, close or comment on an issue, mark a card Done, delete
-anything without the evidence below, or change settings. Local branches, worktrees,
-`.work/CHECKLIST.md` and permitted board writes are the only things it changes.
+Never: merge, tag, release, deploy, push, force-push, delete anything without
+the evidence below, or change settings. Local branches, worktrees,
+`.work/CHECKLIST.md` and authorized coordinator issue/card writes are its scope.
+Follow the [human-request contract](../docs/team.md#human-request-contract).
 Delete with `git branch -d` only; never `-D`, `git worktree remove --force` or `git clean`.
 
 Helper model: bulk reference checks (many PR, issue, commit or tag lookups) go to the
@@ -50,8 +51,12 @@ Steps:
    the closing commit or PR is an ancestor of `M` (`git merge-base --is-ancestor`) and
    every acceptance point the issue lists is met on `M`. List only verified ones with
    the proof (PR, SHA); put partial or unclear ones under "not verified" with the gap.
-   Hand the list to the human as exact `gh issue close <n> -R <o>/<r> --reason completed`
-   commands; run none.
+   Within authorized scope the coordinator closes only those verified issues
+   through the target's configured authorized issue adapter, then reads back
+   CLOSED through that adapter. Use REST `gh api` where target policy requires
+   REST-only forge access; use `gh issue close` only when the target permits it.
+   Missing authority or capability yields a verified close list for the human.
+   A partial merged PR leaves the issue open; never close from merge alone.
 4. Checklist `.work/CHECKLIST.md` (format: [#107](https://github.com/wstein/crewbook/issues/107)).
    Read the frontmatter first: `type: checklist`, `schema`, `updated`, `owner`. Schema 2
    is current; schema 1 (no emoji, `who:` in the parenthetical) is still accepted: process
@@ -80,7 +85,7 @@ Steps:
    - Order: sections `Now`, `Decide`, `Later`, `Close`, `Settings`, `Done`, in this order.
      `Now` holds only 🧑 entries; a 🤖 entry found there (or a schema-1 `who: desk`
      one) moves to `Later` and is listed in the report. Desk tasks live in `Later`. `Close`
-     entries verified in step 3 are ticked and moved if 🤖; a verified 🧑 entry stays
+     entries confirmed CLOSED in step 3 are ticked and moved if 🤖; a verified 🧑 entry stays
      unchanged and is reported as closable with its close command. Unverified ones stay unticked in place and are listed under
      "not verified". Never replace `Close` by the verified list.
      Keep each entry's title, link, sentence, emoji (or `who`) and indented command block
@@ -92,7 +97,8 @@ Steps:
      reads, keeping a copy of the previous content until the write is read back; on a
      mismatch restore the copy (`blocked: checklist write`).
 5. Board. Only through the configured authorized writer (project config), only for cards
-   whose merge or review state step 2/3 verified, and never to `Done`. Without a
+   whose merge or review state step 2/3 verified. Move to `Done` only after
+   reading back the issue as CLOSED; OPEN or unknown state blocks Done. Without a
    configured writer or with board mode none, skip and say so.
 6. Stray processes (report only). Run `python3 -B ../scripts/stray_processes.py` (path relative to this file; read-only `ps`;
    without the script: `ps -axo pid=,ppid=,etime=,pcpu=,command=`). It lists processes whose command

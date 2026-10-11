@@ -1,5 +1,5 @@
 ---
-description: CrewBook tidy workflow: delete integrated branches, free worktrees, close list and checklist cleanup after a merge
+description: CrewBook tidy workflow: delete integrated branches, free worktrees, verified issue closure and checklist cleanup after a merge
 argument-hint: "[PR numbers]"
 ---
 
@@ -15,4 +15,5 @@ Read [crewbook-tidy.md](../../.agents/crewbook-tidy.md) and follow it. Assignmen
 
 This command is a coordinator procedure run in the invoking context. Without
 arguments it scans all local topic branches; PR numbers limit it to those PRs'
-branches and issues. It never closes issues, merges or pushes.
+branches and issues. The coordinator closes fully verified issues and moves cards to Done only
+after confirmed CLOSED state within the human request. It never merges or pushes.

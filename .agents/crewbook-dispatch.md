@@ -61,7 +61,7 @@ Before each spawn run the [dispatcher preflight](../docs/team.md#dispatcher-pref
 (including the detached landing station) and [no worktree holds main](../docs/team.md#no-worktree-holds-main)
 before offering a landing line.
 Keep only the returned conclusion, commits, criteria and unverified items.
-Only the designated coordinator starts the pinned design batch: in fresh context for waiting decisions at most once an hour unless
+Only the designated coordinator starts the pinned design batch: on resume within the active human request, in fresh context for waiting decisions at most once an hour unless
 a highest-priority issue is blocked; in split mode desk never starts it, and a human-opened design session owns the role when open. Start independent reviewers in fresh context before human publication, always with an explicit
 model (Codex mapping in the [README](../README.md)): crewbook-reviewer on Opus (`model: opus`);
 crewbook-docs-reviewer on Sonnet (`model: sonnet`) only for documentation review that project
@@ -70,19 +70,20 @@ policy classifies as eligible or, in the old landing flow until the migration fi
 `gpt-6.1-sol/medium`; a lower tier (`sonnet`, `gpt-6.1-sol/low`) only for documentation
 review that project policy classifies as eligible (see crewbook-review) or, in the old landing flow, for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). A review note
 permits a configured ready status only for its exact SHA with no open findings.
-The assigned author alone commits when authorized and, in the [pull request flow](../docs/git-history.md#pull-request-flow), opens a draft PR and marks it ready after CLEAR (the human merges; during the [auto-push trial](../docs/git-history.md#auto-push-trial) the desk does this in merged mode). The desk decides at dispatch which issues form a stack and records the order in the dispatch note ([git-history](../docs/git-history.md#pull-request-flow)), otherwise uses configured landing; record status
+The assigned author alone commits when authorized and, in the [pull request flow](../docs/git-history.md#pull-request-flow), opens a draft PR and marks it ready after CLEAR (the human merges; an assigned coordinator can run the ship procedure within the human request). The desk decides at dispatch which issues form a stack and records the order in the dispatch note ([git-history](../docs/git-history.md#pull-request-flow)), otherwise uses configured landing; record status
 only from confirmed outcomes. Do not land on its behalf. Use configured status
 procedures; route rules, high findings and
-lane conflicts to crewbook-design. Hand over through the invoking session or configured crewbook-desk. On each true empty-queue transition request more work once (merged: report straight to the human; split: through desk) with
+lane conflicts to crewbook-design. Hand over through the invoking session or configured crewbook-desk. On each true empty-queue transition report once (merged: report straight to the human; split: through desk) with
 completed work, active ownership and blocked dependencies, then yield. A full
 pool, failed lookup or decision-blocked backlog is not an empty queue; a
 decision-blocked item names its `H<n>` and human asks go through desk's NEEDS YOU block. Record
-hourly nonempty design routing and its ready queue; start already-routed work
+resume-driven nonempty design routing and its ready queue; start already-routed work
 without waiting for that round. Escalate per [review rounds](../docs/team.md#review-rounds). Keep at most the configured author and independent
 reviewer caps (default 2 each, max 3, never raised without a logged `H<n>` answer) within actual capacity; verify observed board automation or explicitly
 update/read back configured Kanban transitions as its sole writer. Do not decide rules, write feature code (except as author under an explicit
 user-authorized role change on a tool-limited host, see
-[merged-mode supervision](../docs/team.md#merged-mode-supervision)), review or push.
+[merged-mode supervision](../docs/team.md#merged-mode-supervision)), review, merge, tag, release or deploy. Authorized ship steps follow the
+[human-request contract](../docs/team.md#human-request-contract).
 For authorized issue-body updates, check each acceptance criterion immediately
 when its own evidence verifies fulfillment, including exact-revision review when
 required; do not wait for the whole issue. Follow the manual's checklist update
