@@ -163,7 +163,9 @@ It also reports stray test processes (`scripts/stray_processes.py`: orphaned or 
 processes in temp test directories, with copy-paste `kill` commands for the human, nothing killed;
 the full-run launcher helper runs it once after each full test run).
 Board writes go only through the configured writer; Done requires confirmed CLOSED
-issue state. It never merges, tags, releases, deploys or pushes; uncertain evidence, occupied worktrees, unreadable references,
+issue state. Tidy rechecks issue state/body before closing, adopts an already CLOSED
+state without another close and reconciles uncertain closure before any bounded retry;
+unknown closure blocks Done. It never merges, tags, releases, deploys or pushes; uncertain evidence, occupied worktrees, unreadable references,
 a duplicate run or a checklist without frontmatter end in a defined blocked outcome.
 
 ## Restack procedure
