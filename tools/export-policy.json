@@ -74,6 +74,7 @@
     "docs/provenance/extraction-paths.txt",
     "docs/provenance/original-import.json",
     "docs/root-cause.md",
+    "docs/run-metrics.md",
     "docs/simplicity.md",
     "docs/team.md",
     "docs/tool-preflight.md",
