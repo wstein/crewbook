@@ -87,7 +87,8 @@ Steps:
    starts; report in the preconditions whether it was done.
 4. Local verification, before the PR and local only (no push, no tag, no network
    write): read the hook files and the profile's local check targets (local check and
-   snapshot-build targets) before running them; run each and report
+   snapshot-build targets) before running them. Run routine source checks; build
+   targets, including snapshots, require explicit human build approval. Report
    every hook and target with its command and result. An unrun check is unverified; a hook
    or target that pushes, tags, uploads, publishes or writes outside the worktree
    (tool/module caches excepted) is not run and is reported unverified.
