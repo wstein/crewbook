@@ -10,13 +10,33 @@ uses these same roles and lifecycle; provider compatibility needs separate evide
 <a id="human-request-contract"></a>
 ## Human-request contract
 
-WorkHarbor requirements v3 describe hours of interactive work within one human
-request: “fix issues 1, 2 and 3 and open a pull request” authorizes the assigned
-agents to commit, push their own topic branches, open/update PRs and update
-issues and configured project cards as part of that work. Reuse this scope
-without routine per-action approval questions. Confirm destinations, ownership
-and actual capabilities first. A local-only task does not authorize outward
-writes; generic sessions retain their actual user and host controls.
+For authorized issue work, the assigned author commits, publishes its own
+reviewed topic branch and creates or updates its PR after exact-revision review,
+reporting the required check results. This is part of completing the issue assignment;
+the human need not request publication separately or approve each push or PR
+update. Reuse that scope throughout the active human request, as in the
+WorkHarbor requirements v3 example of several issue fixes and a PR. Issue and
+configured project-card writes remain with the designated coordinator.
+
+Incomplete issue criteria, native verification or build readiness alone do not
+prevent publishing reviewed partial source as a scoped `Refs #N` draft PR. Run
+applicable source checks and disclose their results, remaining criteria and
+verification/build limits. Keep the PR draft when required checks are missing or
+not green; these readiness and completion gates do not by themselves block PR creation.
+
+Before pushing or creating/updating a PR, check whether the operation will trigger
+approval-required builds, including workflows that run on draft PRs. If so, wait
+for explicit build authorization for the operation and source revision, or use an
+already authorized route that avoids those builds. Draft status alone does not
+prevent a build. Never disable checks or bypass host controls to publish the PR.
+
+Confirm destinations, ownership and actual capabilities before publication.
+An explicitly local-only task does not authorize outward writes; ordinary local
+work retains its local-diff default. Actual host controls and higher-priority
+instructions still apply: report a denied or unavailable publication operation
+and its next action, without bypassing the control or treating prose as tool
+permission. A real host approval requirement remains distinct from a redundant
+workflow approval question.
 
 The human initiates and resumes a run (D57 remains unchanged). CrewBook supplies
 no scheduler, queue-driven launch or API-key automation mode. Work routed during
@@ -49,6 +69,11 @@ Static review scenarios (guidance, not measured native execution):
 | Request or observed state | Required outcome |
 | --- | --- |
 | Human requests three issue fixes and a PR | Assigned authors commit/push owned topics and open PRs; coordinator updates issues/cards within scope without routine approval asks; human merges |
+| Human authorizes an issue fix without separately requesting a PR | After exact review, assigned author publishes its own topic and creates/updates its PR with check results disclosed, without another approval question; human merges |
+| Reviewed partial source; native verification or build readiness unmeasured, required check pending, publication triggers no approval-required build | Publish a scoped `Refs` draft PR with results and limits disclosed; readiness and issue completion remain blocked |
+| Push or PR create/update triggers approval-required builds, including Hugo or `make build` on draft PRs | Wait for explicit build authorization for that operation/revision or an already authorized route avoiding the builds; do not disable checks or rely on draft status |
+| Human explicitly limits the issue assignment to local work | Return the checked local result; no topic push or PR |
+| Host denies a topic push otherwise covered by the request | Preserve the reviewed candidate and report the actual denial and next action; do not bypass host approval controls |
 | Reviewed restack O→N; remote moves after observation | Explicit O lease refuses; preserve remote work, report the changed head, never retry with a refreshed lease |
 | PR merged but one issue criterion remains unmet | Issue stays open; card cannot become Done |
 | Issue closure read back CLOSED | Authorized coordinator may move its card to Done and verify readback |
