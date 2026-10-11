@@ -119,6 +119,19 @@ class ReviewLineTests(unittest.TestCase):
         self.assertEqual(rl.split_evidence(rl.join_evidence(lines)), lines)
         self.assertEqual(rl.split_evidence(''), [])
 
+    def test_join_evidence_rejects_invalid_entries(self):
+        clear = 'CLEAR %s model=opus' % SHA
+        for invalid in ('CLEAR %s' % SHA, clear + ' ', '',
+                        clear + '; ' + 'NOT CLEAR %s model=opus' % SHA):
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                rl.join_evidence([clear, invalid])
+
+    def test_join_evidence_accepts_an_iterator(self):
+        lines = ['review started %s model=opus' % SHA,
+                 'CLEAR %s role=review model=opus' % SHA]
+        self.assertEqual(rl.split_evidence(rl.join_evidence(iter(lines))), lines)
+        self.assertEqual(rl.join_evidence([]), '')
+
     def test_review_started_is_not_a_stamp(self):
         self.assertTrue(rl.gate(['review started %s model=opus' % SHA], SHA, {'opus'}, 1))
 

@@ -33,6 +33,10 @@ def split_evidence(value):
 
 
 def join_evidence(lines):
+    """Join valid review entries without allowing embedded evidence separators."""
+    lines = list(lines)
+    if any(SEPARATOR in line or parse(line) is None for line in lines):
+        raise ValueError('evidence entries must be valid individual review lines')
     return SEPARATOR.join(lines)
 
 
