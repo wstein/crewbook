@@ -59,6 +59,8 @@ What the repo files show:
 <a id="model-and-effort-mapping"></a>
 - Model and effort mapping. Codex values are a starting point, **unmeasured**; revise
   them from the run records (`scripts/runs_report.py`) after the first ten PRs.
+  Host policy and explicit authorized substitutions take precedence; record the
+  actual model/effort as described in the [team matrix](docs/team.md#model-effort-matrix).
   The helper tier (`gpt-6.1-sol`, low) is the helper model that `crewbook-ship`
   and the [tidy](.agents/crewbook-tidy.md) checks resolve; Claude values are in [team.md](docs/team.md#model-effort-matrix).
 
@@ -71,6 +73,10 @@ What the repo files show:
   | reviewer, code | gpt-6.1-sol | medium; high for security paths |
   | reviewer, docs / delta | gpt-6.1-sol | low |
   | helper, watcher | gpt-6.1-sol | low |
+
+  Roles absent from this starting table (for example design) need an explicit
+  eligible model/effort assignment under the host policy; do not infer a Claude
+  equivalent or inherit the parent model.
 
 - Unverified: installed native startup, the alias discovery and managed
   execution. A desk/dispatch delegation was observed once in a Codex session;
