@@ -34,6 +34,37 @@ prior approval and readiness silently; see the
 the required checks/review for any further changed candidate; never reuse old
 clearance.
 
+## Merge-method readiness
+
+Resolve the actual integration method from trusted project instructions or an
+explicit session decision and record that source. Repository identity, old
+merge history and allowed-method settings do not select a method for the task.
+Before final readiness, read the actual forge PR head and base and bind the
+observation to the expected full head and current target-base SHAs. For GitHub,
+read `gh api repos/<owner>/<repo>/pulls/<number>`: rebase-only readiness requires
+its REST `rebaseable` field to be exactly `true`. `mergeable: true`, a `clean`
+mergeable state and green CI do not establish rebase eligibility. `false` is a
+method blocker; absent/null or a different head/base leaves readiness pending.
+Reobserve after GitHub computes unknown eligibility or either revision changes;
+do not carry an old observation onto a new pair. This is a point-in-time
+observation, not a guarantee that the human's later merge will succeed.
+
+For linear targets, also record complete local history proof: the expected base
+is an ancestor of the exact head and `base..head` contains zero merge commits.
+Establish ownership of every commit before rewriting; ancestry and a zero count
+do not establish authorship. If reconstruction is necessary, the assigned
+author preserves all human content and unique commits, rebases only owned
+commits within scope and obtains checks and independent review of the resulting
+SHA. Do not append a merge to repair a branch under a linear policy. Stop and
+hand off when ownership or preservation cannot be established.
+
+The source-only [observation helper](../tools/README.md#merge-method-observation)
+can evaluate supplied REST evidence and report local proof separately. Consumers
+without it perform the same reads with their available tools; no adapter or
+installation is required. Checks, review and human consent remain separate
+requirements. Missing eligibility evidence leaves final merge readiness pending;
+it does not prevent opening the authorized source PR for review.
+
 <a id="rebase-re-review"></a>
 ### Rebase re-review rule
 
