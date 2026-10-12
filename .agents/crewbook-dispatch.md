@@ -25,6 +25,9 @@ and review rounds under the manual's [measurement contract](../docs/team.md#run-
 Maintain the [coordinator registry](../docs/project-config.md#coordinator-mode-and-registry),
 including phase and next artifact, with actual model/effort recorded in evidence. Resume the existing assignment
 on worker handback or follow-up; do not duplicate starts because a turn ended.
+Use the manual's [retained-worker continuation](../docs/team.md#retained-worker-continuation)
+capability mapping to distinguish an idle-handle resume from a running-worker update,
+and await the named result before recording success.
 Keep this dispatcher persistent (in merged mode the desk session keeps the coordinator state). Start fresh contexts for new work items,
 design batches and bounded helper/research/verification tasks; resume the same
 author for its item's fixes and same independent reviewer for finding corrections.

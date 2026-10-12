@@ -492,6 +492,44 @@ CI, authors or the next design round. A genuine validation dependency names
 its missing artifact and holds only the dependent operation. Record scoped
 content review separately from final integration validation.
 
+### Retained-worker continuation
+
+Before continuing a work item, confirm its assigned owner, retained handle,
+current host-reported state and the available tools' actual semantics. Apply
+this to authors, same-item reviewers and the persistent split dispatcher.
+A message delivery tool does not necessarily start an idle worker. On a host
+with the following collaboration capabilities, use this mapping:
+
+| Confirmed worker state | Continuation operation |
+| --- | --- |
+| Idle or completed, with its same-item handle retained | `collaboration.followup_task` sends the bounded assignment and starts a turn on that handle |
+| Running on the same item | `collaboration.send_message` delivers the update to the existing turn; keep that worker as owner |
+| State or prior continuation outcome unknown | Resolve status and pending results before another continuation or replacement |
+
+These names describe the current host capability, not a CrewBook adapter or a
+requirement that another provider expose identical names. Elsewhere select a
+supported operation that actually resumes an idle handle or updates a running
+one. If the needed capability is absent, preserve ownership and hand off with
+the concrete unavailable operation and next resume action. Do not claim runtime
+support from this guidance or the maintenance recovery model.
+
+Route one continuation for each work item, next operation and exact candidate
+revision when applicable. Record the retained handle, request outcome and named artifact in the
+assignment evidence; do not send both an update and a second start for the same
+pending operation, or spawn a duplicate worker because its previous turn ended.
+A later confirmed failure or revised candidate may require a new continuation;
+resolve an uncertain earlier outcome first. If an update reaches a worker that
+has become idle, confirm whether it started a turn before using the host's resume
+operation on that same handle.
+
+A delivered request, acknowledgment or start status proves neither completion
+nor success. Await the named artifact through supported bounded tools: for
+example, the author's corrected exact SHA and check results, the retained
+reviewer's verdict for that SHA, or the authorized operation's explicit result.
+Validate owner, scope, revision and outcome before advancing readiness. Preserve
+pending obligations and use the existing supervision/handoff rules when waiting
+is unavailable; never substitute a progress report for the awaited result.
+
 Keep a compact registry per repository/task. The durable
 [coordinator registry file](project-config.md#coordinator-mode-and-registry)
 holds only its header and the task keys listed there; carry the items below that
@@ -999,7 +1037,8 @@ may be configured up to a maximum of **4**; nothing defaults above 2.
 ### Review and correction priority
 
 Before filling author slots, route completed candidates to independent review
-and resume actionable findings with the same author and reviewer. Keep each
+and resume actionable findings with the same author and reviewer using the
+[retained-worker continuation](#retained-worker-continuation) capability mapping. Keep each
 coding chunk small, atomic and complete enough to check and hand back at an
 exact SHA with scope, evidence and next action. A chunk still receives the
 required exact-revision review; splitting work never carries approval forward.
