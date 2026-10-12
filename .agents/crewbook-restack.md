@@ -85,7 +85,16 @@ Steps:
    Without authority or capability, return the exact lease command and evidence
    for the human. Several branches run parent first.
 
-7. Report to the human (in the project language), per branch: old head `O`, new head `N`,
+7. Final merge readiness is separate from successful restack/push. Read back the
+   actual forge head, diff and CI at `N`, and apply
+   [merge-method readiness](../docs/git-history.md#merge-method-readiness) against
+   the current expected base and trusted configured method. Rebase-only readiness
+   needs actual REST `rebaseable == true`, not mergeability or green checks alone.
+   Unknown/stale evidence stays pending; false eligibility goes to the same
+   author for scoped correction. Retain zero-topic-merge and commit-ownership
+   proof for linear targets. Restack does not reconstruct content or add merges.
+
+8. Report to the human (in the project language), per branch: old head `O`, new head `N`,
    base, range-diff result, checks result, the push command or the blocked outcome with
    its reason and next human action, and skipped branches with the reason.
 
