@@ -197,3 +197,37 @@ Snapshot board card numbers must be positive JSON integers (booleans, strings
 and fractional numbers are malformed). Unsupported board or workflow labels
 make their section unavailable before grouping, so masked identities cannot merge.
 Bounded labels containing ordinary spaces retain their original distinct identities.
+
+
+## Merge-method observation
+
+`merge_readiness.py` is source-only maintenance code, excluded from the exported
+skill. It reads a caller-supplied GitHub REST PR object from stdin and requires
+both the trusted configured method and the method whose readiness is requested.
+It never infers policy from repository identity, history or allowed settings,
+contacts a forge, merges, pushes, builds, changes settings or enforces policy.
+
+```sh
+python3 -B tools/merge_readiness.py --configured-method rebase --method rebase \
+  --head FULL_EXPECTED_HEAD --base FULL_CURRENT_BASE --root /absolute/checkout < pr.json
+```
+
+Obtain `pr.json` with a separate checked read of
+`gh api repos/<owner>/<repo>/pulls/<number>`. Rebase observation requires exact
+head/base matches and boolean `rebaseable: true`; merge/squash observation uses
+`mergeable` only when that method was explicitly configured. Exit codes are
+0 ready for that method, 1 blocked, 2 pending. Checks, review, authorization,
+required forge policy and freshness remain caller responsibilities. The helper
+cannot prove that supplied JSON is authentic or still current.
+
+Optional `--root` adds separate read-only local ancestry and physical topic-merge
+count evidence, refusing shallow/grafted history and ignoring replacement objects.
+Its result does not change the method-only exit code: linear targets must also
+require local history `ready` with count zero and establish commit ownership
+separately. Unavailable local objects stay pending; every local Git query disables lazy
+fetching and optional locks. Git without `--no-lazy-fetch` support leaves local
+evidence pending rather than contacting a promisor remote. The helper never fetches.
+`test_merge_readiness.py` covers negative/unknown/stale method observations,
+positive eligibility, local linear/merge/diverged histories and CLI exits in the
+normal unittest suite. These offline fixtures do not measure live GitHub
+eligibility calculation or agent compliance with the workflow guidance.
