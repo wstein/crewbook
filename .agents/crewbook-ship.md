@@ -32,15 +32,20 @@ Helper model: the helper tier of the configured model mapping ([README](../READM
 coordinator; never pick one (gap tracked under #108).
 
 Steps:
-1. Preconditions, each checked with a command and recorded. Run `git fetch origin` as its
-   own command first. Then: the worktree is clean and on the branch, `git rev-parse HEAD`
-   equals `S`, and `S` descends from the tip of `base` (default: `origin/main`). A worktree
-   that `git worktree list` or the registry/claim check shows held by another author, or a
-   dirty one: `blocked: worktree occupied`, touch nothing. Not a descendant of the current
-   `origin/main` tip without a given `base`: `blocked: needs rebase` if it is plainly behind
-   main, `blocked: stacked branch` if it carries another branch's commits. Do not rebase
-   here; return it to the author for re-review. The block is conservative; the human may
-   relax it.
+1. Preconditions, each checked and recorded. Apply the author's
+   [pre-push preparation](../docs/git-history.md#auto-push-trial) before binding
+   checks and CLEAR to `S`. Resolve and fetch the actual default branch from the
+   target's own remote as separate checked calls. The worktree is clean and on
+   the branch, `git rev-parse HEAD` equals `S`, and the fresh default tip is an
+   ancestor of `S`. For a stack, also require `S` to descend from the updated
+   parent `base`; a stale parent returns to the author for dependency-preserving
+   restack. A worktree held by another author or dirty is `blocked: worktree
+   occupied`, untouched. Ship never rebases: a stale base returns to the author
+   for preparation, checks and exact-SHA re-review.
+   Immediately before step 2, reobserve the default name/tip and remote topic
+   head against the recorded observations. A changed default is `blocked: needs
+   rebase`; a changed topic is `blocked: remote moved`. Preserve both heads;
+   never proceed using stale clearance or overwrite concurrent work.
 2. Push the topic branch, never forced: `git push origin <branch>` as its own command, not
    chained with any rebase, fetch or `| tail`. Run Git steps one command at a time with
    exit codes checked. Then read the remote branch tip (`git ls-remote`); it must equal `S`.
@@ -91,9 +96,10 @@ Blocked outcomes (the PR stays draft, no retry loop, no workaround; report the b
 - gate timeout (watcher deadline reached, or gate re-run retries exhausted): `blocked: gate timeout`;
   the PR stays draft (with the evidence comment if step 5 ran). Not a failure of the PR; the desk may
   re-invoke once the gate is available, which re-verifies `S` from step 1.
-- rebase conflicts, behind main or a stacked branch without `base`: `blocked: needs rebase` /
+- rebase conflicts, behind the fresh default or a stacked branch without `base`: `blocked: needs rebase` /
   `blocked: stacked branch`; ship never rebases.
 - occupied worktree: `blocked: worktree occupied`, per step 1.
+- remote topic changed before push: `blocked: remote moved`; preserve both heads.
 - push rejected (non-fast-forward): `blocked: remote diverged`; never force.
 
 Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports).
