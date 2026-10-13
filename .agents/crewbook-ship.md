@@ -71,7 +71,14 @@ Steps:
    `gh pr view <pr> --json headRefOid,statusCheckRollup`. Require `headRefOid == S`,
    every required check present on `S` with conclusion `SUCCESS`, and `review/<tier>`
    present and `success`.
-8. Only then `gh pr ready <pr>`; read back `isDraft == false` and `headRefOid == S`.
+8. Before final readiness, apply [merge-method readiness](../docs/git-history.md#merge-method-readiness):
+   resolve the configured method from trusted inputs and read the actual PR REST
+   observation for `S` and the current expected base. A rebase-only target needs
+   `rebaseable == true`; clean mergeability and green CI are insufficient. Record
+   the linear-history/ownership proof when required. Unknown or stale evidence
+   leaves final readiness pending; false eligibility returns to the same author
+   for scoped correction and exact-SHA re-review. The authorized draft PR may
+   already be open. Only with the required evidence `gh pr ready <pr>`; read back `isDraft == false` and `headRefOid == S`.
 9. Record the run per [run records](../docs/team.md#run-records), then report to the human: PR URL, `S`, tier, checks with conclusions, and that merging by
    rebase is the human's action.
 
