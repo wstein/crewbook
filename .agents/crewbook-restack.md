@@ -32,9 +32,12 @@ coordinator; never pick one (gap tracked under #108). Helpers run in the backgro
 report facts; the desk decides. No foreground polling.
 
 Steps:
-1. `git fetch origin` as its own command. Record `origin/main` SHA `M` (the default
-   branch from project config); every step names `M`, not the local `main`. Read
-   `git worktree list` and the open assignments.
+1. Apply [pre-push preparation](../docs/git-history.md#auto-push-trial): freshly
+   resolve and fetch the actual default branch from the target's own remote,
+   with each call checked separately. Record its name and fetched full SHA `M`;
+   every step names `M`, not an assumed `origin/main` or local default. Read
+   `git worktree list` and the open assignments. Establish ownership of every
+   commit to be rewritten; stop rather than rewrite human/foreign commits.
 2. Candidates. A local branch qualifies with an open PR (`gh pr list --head <b> --state
    open`) or an unmerged reviewed head (CLEAR on its SHA). Exclude branches whose PR is
    merged, whose head is an ancestor of `M`, or for which `git cherry M <b>` shows no `+`
@@ -47,7 +50,9 @@ Steps:
    (GitHub deletes a merged parent and retargets the child to main, so
    `git merge-base O M` would be wrong). For an independent branch: `git merge-base O M`. If `B` cannot be
    determined, `blocked: base unknown` for that branch. The new base is `M`, or the
-   rewritten head of an unmerged parent. A blocked parent blocks its children
+   rewritten head of an unmerged parent, preserving pending dependencies; first
+   update the owned stack base onto `M`, then restack children without flattening.
+   Require `M` to be an ancestor of every new head. A blocked parent blocks its children
    (`blocked: parent blocked`).
 4. Rebase, one branch at a time. The branch's worktree must be clean
    (`git status --porcelain` empty) and held by no assignment or claim; a free branch
@@ -76,7 +81,10 @@ Steps:
    required by step 5; all `=` alone is insufficient. Push only an owned topic
    within the authorized request. Observe its remote with
    `git ls-remote origin refs/heads/<b>` as a separate command. Require the remote
-   to equal recorded old head `O`, and recheck immediately before the push.
+   to equal recorded old head `O`, and recheck immediately before the push along
+   with the actual default name/tip against step 1. A changed default stops the
+   push and requires fresh preparation, checks and exact-SHA review; a changed
+   remote topic is preserved and reconciled, never overwritten.
    Run `git push --force-with-lease=refs/heads/<b>:<O> origin <N>:refs/heads/<b>`
    as a separate checked command. Never plain `--force`, implicit leases or a
    retry with a newer expected head. A concurrent remote change causes lease
@@ -102,12 +110,13 @@ Blocked outcomes (the affected branch keeps its old head or is not ready; the re
 run continues unless noted; report branch, observed state and next human action):
 - duplicate invocation (another restack run, rebase in progress or a branch head that
   changed since step 2): `blocked: duplicate invocation`, branch untouched.
-- `origin/main` unreadable or fetch failed: `blocked: base unknown`, stop the whole run (a branch whose `B` is
+- actual default unreadable or fetch failed: `blocked: base unknown`, stop the whole run (a branch whose `B` is
   undeterminable: the same outcome for that branch only).
 - rebase conflict: `blocked: rebase conflict`, rebase aborted, branch untouched.
 - range-diff not all `=`: `blocked: patch changed`, needs a fresh review.
 - repo checks fail on the new head: `blocked: checks failed`, not ready.
 - dirty, occupied or assigned worktree: `blocked: worktree occupied`, touch nothing in it.
+- default name/tip changed before push: `blocked: needs rebase`, no stale push.
 - remote head differs from `O` (at observation or at hand-over): `blocked: remote moved`.
 - parent branch blocked: `blocked: parent blocked`, children untouched.
 

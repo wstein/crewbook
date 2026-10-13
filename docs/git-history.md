@@ -102,6 +102,28 @@ edit ownership. Required exact-SHA review, checks and target policy still apply.
 No routine approval question is needed when the request already covers these
 operations. A local-only assignment authorizes no push or PR.
 
+Before the initial topic push and every PR update, the author freshly resolves
+and fetches the actual repository default branch from its own remote; do not
+assume `main` or trust a stale local/default tracking ref. Rebase only owned
+topic commits onto that fetched tip before running required checks and obtaining
+independent exact-SHA review. If already based on that tip, record the ancestry
+proof. For a stack, first update the owned stack base onto the fresh default,
+then restack children onto their updated parents in dependency order. The default
+must be an ancestor of every resulting head; preserve each pending parent
+dependency rather than flattening the child onto the default. Stop if this would
+rewrite human/foreign commits or ownership cannot be established. For linear
+targets, retain the zero-topic-merge proof; do not merge the default into a topic.
+
+Immediately before pushing, reobserve the actual default branch name/tip and
+owned remote topic head against the recorded observations. If either changed,
+stop that push and reconcile ownership/preservation; a changed default requires
+fresh rebase/restack, checks and exact-SHA review before retrying. Never overwrite
+concurrent remote work or refresh a lease blindly. An authorized owned-topic
+rewrite uses only the full-SHA expected-head lease in
+[restack](../.agents/crewbook-restack.md); an initial or fast-forward push uses
+[ship](../.agents/crewbook-ship.md). This preparation grants no default-branch
+push, PR merge, build, release or settings authority.
+
 Never push the protected integration branch or tags, merge, release, deploy or
 change forge protections. Restacking an owned topic uses only the reviewed
 explicit-lease procedure in [restack](../.agents/crewbook-restack.md); ordinary
