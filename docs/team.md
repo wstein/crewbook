@@ -78,6 +78,14 @@ review. It narrows only the later-round re-review: it never applies to a rebase 
 new base or a restack, to rule changes, or to the first review, and a rewritten SHA
 that a restack or rebase onto a new base produced still needs its exact-SHA review.
 
+<a id="ready-means-mergeable"></a>
+**Ready means the human can merge:** a PR is Draft only with a named blocker in its
+body (for example review not CLEAR for the exact head, a required check red or
+pending, a merge-method blocker such as `rebaseable != true` per
+[merge-method readiness](git-history.md#merge-method-readiness), a pending build
+authorization, unmet scope), and the human merges a Ready PR without a further
+approval step.
+
 The designated coordinator remains the sole issue/card writer for assigned
 work. Check criteria against evidence, preserve unrelated issue content, and
 close an issue only when every criterion is fulfilled (including required exact
@@ -98,6 +106,7 @@ Static review scenarios (guidance, not measured native execution):
 | Human explicitly limits the issue assignment to local work | Return the checked local result; no topic push or PR |
 | Host denies a topic push otherwise covered by the request | Preserve the reviewed candidate and report the actual denial and next action; do not bypass host approval controls |
 | Review finds a defect in an owned open PR; the fix belongs to an earlier commit | Author folds the fix into that commit, runs the checks and gets the exact-SHA review of the new head, then pushes with the explicit old-head lease; the PR stays Draft with the named blocker until then |
+| PR has a CLEAR review of its exact head and green required checks, no other named blocker (merge-method `rebaseable`, build authorization) and is still Draft | Mark it Ready and say so; Draft without a named blocker is a defect of the handoff |
 | Reviewed restack O→N; remote moves after observation | Explicit O lease refuses; preserve remote work, report the changed head, never retry with a refreshed lease |
 | PR merged but one issue criterion remains unmet | Issue stays open; card cannot become Done |
 | Issue closure read back CLOSED | Authorized coordinator may move its card to Done and verify readback |
