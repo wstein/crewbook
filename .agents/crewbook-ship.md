@@ -87,8 +87,9 @@ Steps:
 9. Record the run per [run records](../docs/team.md#run-records), then report to the human: PR URL, `S`, tier, checks with conclusions, and that merging by
    rebase is the human's action.
 
-Blocked outcomes (the PR stays draft, no retry loop, no workaround; report the blocker,
-`S`, observed state and the next human or author action):
+Blocked outcomes (when a PR exists it stays draft with the blocker named in its body; several
+blocked outcomes happen before any PR exists, and then the report alone carries the blocker. No retry
+loop, no workaround; report the blocker, `S`, observed state and the next human or author action):
 - changed HEAD (local, remote or PR head not `S`): `blocked: head changed`.
 - missing checks (a required check absent or not on `S` at the deadline): `blocked: checks missing`;
   a failed check: `blocked: check failed` with name, URL and first failing line.
@@ -101,6 +102,12 @@ Blocked outcomes (the PR stays draft, no retry loop, no workaround; report the b
 - occupied worktree: `blocked: worktree occupied`, per step 1.
 - remote topic changed before push: `blocked: remote moved`; preserve both heads.
 - push rejected (non-fast-forward): `blocked: remote diverged`; never force.
+
+Blocker in the PR body: to name a blocker in an existing PR body, first read the current
+body (`gh pr view <pr> --json body`) and the PR comments, edit the body once with the
+blocker added or replaced, and never post the same blocker twice (reconcile an uncertain
+write by reading the body again before any retry). Clear the blocker line when the blocker
+is resolved.
 
 Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports).
 Card and issue writes stay with the designated coordinator.
