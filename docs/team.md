@@ -55,6 +55,29 @@ Artifact, image and documentation builds, including release snapshots, require
 explicit human approval under the applicable umbrella policy; source checks
 remain routine. A request to push or open a PR is not build authorization.
 
+<a id="owned-pr-rewrite"></a>
+An author may rewrite the history of its own open PR branch when that is
+necessary: restack onto the fresh default branch or a moved parent, fold a review
+fix into the commit it fixes ([commit hygiene](git-history.md#commit-hygiene)), or
+reorder or split commits to keep them atomic and within the size budget. Conditions:
+only commits the agent authored (ownership evidence is the assignment or session
+record and the agent `Co-Authored-By` trailer, because the Git author of agent
+commits is the human); the rewritten head gets its checks and the exact-SHA review
+the [rebase re-review rule](git-history.md#rebase-re-review) requires BEFORE the
+push; then the push uses only the explicit
+`--force-with-lease=refs/heads/<b>:<observed full SHA>` of
+[restack](../.agents/crewbook-restack.md), never a plain `--force` and never a
+refreshed lease; the default branch and tags are never rewritten.
+
+<a id="wording-only-exception"></a>
+Owner-decided exception (2026-10-17, "Script ist ok"): a later-round fix that only
+changes wording (no rule, behaviour or contract) and follows an exact-SHA CLEAR may be
+verified by the project's own documented docs or lint check (none documented, no
+exception) plus `git diff --check` instead of another model
+review. It narrows only the later-round re-review: it never applies to a rebase onto a
+new base or a restack, to rule changes, or to the first review, and a rewritten SHA
+that a restack or rebase onto a new base produced still needs its exact-SHA review.
+
 The designated coordinator remains the sole issue/card writer for assigned
 work. Check criteria against evidence, preserve unrelated issue content, and
 close an issue only when every criterion is fulfilled (including required exact
@@ -74,6 +97,7 @@ Static review scenarios (guidance, not measured native execution):
 | Push or PR create/update triggers approval-required builds, including Hugo or `make build` on draft PRs | Wait for explicit build authorization for that operation/revision or an already authorized route avoiding the builds; do not disable checks or rely on draft status |
 | Human explicitly limits the issue assignment to local work | Return the checked local result; no topic push or PR |
 | Host denies a topic push otherwise covered by the request | Preserve the reviewed candidate and report the actual denial and next action; do not bypass host approval controls |
+| Review finds a defect in an owned open PR; the fix belongs to an earlier commit | Author folds the fix into that commit, runs the checks and gets the exact-SHA review of the new head, then pushes with the explicit old-head lease; the PR stays Draft with the named blocker until then |
 | Reviewed restack O→N; remote moves after observation | Explicit O lease refuses; preserve remote work, report the changed head, never retry with a refreshed lease |
 | PR merged but one issue criterion remains unmet | Issue stays open; card cannot become Done |
 | Issue closure read back CLOSED | Authorized coordinator may move its card to Done and verify readback |
@@ -197,7 +221,7 @@ a duplicate run or a checklist without frontmatter end in a defined blocked outc
 is the desk's procedure after a merge. It rebases the open topic branches onto the new
 default branch in dependency order (a stack's parent first), proves with `git range-diff`
 that every patch is unchanged (all `=`), and runs the repo checks on the helper tier
-before a rewritten head counts as ready; ready means ready for the review the
+before a rewritten head counts as review-ready; review-ready means ready for the review the
 [rebase re-review rule](git-history.md#rebase-re-review) requires, since all `=` proves
 the patches unchanged but is not a review, and the old review does not carry over. It resolves no conflicts and never merges. After exact-new-SHA review, an authorized
 owned topic may be pushed with an explicit old-head lease, bound to `O` observed
