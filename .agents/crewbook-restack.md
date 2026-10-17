@@ -71,14 +71,16 @@ Steps:
    desk can restore it). All `=` proves the patches unchanged; it is not a review. Then
    run the repo checks for `N` on the helper tier from the configured mapping (never
    hardcoded; ask the coordinator if none); failure is `blocked: checks failed` with the
-   failing command. Ready means all `=` and green checks on `N`, ready for the review the
+   failing command. Review-ready means all `=` and green checks on `N`, ready for the review the
    [rebase re-review rule](../docs/git-history.md#rebase-re-review) requires (narrowed
    Opus review of `N`, full on file overlap) before any status is re-posted on `N`;
    report the overlap: the files in both `git diff --name-only B <new base>` and
    `git diff --name-only B O`.
    A CLEAR or status on `O` does not carry over.
 6. Reviewed lease push. Before pushing, obtain the independent exact-`N` review
-   required by step 5; all `=` alone is insufficient. Push only an owned topic
+   required by step 5; all `=` alone is insufficient. The wording-only verification
+   of the [owner exception](../docs/team.md#wording-only-exception) never applies to a
+   restack. Push only an owned topic
    within the authorized request. Observe its remote with
    `git ls-remote origin refs/heads/<b>` as a separate command. Require the remote
    to equal recorded old head `O`, and recheck immediately before the push along
