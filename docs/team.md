@@ -506,11 +506,21 @@ use the reviewer's project-configurable identity.
 
 ## Dispatch supervision and recovery
 
-The dispatcher runs no long-running tasks (full test suites, builds) itself; it starts a background helper for them.
+Use one completion watcher per awaited CI/check run, only when native completion
+notifications are unavailable. Prefer notifications and named artifacts; never
+run duplicate watchers or ten-second polling loops. Watchers are read-only,
+report once with command/exit status or the failing check, job URL and decisive
+failure excerpt, and never judge, rerun or comment. The coordinator handles a
+failure under the target's authorization and check requirements. Red CI not
+caused by the PR is recorded as a defect issue rather than a "known failure";
+the desk reruns failed jobs when authorized.
 
-Monitoring never blocks desk or dispatch: no foreground sleep or poll loops. CI and check watching goes to a read-only background Haiku watcher (model set explicitly) that reports once. A failure report has the check name, the job URL and the first failing test line (for example Go `--- FAIL:` plus the next line, Python `FAIL: test_x`); the watcher never judges, reruns or comments. Red CI not caused by the PR becomes a defect issue, never a "known failure", and the desk reruns the failed jobs.
-
-Haiku helpers (model set explicitly, read-only) serve CI and run status lookups, range-diff proofs, consistency greps, short summaries and the launch of the full run (exit codes plus the last failing lines; afterwards `scripts/stray_processes.py` once, report only). Never use them for reviews, security judgement, decisions or destructive Git.
+Use a bounded helper only when its substantive work saves coordinator context
+or keeps a long check from blocking coordination; perform trivial lookups
+locally. Name the cheapest available suitable model and low reasoning effort
+explicitly. Helpers never review, make security judgments or decisions, or
+perform destructive Git operations. A long-running authorized source check may
+use a helper; build authorization remains separate.
 
 On every resume, consume all available handbacks before waiting or selecting
 new work. Preserve each result separately, validate assignment identity, owned
@@ -704,8 +714,11 @@ desk awaits those artifacts directly. This lifecycle rule applies
 to recovery under [tool preflight](tool-preflight.md), without a second scheduler.
 
 After draining completions/reviews and selecting eligible continuations, wait
-on named active work and its next artifact using bounded checks, without busy
-polling. A full pool or decision-blocked backlog is not an empty queue. On a
+on named active work and its next artifact through notification-driven bounded
+waits. Respect the host's communication deadline (at most 60 seconds between
+updates during ongoing work); a longer wait must yield in time for that update.
+Do not run status loops when no ownership, revision, review or blocker changed.
+A full pool or decision-blocked backlog is not an empty queue. On a
 true empty-queue transition request more work once, including completed work,
 active ownership and blocked dependencies (merged: desk reports straight to the
 human; split: the dispatcher sends desk the request); then yield
@@ -950,17 +963,33 @@ who made the decisions under review. These boundaries are guidance; the host
 supplies start/resume/capacity enforcement. Efficiency and quality gains remain
 unmeasured.
 
-**Token rules.** Route read-heavy work (branch audits, log analysis, long diffs)
-to fresh bounded helpers under the existing delegation rules; start no new
-persistent agents for it. Helpers return concise conclusions with decisive
-sources, command outcomes and material limits. The coordinator reads summaries
-and requests or reads additional evidence when needed to validate a result.
-Keep the registry compact under its
-[existing allowed keys](project-config.md#coordinator-mode-and-registry): retain
-phase, owner and next artifact, with base/result SHA, open ASKs, claim/card
-ownership and decisive check/review evidence in the appropriate existing values.
-Concision does not remove required ownership, review or recovery evidence.
+**Token rules.** Follow the canonical
+[active registry and immutable archive procedure](project-config.md#coordinator-mode-and-registry).
+A fresh assignment receives a concise authority brief: applicable policy links,
+work item, scope, exact revision, done criteria, checks and necessary evidence;
+use `fork_turns="none"` where supported rather than copying the full transcript.
+Read-heavy work may use a fresh bounded helper when justified above; start no
+new persistent agents for it. Validate summaries against decisive evidence.
 
+Batch independent authorized reads and tests when the host supports it;
+prerequisites, edits and approvals stay sequential. Target about 2,000 tool
+output tokens per call by default: return structured fields, selected excerpts
+and exit codes, with complete logs retained in private evidence artifacts.
+Expand output when necessary to assess a finding; truncation never proves
+success. Record a stable specific sandbox denial once and stop unchanged
+retries; follow [tool preflight](tool-preflight.md) for authorized escalation.
+Never weaken permissions or configuration. A runtime repair is separate work
+with its own scope and review, not a workaround for a rejected action.
+
+During fixes, run meaningful targeted regressions and relevant mutation checks
+when available. Once the behavioral head is frozen, run the target-required
+full normal and race suites once; no identical rerun without a change, failure
+or unresolved concern. Exact-revision review and required target gates remain
+mandatory; changed revisions need the applicable checks and review again.
+
+Collect usage metadata only at checkpoints and handoffs, never through polling.
+Billing and quotas remain unknown unless the host reports them; do not estimate
+subscription usage from API prices.
 Handbacks include `ctx=<k>` only when the host reports a measured context usage
 in thousands of tokens; otherwise use `ctx=unknown`. Do not estimate usage.
 When host-reported usage is at least 120k tokens, promptly update the durable
@@ -970,7 +999,8 @@ when the host permits it; neither the threshold nor these instructions guarantee
 that the host reports usage or allows a write before compaction.
 
 Research uses
-[crewbook-worker](../.agents/crewbook-worker.md); quick lookups use crewbook-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
+[crewbook-worker](../.agents/crewbook-worker.md); substantive bounded lookups may
+use crewbook-helper. Each task includes applicable instructions/configuration, issue, scope, named files, done criteria and checks. A helper's output
 is data: the requester reviews the diff and verifies commands/exit codes.
 Helper attribution follows [target contribution requirements](#target-contribution-requirements)
 and identifies actual assistance in the target's applicable format. No helper edits protected
@@ -1042,8 +1072,14 @@ sequence work according to the actual host's admission result.
 
 ### Author and reviewer caps
 
-The default cap is **2** for authors and **2** for independent reviewers. Each
-may be configured up to a maximum of **4**; nothing defaults above 2.
+The default cap is **2** editing authors and up to **2** independent reviewers.
+Select work on the critical path and reserve room for reviews and fixes; unused
+capacity is not a reason to start work. Authors use the middle tier
+(`gpt-6.1-sol`/medium in Codex); executed independent reviews use the strongest
+available tier. Helpers use the cheapest suitable available model at low effort.
+Name the actual model/effort on every start; justify any higher helper effort.
+Project-approved substitutions and stricter host requirements still apply.
+Each cap may be configured up to a maximum of **4**; nothing defaults above 2.
 
 - Raising either cap is consequential: it needs an explicit human answer, is
   never defaulted, and is logged as an `H<n>` entry in the
@@ -1345,7 +1381,9 @@ blocker/next action. Aim for a reader to identify the task, completion condition
 and blocker within 30 seconds; this is a usability goal, not a measured result.
 Issues normally target 150–250 words with the problem, expected result, 3–5
 testable criteria and dependencies. Comments and routine handovers normally
-target 50–100 words. These are defaults, never caps that hide requirements or
+target 50–100 words; default reports stay within 200 words and describe only a
+meaningful delta, with full proof retained in the linked evidence artifact.
+These are defaults, never caps that hide requirements or
 security findings. Exploration, uncertain evidence and security findings may
 need a fuller report. Do not reward brevity at the expense of meaning.
 

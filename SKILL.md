@@ -47,6 +47,8 @@ run lifecycle. Host controls and explicit local-only limits still apply.
 For coordinated work, apply [review and correction priority](docs/team.md#review-and-correction-priority)
 before starting more authors; its allocation, reviewer isolation and measurement
 contract uses the current project/session limits.
+Use the canonical [cost and context procedure](docs/team.md#delegation-and-context)
+for compact evidence, tool output and check cadence.
 
 ## Start working
 
