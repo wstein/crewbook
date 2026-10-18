@@ -63,19 +63,26 @@ Steps:
    ran: if the target's gate check on `S` completed before the status, re-run it once it
    is no longer queued or in progress, with backoff (30 s, doubling, at most 5 attempts).
    Skip when the target re-runs the gate itself or has none (CrewBook has none today).
-5. Post the evidence comment: `S`, tier, reviewer, round count, the checks run with exit
-   codes, and any accepted Lows with owner. Reconcile an uncertain write by listing
-   the comments before retrying; never post it twice.
+5. Post the evidence comment: `S`, tier, each independent reviewer's identity and
+   scope, executed review round count, conclusion/findings, the checks actually run
+   with exit codes, and any accepted Lows with acceptance evidence and owner.
+   Distinguish the configured model/effort from runtime identity when the host
+   does not expose the latter; never invent runtime attestation. Missing runtime
+   identity must not suppress the executed review's conclusion or its public
+   status/comment. This does not relax the actual-model grammar or gate for
+   [registry/review notes](../docs/project-config.md#review-note), grant a configured
+   model tier eligibility, or replace the project's required tier and explicit
+   trusted host mapping. Report any unresolved eligibility gap as a blocker.
+   Reconcile an uncertain write by listing the comments before retrying; never
+   post it twice.
 6. Start one background watcher (read-only, reports once, no foreground polling) on the
    configured helper model. Give it `S`, the PR, the required checks (from
    `gh api repos/<o>/<r>/rules/branches/<base>`, `required_status_checks`) and a deadline
    (default 30 minutes; a project profile may override it). It returns per check: name, conclusion,
    job URL and the first failing line. It never judges, reruns or comments.
 7. Stamping and watching are separate: step 4 completes before the watcher result is
-   awaited. Do not mark ready on the watcher's word. On its report, read it directly:
-   `gh pr view <pr> --json headRefOid,statusCheckRollup`. Require `headRefOid == S`,
-   every required check present on `S` with conclusion `SUCCESS`, and `review/<tier>`
-   present and `success`.
+   awaited. On its report, perform the [Review → Ready preflight](#review-ready-preflight)
+   directly; the watcher's word cannot establish readiness.
 8. Before final readiness, apply [merge-method readiness](../docs/git-history.md#merge-method-readiness):
    resolve the configured method from trusted inputs and read the actual PR REST
    observation for `S` and the current expected base. A rebase-only target needs
@@ -83,9 +90,44 @@ Steps:
    the linear-history/ownership proof when required. Unknown or stale evidence
    leaves final readiness pending; false eligibility returns to the same author
    for scoped correction and exact-SHA re-review. The authorized draft PR may
-   already be open. Only with the required evidence `gh pr ready <pr>`; read back `isDraft == false` and `headRefOid == S`.
+   already be open. Complete the preflight before instructing the assigned author
+   to mark Ready. The author independently repeats it immediately before
+   `gh pr ready <pr>` (or the assigned ship coordinator does when authorized to
+   perform that operation); read back `isDraft == false` and `headRefOid == S`.
 9. Record the run per [run records](../docs/team.md#run-records), then report to the human: PR URL, `S`, tier, checks with conclusions, and that merging by
    rebase is the human's action.
+
+<a id="review-ready-preflight"></a>
+## Review → Ready preflight
+
+Before the desk instructs Ready, and independently before the assigned author
+marks Ready, read the actual GitHub state for the exact pushed/reviewed `S`:
+
+- Read the PR head and remote topic head; both must equal `S`, with independent
+  CLEAR evidence for `S` satisfying the target's review tier and scope.
+- Read the commit statuses on `S`. Require the effective `review/<tier>` status
+  to be `success`, created by the target-required account. A same-named status
+  from another account or on another SHA does not count.
+- List the PR comments and read back the exact evidence comment posted in step 5
+  for `S`, retaining its URL/id. Verify its tier, reviewers/scopes, executed round
+  count, conclusion/findings and accepted Lows with acceptance evidence/owner,
+  and executed checks with exit codes against the review handbacks. An internal
+  handback, PR body or git note cannot replace the visible status and comment.
+- Read required checks directly with
+  `gh pr view <pr> --json headRefOid,statusCheckRollup`: each required check must
+  be present and successful on `S`. Read the PR REST head/base and current target
+  base per [merge-method readiness](../docs/git-history.md#merge-method-readiness),
+  including `rebaseable == true` for a rebase-only target and required local
+  history/ownership proof. Preserve any other named blocker.
+- Finally resample the PR head, remote topic head and target base. A changed
+  head blocks Ready; a changed base requires refreshed checks/eligibility under
+  target policy before repeating this preflight. Do not act on stale observations.
+
+Missing or mismatched public review evidence is `blocked: review evidence missing`;
+keep the PR Draft with that named blocker. Return missing writes to the desk,
+the status/comment owner; author and dispatcher read back rather than duplicating
+those writes. Reconcile uncertain writes under steps 4–5 before retrying.
+Ready remains the human-merge handoff, never permission for an agent to merge.
 
 Blocked outcomes (when a PR exists it stays draft with the blocker named in its body; several
 blocked outcomes happen before any PR exists, and then the report alone carries the blocker. No retry

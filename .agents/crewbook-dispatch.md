@@ -82,6 +82,9 @@ policy classifies as eligible or, in the old landing flow until the migration fi
 `gpt-6.1-sol/medium`; a lower tier (`sonnet`, `gpt-6.1-sol/low`) only for documentation
 review that project policy classifies as eligible (see crewbook-review) or, in the old landing flow, for the one landing review under the [`landing` pointer rule](../docs/git-history.md#landing-pointer). A review note
 permits a configured ready status only for its exact SHA with no open findings.
+Route any Ready instruction through the desk's
+[Review → Ready preflight](crewbook-ship.md#review-ready-preflight); missing public
+review evidence remains a named Draft blocker, not a completed handoff.
 The assigned author alone commits when authorized and, in the [pull request flow](../docs/git-history.md#pull-request-flow), opens a draft PR and marks it ready after CLEAR, with the required checks green and no other named blocker such as `rebaseable != true` or a pending build authorization (the human merges; an assigned coordinator can run the ship procedure within the human request). The desk decides at dispatch which issues form a stack and records the order in the dispatch note ([git-history](../docs/git-history.md#pull-request-flow)), otherwise uses configured landing; record status
 only from confirmed outcomes. Do not land on its behalf. Use configured status
 procedures; route rules, high findings and
