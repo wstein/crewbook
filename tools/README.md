@@ -65,7 +65,10 @@ The unittest command runs every `tools/test_*.py` file: `test_package.py`
 `review_lines.py`) `test_parser_properties.py` (seeded, bounded property tests for the review-line, confirmation-record and recovery-state parsers),
 `test_stray_processes.py` (canned `ps` output for `scripts/stray_processes.py`),
 and `test_usage_report.py` (synthetic-fixture and redaction tests for the
-distributed `scripts/usage_report.py`).
+distributed `scripts/usage_report.py`), plus `test_codex_usage_report.py`
+(synthetic native Codex metadata, resume/global response deduplication,
+inherited threads, model changes, guardian separation, malformed/partial usage
+and output privacy).
 
 The exported skill contains no maintenance code or dependencies. Source/layout
 checks and provider assertions do not establish native loading, permission
@@ -231,3 +234,36 @@ evidence pending rather than contacting a promisor remote. The helper never fetc
 positive eligibility, local linear/merge/diverged histories and CLI exits in the
 normal unittest suite. These offline fixtures do not measure live GitHub
 eligibility calculation or agent compliance with the workflow guidance.
+
+## Local Codex usage metadata
+
+Run `python3 -B scripts/usage_report.py --codex --json [PATH ...]` for a
+read-only report; without paths it reads `$CREWBOOK_USAGE_PATH` or
+`~/.codex/sessions`. Text and `--html FILE` output are also available. The Claude
+Code default, input format, pricing and output remain unchanged.
+
+The Codex adapter reads `session_meta.payload` identity/source,
+`turn_context.payload.model` and `token_usage_record.payload.usage` only. It
+filters inherited records whose `thread_id` differs from the current metadata
+`id`, then deduplicates `response_id` globally across resumed files. A response
+with contradictory thread/model/token metadata is excluded and reported as a
+conflict. `turn_token_usage`, `thread_token_usage` and cumulative `token_count`
+records are never summed. Models outside the fixed catalog become `unknown`.
+
+`input` excludes the `cache_read` subset; reasoning output is a separately
+reported subset of `output`, so neither subset is counted twice. Complete,
+nonnegative integer fields and `total_tokens == input_tokens + output_tokens`
+are required. Cache-write input is retained as an informational component with unknown
+subset/charge semantics and is never added to or subtracted from known input. Missing identity, malformed/truncated or partial usage
+produces visible counters and `partial`/`unavailable` coverage; no attributable
+responses gives unknown token totals. `observed` means an observed subtotal,
+not proof of complete session coverage.
+
+Guardian threads are recognized only by structured
+`source.subagent.other == "guardian"` or `thread_source == "guardian_review"`
+and reported separately. The report makes no billing, quota weighting,
+remaining-quota or savings claim; Codex price tables are rejected. It does not
+parse messages, prompts, tool arguments or account IDs, emit raw identifiers
+or source paths, modify logs or contact a service. Native formats can change;
+revisit unsupported schemas and cache-write semantics when authoritative
+metadata documentation or a sanitized fixture establishes their contract.

@@ -1453,9 +1453,22 @@ cost over all agent requests per burst when every request is priced.
 Cost uses a price table you supply (`--prices`; the shipped
 `scripts/usage_prices.example.json` is an **estimate, not vendor-verified**
 example). Without a table the report shows tokens only and cost `n/a`. Resume
-counts and loop/cron tick cost are heuristics and **unverified**. The command
-does not change loop cadence or any rule; whether a given client loads it
-natively is unverified, and the Codex pendant is tracked in #41.
+counts and loop/cron tick cost are heuristics and **unverified**. The command does not change loop cadence or any rule; native client loading
+remains unverified.
+
+`python3 scripts/usage_report.py --codex` reads local Codex metadata (default
+`~/.codex/sessions`). It counts only `token_usage_record.payload.usage` matched
+to the current `session_meta` thread and, when supplied there, session identity.
+It excludes inherited threads before globally deduplicating response IDs across
+resumed files; conflicting responses are excluded with visible coverage gaps.
+Cumulative counters are never summed. Cached input and reasoning output remain
+subsets; cache-write input is informational with unknown subset/charge semantics.
+Structured guardian threads are reported separately without assumed billing or
+quota weighting; absent records do not prove zero usage. Missing identity,
+partial/malformed usage and conflicts leave coverage gaps; no attributable
+responses gives unknown totals. Codex pricing and remaining-quota inference are
+unsupported. Identifiers are hashed; prompts, messages, account IDs and source
+paths are omitted. New schema coverage requires a sanitized fixture first.
 
 <a id="run-records"></a>
 ## Run records
