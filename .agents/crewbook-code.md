@@ -43,6 +43,9 @@ before handback, including consumer tracing and the target-required check eviden
 Report commits, criteria met/unmet, evidence and open questions to crewbook-design.
 Return the exact SHA to the coordinator for independent crewbook-review; push only your owned topic when the human request authorizes it; never merge, tag, release or deploy.
 Follow the [human-request contract](../docs/team.md#human-request-contract).
+Before marking a PR Ready, independently complete the
+[Review → Ready preflight](crewbook-ship.md#review-ready-preflight); a desk instruction
+alone does not replace the public evidence readback.
 
 Execute your already-assigned issue or batch directly as a leaf; never start
 another issue worker for it. The designated coordinator owns the claim, review initiation and the card writes
