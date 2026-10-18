@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only usage report for Claude Code session logs (stdlib only, Python 3.9+).
+"""Read-only local Claude Code or Codex usage report (stdlib, Python 3.9+).
 
 Reads session jsonl files (including subagents/*.jsonl) passively and locally;
 nothing is sent anywhere. Output contains only counts, token numbers, hashed
@@ -8,6 +8,10 @@ file paths or secrets. Costs are ESTIMATES from a user-supplied price table.
 
 Usage: usage_report.py [PATH ...] [--prices FILE] [--top N] [--json | --html FILE]
 PATH defaults to $CREWBOOK_USAGE_PATH, then ~/.claude/projects.
+With --codex, the default is ~/.codex/sessions. Only native per-response
+metadata is counted, globally deduplicated after excluding inherited threads.
+Unknown/partial usage is excluded visibly; cumulative token_count events are
+never summed. Codex pricing and quota/charge attribution are unsupported.
 
 Heuristics (estimates, unverified):
   resume    a gap above --resume-gap seconds (default 1800) between two
@@ -230,6 +234,150 @@ class Collector:
                           "v": vals, "ts": ts, "order": len(self.recs)}
 
 
+# Fixed catalog: arbitrary log strings (including model-shaped secrets) never
+# reach output. Unknown/new models retain usage but lose model attribution.
+CODEX_MODELS = frozenset({
+    "gpt-6.1-sol", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna", "gpt-reserve",
+    "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna", "codex-auto-review",
+})
+CODEX_NOTICE = ("Observed Codex per-response tokens only; incomplete logs may omit usage. "
+                "Reasoning is a subset of output. Guardian usage is separate; "
+                "billing, quota weighting and remaining quota are unknown.")
+
+
+class CodexCollector(Collector):
+    """Read only known native metadata, never messages, tool arguments or quotas."""
+    def __init__(self, resume_gap):
+        super().__init__(resume_gap)
+        self.conflicts = set()
+        self.stats.update(dict.fromkeys(("inherited_records", "conflicting_responses",
+                                       "cumulative_records_ignored"), 0))
+
+    def add_file(self, path):
+        # A resumed file must establish its own metadata/model; no state leaks
+        # from another thread, and inherited ancestor usage is excluded below.
+        self.thread = self.session = None
+        self.model = "unknown"
+        self.guardian = False
+        super().add_file(path)
+
+    def add_obj(self, obj, file_agent, label):
+        kind, payload = obj.get("type"), obj.get("payload")
+        if kind not in ("session_meta", "turn_context", "token_usage_record", "event_msg"):
+            # Content-bearing records are deliberately not interpreted.
+            return
+        if kind == "session_meta":
+            self.thread = self.session = None
+            self.model = "unknown"
+            self.guardian = False
+        elif kind == "turn_context":
+            self.model = "unknown"
+        if not isinstance(payload, dict):
+            self.stats["bad_usage"] += 1
+            return
+        if kind == "session_meta":
+            self.thread = payload.get("id")
+            self.session = payload.get("session_id")
+            self.model = "unknown"
+            source = payload.get("source")
+            subagent = source.get("subagent") if isinstance(source, dict) else None
+            self.guardian = (payload.get("thread_source") == "guardian_review" or
+                             isinstance(subagent, dict) and subagent.get("other") == "guardian")
+        elif kind == "turn_context":
+            value = payload.get("model")
+            self.model = value if isinstance(value, str) and value in CODEX_MODELS else "unknown"
+        elif kind == "event_msg":
+            if payload.get("type") == "token_count":
+                # last/total/turn/thread usage can repeat on resume. Only the
+                # dedicated per-response record supplies a trustworthy key.
+                self.stats["cumulative_records_ignored"] += 1
+        else:
+            self.add_usage(obj, payload)
+
+    def add_usage(self, obj, payload):
+        thread, response = payload.get("thread_id"), payload.get("response_id")
+        session = payload.get("session_id")
+        if not all(isinstance(v, str) and v for v in (self.thread, thread, response)):
+            self.stats["no_dedupe_key"] += 1
+            return
+        if thread != self.thread:
+            self.stats["inherited_records"] += 1
+            return
+        if (self.session is not None and
+                (not isinstance(self.session, str) or not self.session or session != self.session)):
+            self.stats["no_dedupe_key"] += 1
+            return
+        raw = payload.get("usage")
+        keys = ("input_tokens", "cached_input_tokens", "cache_write_input_tokens",
+                "output_tokens", "reasoning_output_tokens", "total_tokens")
+        if not isinstance(raw, dict):
+            self.stats["bad_usage"] += 1
+            return
+        values = [to_int(raw.get(k)) for k in keys]
+        if any(v is None for v in values):
+            self.stats["bad_usage"] += 1
+            return
+        inp, cached, written, output, reasoning, total = values
+        # Cached input and reasoning output are subsets, never extra tokens.
+        # Cache-write semantics are unknown: retain the raw component separately,
+        # never add it to inclusive input or subtract it from known input.
+        if cached > inp or reasoning > output or total != inp + output:
+            self.stats["bad_usage"] += 1
+            return
+        key = response
+        rec = {"agent": self.thread, "file_agent": self.thread, "model": self.model,
+               "v": dict(input=inp - cached, cache_read=cached, cache_write=0, output=output),
+               "reasoning": reasoning, "written": written, "guardian": self.guardian,
+               "ts": parse_ts(obj.get("timestamp")), "order": len(self.recs)}
+        if key in self.conflicts:
+            self.stats["duplicates"] += 1
+            return
+        previous = self.recs.get(key)
+        if previous is not None:
+            self.stats["duplicates"] += 1
+            if any(previous[k] != rec[k] for k in ("agent", "v", "model", "reasoning", "written", "guardian")):
+                del self.recs[key]
+                self.conflicts.add(key)
+                self.stats["conflicting_responses"] += 1
+            return
+        self.recs[key] = rec
+        if self.guardian:
+            self.roles[self.thread] = "guardian"
+
+
+def build_codex(col, top, resume_gap):
+    # Reuse the existing token grouping/timing and renderers, without applying
+    # Claude's price-table semantics to Codex or guardian activity.
+    rep = build(col, None, top, resume_gap)
+    rep.update(source="codex", notice=CODEX_NOTICE)
+    for name in ("inherited_records", "conflicting_responses", "cumulative_records_ignored"):
+        rep["skipped_unknown"][name] = col.stats[name]
+    gaps = ("malformed_lines", "no_dedupe_key", "bad_usage", "unreadable_files",
+            "walk_errors", "conflicting_responses")
+    rep["coverage"] = ("unavailable" if not col.recs else
+                       "partial" if any(col.stats[k] for k in gaps) else "observed")
+    rep["summary"]["reasoning_output_tokens"] = (sum(r["reasoning"] for r in col.recs.values())
+                                                    if col.recs else None)
+    guardians = [r for r in col.recs.values() if r["guardian"]]
+    rep["guardian"] = dict(requests=len(guardians),
+                           total_tokens=sum(sum(r["v"].values()) for r in guardians) if guardians else None)
+    rep["summary"]["cache_write_input_tokens_informational"] = (
+        sum(r["written"] for r in col.recs.values()) if col.recs else None)
+    rep["summary"]["tokens"].pop("cache_write")
+    for row in rep["rows"]:
+        row.pop("cache_write")
+    if not col.recs:
+        rep["summary"]["tokens"] = None
+    rep["limitations"] = [
+        "Only session_meta, turn_context and token_usage_record.usage metadata are interpreted.",
+        "Cumulative counters, messages, tool calls and rate-limit observations are not summed.",
+        "Missing identity, partial/invalid usage and conflicting responses are excluded; totals are observed subtotals.",
+        "Cache-write input is informational only; its subset/charge semantics are unknown.",
+        "No observed guardian response does not establish zero guardian usage.",
+    ]
+    return rep
+
+
 PRICE_MAX = 1e12
 
 
@@ -382,6 +530,11 @@ def build(col, table, top, resume_gap):
                "cache_read": v["cache_read"], "cache_write": v["cache_write"],
                "total_tokens": sum(v.values()), "cost_estimate": cost,
                "context_last_request": ctx, "resumes_estimate": resumes}
+        if isinstance(col, CodexCollector):
+            # recs already belongs to the full (agent, model, role) identity.
+            # The short emitted agent hash is a display label, never a join key.
+            row["cache_write_input_tokens_informational"] = sum(r["written"] for r in recs)
+            row["reasoning_output_tokens"] = sum(r["reasoning"] for r in recs)
         if loop:
             row["loop_estimate_unverified"] = dict(
                 loop, mean_cost_per_burst=(agent_cost / bursts if agent_cost is not None else None))
@@ -474,6 +627,29 @@ def hidden_text(rep):
 
 
 def render_text(rep):
+    if rep.get("source") == "codex":
+        lines = ["CrewBook Codex usage report (read-only, local). " + rep["notice"],
+                 "Coverage: " + rep["coverage"] + "; totals are observed subtotals."]
+        if rep["summary"]["tokens"] is None:
+            lines.append("Token totals unknown: no attributable responses.")
+        else:
+            lines.append("agent     model             role      responses uncached_input output cached_input reasoning cache_write(info)")
+            for row in rep["rows"]:
+                lines.append("%s %s %s %d %d %d %d %d %d" % (
+                    row["agent"], row["model"], row["role"], row["requests"],
+                    row["input"], row["output"], row["cache_read"],
+                    row["reasoning_output_tokens"], row["cache_write_input_tokens_informational"]))
+            summary = rep["summary"]
+            lines.append("Observed total: %d responses; uncached input %d, cached input %d, output %d; reasoning subset %d; cache_write(info) %d" % (
+                summary["requests"], summary["tokens"]["input"], summary["tokens"]["cache_read"],
+                summary["tokens"]["output"], summary["reasoning_output_tokens"],
+                summary["cache_write_input_tokens_informational"]))
+            if rep["rows_hidden"]:
+                lines.append("%d rows hidden" % rep["rows_hidden"])
+        lines.append("Guardian observed responses: %d; absent records do not establish zero usage." % rep["guardian"]["requests"])
+        lines.append("skipped/unknown: " + ", ".join("%s=%d" % item for item in rep["skipped_unknown"].items()))
+        lines.extend(rep["limitations"])
+        return "\n".join(lines) + "\n"
     s = rep["summary"]
     lines = ["CrewBook usage report (read-only, local). " + rep["notice"], ""]
     cols = ("agent", "model", "role", "reqs", "input", "output", "cache_read", "cache_write",
@@ -510,6 +686,11 @@ def render_text(rep):
 
 
 def render_html(rep):
+    if rep.get("source") == "codex":
+        # The compact text rendering includes coverage and guardian attribution.
+        return ('<!doctype html><html lang="en"><meta charset="utf-8">'
+                '<title>CrewBook Codex usage report</title><pre>' +
+                html.escape(render_text(rep)) + '</pre></html>')
     e = html.escape
     s = rep["summary"]
     head = ("agent", "model", "role", "requests", "input", "output", "cache read", "cache write",
@@ -553,7 +734,8 @@ th:nth-child(-n+3),td:nth-child(-n+3){text-align:left}
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Read-only Claude Code usage report (estimates).")
+    ap = argparse.ArgumentParser(description="Read-only local usage report (Claude Code default; --codex for Codex).")
+    ap.add_argument("--codex", action="store_true", help="read native local Codex per-response metadata; no pricing")
     ap.add_argument("paths", nargs="*", help="session dirs or jsonl files "
                     "(default: $CREWBOOK_USAGE_PATH or ~/.claude/projects)")
     ap.add_argument("--prices", default=os.environ.get("CREWBOOK_USAGE_PRICES"),
@@ -567,7 +749,11 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.top < 0 or a.resume_gap < 0:
         ap.error("--top and --resume-gap must not be negative")
-    roots = a.paths or [os.environ.get("CREWBOOK_USAGE_PATH") or os.path.expanduser("~/.claude/projects")]
+    if a.codex and a.prices:
+        sys.stderr.write("error: Codex pricing is unsupported; omit --prices and CREWBOOK_USAGE_PRICES\n")
+        return 2
+    default_path = "~/.codex/sessions" if a.codex else "~/.claude/projects"
+    roots = a.paths or [os.environ.get("CREWBOOK_USAGE_PATH") or os.path.expanduser(default_path)]
     table, problem = load_prices(a.prices)
     if table == "unreadable":
         sys.stderr.write("error: %s\n" % problem)
@@ -578,13 +764,13 @@ def main(argv=None):
     if not all(os.path.exists(r) for r in roots):
         sys.stderr.write("error: input path not found\n")
         return 2
-    col = Collector(a.resume_gap)
+    col = CodexCollector(a.resume_gap) if a.codex else Collector(a.resume_gap)
     for f in find_files(roots, col.stats):
         col.add_file(f)
     if col.stats["files"] == 0:
         sys.stderr.write("error: no readable session files found\n")
         return 2
-    rep = build(col, table, a.top, a.resume_gap)
+    rep = build_codex(col, a.top, a.resume_gap) if a.codex else build(col, table, a.top, a.resume_gap)
     if a.html:
         try:
             with open(a.html, "x", encoding="utf-8") as fh:
