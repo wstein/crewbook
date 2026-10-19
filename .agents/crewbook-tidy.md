@@ -46,14 +46,24 @@ Steps:
    Keep and report everything else: no PR, open or closed-unmerged PR, head differs
    without patch equivalence, dirty or occupied worktree, active assignment, every
    `spike/*`, any uncertain read.
-3. Close list. For each open issue whose work is claimed done (merged PR `Closes`/`Refs`,
+3. Close list. For each issue whose work is claimed done (merged PR `Closes`/`Refs`,
    checklist `Close` entries, issues named by deleted branches), verify against `M`:
    the closing commit or PR is an ancestor of `M` (`git merge-base --is-ancestor`) and
    every acceptance point the issue lists is met on `M`. List only verified ones with
    the proof (PR, SHA); put partial or unclear ones under "not verified" with the gap.
-   Within authorized scope the coordinator closes only those verified issues
-   through the target's configured authorized issue adapter, then reads back
-   CLOSED through that adapter. Use REST `gh api` where target policy requires
+   Immediately before a close, re-read the issue state and body through the
+   target's configured authorized issue adapter. If the body changed since
+   acceptance verification, reconcile it and verify the current criteria again;
+   preserve unrelated content, never replace the body as part of closing.
+   Already CLOSED means no repeated close; record that readback separately from
+   completion evidence. Within authorized scope the coordinator closes only
+   verified issues still OPEN, then reads back CLOSED through the same adapter.
+   An uncertain close (timeout, failed response or unknown application) is
+   reconciled by reading state before any retry. Confirmed CLOSED means no retry;
+   confirmed OPEN allows at most one retry after fresh criteria/body and scope
+   verification. Unreadable state, another uncertain result or exhausted retry
+   means `blocked: closure outcome pending`; do not repeat the close or mark Done.
+   Use REST `gh api` where target policy requires
    REST-only forge access; use `gh issue close` only when the target permits it.
    Missing authority or capability yields a verified close list for the human.
    A partial merged PR leaves the issue open; never close from merge alone.
@@ -131,6 +141,8 @@ run continues unless noted; report item, observed state and next human action):
 - unreadable reference (PR, issue, commit or tag not found or the call failed): the entry
   keeps its place, unticked, marked in the report as `blocked: reference unreadable`;
   an uncertain read is retried once as its own command, never guessed.
+- uncertain issue close without confirmed CLOSED readback: `blocked: closure outcome
+  pending`; retain the issue/adapter evidence and next read, never repeat blindly or mark Done.
 - checklist without valid frontmatter or with a `schema` other than 1 or 2: `blocked: checklist
   format`, checklist untouched; steps 2, 3, 5, 6 and 7 still run.
 - `origin/main` unreadable or fetch failed: `blocked: main unknown`, stop the whole run.
