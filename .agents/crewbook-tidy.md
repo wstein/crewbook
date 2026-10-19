@@ -87,9 +87,21 @@ Steps:
      commit/tag is reachable from `M`. A done entry becomes `- [x]` and moves to `Done`
      keeping its emoji. Dates sit in the parenthetical as `added: 2026-10-09`; in Done
      `added: 2026-10-09, done: 2026-10-10` with `done:` set to today (same date format).
-   - Retention: `Done` 🤖 entries with `done:` more than 7 days ago are dropped, first
-     appending one line (`- <date> <title> <ref>`) to `.work/LOGBOOK.md` under its own
-     heading `## <date> tidy` (never inside an existing session entry) if that file exists; without it, the entry is kept and reported instead of dropped.
+   - Retention: for `Done` 🤖 entries with `done:` more than 7 days ago, first
+     append one line (`- <date> <title> <ref>`) to an existing `.work/LOGBOOK.md`
+     under its own heading `## <date> tidy` (never inside a session entry).
+     Apply the canonical [logbook writer protocol](crewbook-logbook.md), including
+     ignored/owned/non-linked regular-file and format checks, freshness, stable
+     retention identity, uncertain-append reconciliation and exact readback.
+     The line keeps exactly this format; the stable retention identity adds no field.
+     It is the entry's reference plus title, matched against the lines under `## <date> tidy`
+     headings in the current logbook and verified monthly archives. A tidy-only append in
+     a new month follows the logbook's first-append rotation rule before appending.
+     Drop the checklist entry only after that retention record is confirmed by
+     readback; an already-recorded identity is adopted without another append.
+     Without a logbook or with any blocked/uncertain append or readback, keep the
+     entry and report the gap. A later checklist-write failure retains both copies;
+     the same retention identity prevents a duplicate on the next run.
      🧑 `Done` entries are never dropped: report those with `done:` more than 7 days ago as
      `retention due` (the human removes them).
    - Order: sections `Now`, `Decide`, `Later`, `Close`, `Settings`, `Done`, in this order.
