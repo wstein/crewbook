@@ -40,9 +40,25 @@ After writing, read back the exact intended result. A denied or uncertain write
 requires reconciliation before another append; unknown readback means pending,
 never a blind duplicate or replacement of concurrent content.
 
-At the first append in a new month, rotate the preceding month's complete
-logbook to `.work/LOGBOOK-YYYY-MM.md`, preserving all bytes, and initialize the
-current month's file with the frontmatter above. Do this only when existing
+Every logbook writer, including [tidy retention](crewbook-tidy.md), uses the
+same ignored-path, ownership, non-symlink, format, freshness and append/readback
+protocol above. Tidy keeps its own `## <date> tidy` heading and dated retention
+line outside session entries; the line keeps tidy's fixed `- <date> <title> <ref>`
+format and gains no extra field. The stable retention identity is derived from the
+original entry's reference and title (the `done` date stays on the checklist entry):
+a line under any `## <date> tidy` heading with the same reference and title, in the
+current logbook or a verified monthly archive, is the same record. Use that identity
+to reconcile an existing append without repeating it. Accepted edge cases: a
+reopened and re-done item with the same reference and title is adopted as already
+recorded, and a title edited between a failed checklist write and the next run
+produces a duplicate line. A blocked or uncertain append leaves the checklist
+entry in place. Only confirmed readback of that retention record permits
+dropping it; a later checklist-write failure may leave both copies and is reconciled by the
+same identity on the next invocation.
+
+At the first append in a new month, including a tidy-only retention append,
+rotate the preceding month's complete logbook to `.work/LOGBOOK-YYYY-MM.md`,
+preserving all bytes, and initialize the current month's file with the frontmatter above. Do this only when existing
 session and tidy headings identify one preceding month, the destination is absent, and
 freshness and exclusive ownership still hold. Never overwrite an archive or
 guess for mixed/ambiguous months; report `blocked: logbook rotation` with the
