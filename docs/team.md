@@ -158,6 +158,10 @@ passes the per-run override where the table differs. Use the selected provider
 mapping, never translate Claude tiers into assumed Codex performance. Record
 the actual model/effort and any host- or human-authorized substitution in the
 assignment and handback; host policy takes precedence over these defaults.
+Honor explicit host/user model prohibitions for starts, resumes, reviews and
+fallback selection. Do not select an automatic fallback without host/user
+authorization. If no authorized suitable model is available, report the capability
+gap rather than substituting a prohibited model.
 
 | Role | Model | Effort |
 | --- | --- | --- |
