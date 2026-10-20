@@ -545,7 +545,9 @@ use the reviewer's project-configurable identity.
 
 Use one completion watcher per awaited CI/check run, only when native completion
 notifications are unavailable. Prefer notifications and named artifacts; never
-run duplicate watchers or ten-second polling loops. Watchers are read-only,
+run duplicate watchers or ten-second polling loops. Assign one watcher owner per
+PR across desk and dispatch; neither duplicates the other's polling. Required
+final readiness observations still apply. Watchers are read-only,
 report once with command/exit status or the failing check, job URL and decisive
 failure excerpt, and never judge, rerun or comment. The coordinator handles a
 failure under the target's authorization and check requirements. Red CI not
@@ -1007,6 +1009,22 @@ work item, scope, exact revision, done criteria, checks and necessary evidence;
 use `fork_turns="none"` where supported rather than copying the full transcript.
 Read-heavy work may use a fresh bounded helper when justified above; start no
 new persistent agents for it. Validate summaries against decisive evidence.
+
+Where the host lets the caller arrange instructions, keep applicable stable
+instructions in a consistent prefix and append assignment-specific revisions,
+evidence and deltas afterward. Do not inflate prompts to seek caching, invent
+cache controls or claim cache hits without host evidence. Within one assignment,
+reuse already-read unchanged documents; an observed revision change invalidates
+the affected prior reading and requires the relevant changed material to be read.
+On a same-item correction, send the changed revision, findings, check results and
+remaining decisions as a delta to the retained author/reviewer context; do not
+repeat unchanged instructions or the full history. Required authority, exact-head
+review and decisive evidence remain available.
+
+Report meaningful milestones, changed findings or blockers, and the next action;
+avoid routine progress pings that add no evidence. Honor the host's required
+reporting cadence even when no milestone has changed. Use the shared
+[watcher owner](#dispatch-supervision-and-recovery) for CI observation.
 
 Batch independent authorized reads and tests when the host supports it;
 prerequisites, edits and approvals stay sequential. Target about 2,000 tool
