@@ -17,6 +17,7 @@ the human need not request publication separately or approve each push or PR
 update. Reuse that scope throughout the active human request, as in the
 WorkHarbor requirements v3 example of several issue fixes and a PR. Issue and
 configured project-card writes remain with the designated coordinator.
+A workspace or project AGENTS.md that grants standing authorization for topic pushes, PRs and their associated CI is an established scope; the local-diff default does not apply to those operations. Where no such policy exists the generic default is unchanged.
 
 Incomplete issue criteria, native verification or build readiness alone do not
 prevent publishing reviewed partial source as a scoped `Refs #N` draft PR. Run
@@ -28,14 +29,15 @@ Before pushing or creating/updating a PR, resolve the established host/user
 scope for publication and automatically triggered associated CI. When that scope
 covers them, proceed without another approval question. Preserve contrary project
 constraints unless the user explicitly overrides them within the host's instruction
-hierarchy. If the operation triggers builds still requiring approval, including
-workflows on draft PRs, wait for that authorization for the operation and source
-revision, or use an already authorized route avoiding those builds. Draft status
-alone does not prevent a build. Never disable checks or bypass host controls.
+hierarchy. If the operation triggers builds still requiring approval that no
+established scope covers, including workflows on draft PRs, wait for that
+authorization for the operation and source revision, or use an already authorized
+route avoiding those builds. Draft status alone does not prevent a build. Never disable checks or bypass host controls.
 
 Confirm destinations, ownership and actual capabilities before publication.
 An explicitly local-only task does not authorize outward writes; ordinary local
-work retains its local-diff default. Actual host controls and higher-priority
+work retains its local-diff default unless a workspace or project AGENTS.md
+establishes standing authorization. Actual host controls and higher-priority
 instructions still apply: report a denied or unavailable publication operation
 and its next action, without bypassing the control or treating prose as tool
 permission. A real host approval requirement remains distinct from a redundant
@@ -66,9 +68,11 @@ fix into the commit it fixes ([commit hygiene](git-history.md#commit-hygiene)), 
 reorder or split commits to keep them atomic and within the size budget. Conditions:
 only commits the agent authored (ownership evidence is the assignment or session
 record and the agent `Co-Authored-By` trailer, because the Git author of agent
-commits is the human); the rewritten head gets its checks and the exact-SHA review
+commits is the human); the rewritten head gets its checks and, for code, the exact-SHA review
 the [rebase re-review rule](git-history.md#rebase-re-review) requires BEFORE the
-push; then the push uses only the explicit
+push (owner decision 2026-10-20: for a branch that changes only specification or documentation only
+green local checks and, for a pure rebase, `git range-diff` equality are needed, and
+the independent review of the exact head still belongs to Ready); then the push uses only the explicit
 `--force-with-lease=refs/heads/<b>:<observed full SHA>` of
 [restack](../.agents/crewbook-restack.md), never a plain `--force` and never a
 refreshed lease; the default branch and tags are never rewritten.
@@ -86,8 +90,7 @@ that a restack or rebase onto a new base produced still needs its exact-SHA revi
 **Ready means the human can merge:** a PR is Draft only with a named blocker in its
 body (for example review not CLEAR for the exact head, a required check red or
 pending, a merge-method blocker such as `rebaseable != true` per
-[merge-method readiness](git-history.md#merge-method-readiness), a pending build
-authorization, unmet scope), and the human merges a Ready PR without a further
+[merge-method readiness](git-history.md#merge-method-readiness), unmet scope), and the human merges a Ready PR without a further
 approval step.
 
 The designated coordinator remains the sole issue/card writer for assigned
@@ -107,11 +110,11 @@ Static review scenarios (guidance, not measured native execution):
 | Human authorizes an issue fix without separately requesting a PR | After exact review, assigned author publishes its own topic and creates/updates its PR with check results disclosed, without another approval question; human merges |
 | Reviewed partial source; native verification or build readiness unmeasured, required check pending, publication triggers no approval-required build | Publish a scoped `Refs` draft PR with results and limits disclosed; readiness and issue completion remain blocked |
 | Established host/user scope covers reviewed topic publication and automatically triggered associated CI | Publish after exact review and required source checks without another approval question; human merges |
-| Push or PR create/update triggers builds still requiring approval, including Hugo or `make build` on draft PRs | Wait for explicit build authorization for that operation/revision or an already authorized route avoiding the builds; do not disable checks or rely on draft status |
+| Push or PR create/update triggers builds still requiring approval, including Hugo or `make build` on draft PRs | Wait for explicit build authorization for that operation/revision unless an established scope covers that associated CI, or use an already authorized route avoiding it; do not disable checks |
 | Human explicitly limits the issue assignment to local work | Return the checked local result; no topic push or PR |
 | Host denies a topic push otherwise covered by the request | Preserve the reviewed candidate and report the actual denial and next action; do not bypass host approval controls |
-| Review finds a defect in an owned open PR; the fix belongs to an earlier commit | Author folds the fix into that commit, runs the checks and gets the exact-SHA review of the new head, then pushes with the explicit old-head lease; the PR stays Draft with the named blocker until then |
-| PR has a CLEAR review of its exact head and green required checks, no other named blocker (merge-method `rebaseable`, build authorization) and is still Draft | Mark it Ready and say so; Draft without a named blocker is a defect of the handoff |
+| Review finds a defect in an owned open PR; the fix belongs to an earlier commit | Author folds the fix into that commit and runs the checks; for code gets the exact-SHA review of the new head before pushing (specification and documentation need no review before the push), then pushes with the explicit old-head lease; the PR stays Draft with the named blocker until the exact head is CLEAR |
+| PR has a CLEAR review of its exact head and green required checks, no other named blocker (merge-method `rebaseable`) and is still Draft | Mark it Ready and say so; Draft without a named blocker is a defect of the handoff |
 | Reviewed restack O→N; remote moves after observation | Explicit O lease refuses; preserve remote work, report the changed head, never retry with a refreshed lease |
 | PR merged but one issue criterion remains unmet | Issue stays open; card cannot become Done |
 | Issue closure read back CLOSED | Authorized coordinator may move its card to Done and verify readback |
@@ -209,7 +212,8 @@ is the desk's procedure after a CLEAR: push, draft PR, `review/<tier>` status, e
 comment, background watcher, direct `statusCheckRollup` check, then ready. It binds one
 exact SHA and ends in a defined blocked outcome on a changed head, missing checks,
 duplicate invocation, gate timeout, rebase conflicts or an occupied worktree. It never
-merges, force-pushes, pushes `main` or tags, or changes settings. The human merges.
+merges, plain force-pushes, pushes `main` or tags, or changes settings; a rewrite goes
+through restack with an explicit lease. The human merges.
 
 ## Tidy procedure
 

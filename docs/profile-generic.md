@@ -51,7 +51,8 @@ checks and explicit model/effort. At most the author cap of code workers (defaul
 checkout may run. With one checkout, run editors sequentially. No external
 claim/comment or card write is needed for a local task. Require an independent
 review for publication and report the exact reviewed revision; a local diff
-handoff may remain uncommitted and unlanded. Preserve host approval boundaries.
+handoff may remain uncommitted and unlanded unless a workspace or project AGENTS.md
+establishes standing authorization for publication. Preserve host approval boundaries.
 Reuse already-established authorization for local commits and local target
 integration within its scope; do not ask again merely because the next commit
 or integration is ready. Follow the target's supplied procedure and review order,

@@ -14,7 +14,7 @@ reviewed topic branch as a pull request (the [pull request flow](../docs/git-his
 coordinator, not a lane: it starts no issue worker, and the one background watcher it
 starts is the only child. Assignment: one branch, its issue and the CLEAR evidence.
 
-Never: merge, release, deploy, push `main` or a tag, force-push, change rulesets or settings, or push
+Never: merge, release, deploy, push `main` or a tag, plain force-push (a rewrite goes through restack with an explicit lease), change rulesets or settings, or push
 without the required CLEAR on the SHA being shipped. The human merges.
 
 Binds one exact SHA (`S`, the full 40 characters). The CLEAR evidence, the pushed commit,
