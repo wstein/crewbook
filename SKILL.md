@@ -48,7 +48,8 @@ For coordinated work, apply [review and correction priority](docs/team.md#review
 before starting more authors; its allocation, reviewer isolation and measurement
 contract uses the current project/session limits.
 Use the canonical [cost and context procedure](docs/team.md#delegation-and-context)
-for compact evidence, tool output and check cadence.
+for stable instruction prefixes, document reuse, correction deltas, watcher
+ownership, compact evidence and milestone reporting.
 
 ## Start working
 

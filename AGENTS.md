@@ -39,7 +39,9 @@ installation is required for the maintenance suite.
 Preserve user work and respect actual host controls. Follow the
 [team manual](docs/team.md) for shared ownership, concurrency and review workflow.
 Keep one editor per checkout and isolate concurrent editing in disjoint scopes,
-including generated files.
+including generated files. Apply the canonical
+[cost and context procedure](docs/team.md#delegation-and-context) for instruction
+reuse, correction deltas, watcher ownership and milestone reports.
 
 For assigned work, the designated coordinator is authorized to move board cards
 under the [team workflow](docs/team.md#coordinator-and-leaf-execution-contract)
