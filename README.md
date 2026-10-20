@@ -73,6 +73,8 @@ What the repo files show:
   | reviewer, code | gpt-6.1-sol | medium; high for security paths |
   | reviewer, docs / delta | gpt-6.1-sol | low |
   | helper, watcher | gpt-6.1-sol | low |
+  | QA, behavior verification | `sol` family | low |
+  | QA, test-quality review | `terra` family | low |
 
   Roles absent from this starting table (for example design) need an explicit
   eligible model/effort assignment under the host policy; do not infer a Claude

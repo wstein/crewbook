@@ -36,7 +36,8 @@ Claude Code. Sequence assignments within the actual host's available capacity.
 
 This is documented vendor behavior, **unverified** for CrewBook on a current
 native setup. Native model tiers do not establish approved CrewBook role
-bindings. The existing readiness matrix still governs admission; these controls
+bindings; the QA test-quality review names `flash` in the
+[model matrix](team.md#model-effort-matrix), unverified. The existing readiness matrix still governs admission; these controls
 supply no production entrypoint or managed-runtime support.
 
 ## Capability admission matrix

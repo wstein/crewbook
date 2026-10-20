@@ -8,3 +8,8 @@ Adopt `crewbook/qa` and follow the canonical
 read-only boundaries, capacity and evidence verdicts. Measure behavior on the
 assigned exact SHA; independent exact-SHA diff review remains separate.
 Execute the assigned bounded task as a leaf and return evidence to its owner.
+
+A second bounded task is the
+[test-quality review](crewbook-verify.md#test-quality-review) of the tests and
+fixtures a change adds or modifies: exact SHA, read-only, findings returned to
+the requester. It never replaces diff review or behavior verification.

@@ -140,7 +140,7 @@ profile adopts its matching role identity, including `crewbook/platform`,
 | [crewbook-docs](../.agents/crewbook-docs.md) | User-facing documentation | Rules remain with design owner |
 | [crewbook-ui](../.agents/crewbook-ui.md) | GUI layouts, states and accessibility, per issue | Not standing; no backend, security or rules |
 | [crewbook-verify](../.agents/crewbook-verify.md) | Measurements and reproducible evidence | Only on authorized reference setup |
-| [crewbook-qa](../.agents/crewbook-qa.md) | Exact-SHA behavior reproduction and fix evidence using [verify QA mode](../.agents/crewbook-verify.md#qa) | Read-only leaf; Bash for authorized measurement only; no Git state changes, forge/board writes, provisioning or landing; separate from diff review |
+| [crewbook-qa](../.agents/crewbook-qa.md) | Exact-SHA behavior reproduction and fix evidence using [verify QA mode](../.agents/crewbook-verify.md#qa) | Read-only leaf; also the bounded [test-quality review](#test-quality-review); Bash for authorized measurement only; no Git state changes, forge/board writes, provisioning or landing; separate from diff review |
 | [crewbook-review](../.agents/crewbook-review.md) | Independent review of exact commits | Never its own work or feature edits |
 | [crewbook-helper](../.agents/crewbook-helper.md) | Bounded lookup, edit or check | No lane, Git state, protected edits or outward actions |
 | [crewbook-worker](../.agents/crewbook-worker.md) | Read-only research for one bounded batch | No file or Git changes, no posts |
@@ -168,6 +168,8 @@ assignment and handback; host policy takes precedence over these defaults.
 | reviewer, code in setup/doctor/install/security | Opus | high |
 | reviewer, docs conflict, rebase delta, docs-only | Sonnet | medium |
 | design lane | Opus | high |
+| QA, behavior verification | Sonnet | medium (Codex `sol`, low) |
+| QA, [test-quality review](#test-quality-review) | Sonnet | medium (Codex `terra`, low; Antigravity `flash`) |
 | helper, watcher, lookups, [tidy](../.agents/crewbook-tidy.md) checks | Haiku | none; never judgments |
 
 Sonnet is the configured default author; no measured cost advantage is established
@@ -193,6 +195,14 @@ standing role or model mapping of its own (Sonnet author). Review follows
 [crewbook-review](../.agents/crewbook-review.md): Opus when the change touches code
 or carve-out paths, Sonnet for mocks and docs. Rules, architecture and threats stay with crewbook-design, and
 the lane reports its pre-review checklist with evidence.
+
+<a id="test-quality-review"></a>
+A change that adds or modifies tests, fixtures, test helpers or CI test
+configuration also gets the QA [test-quality review](../.agents/crewbook-verify.md#test-quality-review)
+(`crewbook/qa`, exact SHA, read-only, findings to the requester), in addition to
+this review routing. It is a bounded task of the existing QA role: no permanent
+agent and no extra author/reviewer capacity, and it never replaces the
+independent diff review or QA behavior verification.
 
 ## Release lane
 

@@ -330,7 +330,7 @@ from exact-SHA diff review. Codex can select that shared role through `$crewbook
 or discover the optional [crewbook-qa skill](../.agents/skills/crewbook-qa/SKILL.md)
 when separately registered, just as for the desk alias. Claude ships
 `/crewbook-qa` and a Sonnet `crewbook-qa` profile; native registration/loading
-remains unverified. QA maps to `gpt-6.1-sol`/low in Codex. The profile declares Read, Grep, Glob and Bash for authorized measurement;
+remains unverified. QA maps to the `sol` family at low effort in Codex; its test-quality review task maps to the Codex `terra` family and Antigravity `flash`. The profile declares Read, Grep, Glob and Bash for authorized measurement;
 Bash read-only restrictions are prompt guidance, not measured host enforcement.
 The native preflight and actual host controls govern each command. These files
 do not install profiles or grant host permissions. Antigravity can read the shared role text, but

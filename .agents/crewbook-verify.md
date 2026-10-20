@@ -50,7 +50,10 @@ repository writes or other unauthorized effects, report it unavailable.
 Use one fresh bounded QA task at a time, within the existing available child
 capacity. This adds no author/reviewer capacity or permanent agent. QA executes
 as a leaf and returns evidence to the requester/coordinator without delegation.
-Claude tier is Sonnet; Codex is `gpt-6.1-sol` with low reasoning effort.
+Claude tier is Sonnet; Codex is the `sol` family with low reasoning effort. The
+[test-quality review](#test-quality-review) uses Sonnet (medium), Codex family
+`terra` and Antigravity `flash`; see the
+[model matrix](../docs/team.md#model-effort-matrix).
 
 Keep assessment, the author's fix and verification as separate recorded stages:
 
@@ -79,3 +82,40 @@ use `partial` when evidence is missing and no required failure was observed.
 State the rule: **missing verification is not a successful fix**. Report
 remaining assumptions, missing evidence and the next authorized measurement;
 do not turn a partial or failed result into review approval or gate clearance.
+
+### Test-quality review
+
+The second bounded QA task is an additional review of the tests and fixtures a
+change adds or modifies, run on the assigned exact SHA and returned to the
+requester. It never replaces the independent diff review or the behavior
+verification above. Same boundaries as QA: leaf, read-only, no edits or Git
+state changes, authorized scratch only, no added author/reviewer capacity or
+permanent agent.
+
+Run it for any PR or candidate that adds or changes tests, fixtures, test
+helpers or CI test configuration, and when a test failed or was flaky during the
+work. Check:
+
+- No hard-coded versions, dates, paths or ports that a routine dependency bump
+  or environment change breaks; derive them from one source of truth (the
+  lockfile or a single constant).
+- No wall-clock deadlines in unit tests, or deadlines with load headroom.
+- Isolation from environment variables, user/global/system configuration and
+  shared state.
+- Determinism: ordering, sorting, parallelism, randomness, clocks.
+- Resource and time bounds proportionate to the behavior tested.
+- Failure messages that name the cause.
+- The test fails when the production behavior is wrong (mutation probe: remove
+  or flip the production check in a scratch copy, never in the checkout, and confirm red) and does not assert
+  implementation details.
+- Fixtures are built in the test, not shared mutable files.
+
+Flake probe: run each new or changed test repeatedly (default 5 runs, once in
+parallel with background load where the host allows) and report pass counts and
+durations. Runs execute in authorized scratch only; a check that cannot avoid
+repository writes is reported unavailable.
+
+Report within 150 words: per finding `file:line`, severity (Critical, High,
+Medium, Low) and kind (`fragile`, `weak-assertion`, `unisolated`,
+`nondeterministic`, `other`), then the verdict CLEAR or NOT CLEAR for the exact
+SHA. Fragility that breaks on routine maintenance is at least Medium.
