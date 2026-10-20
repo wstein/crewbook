@@ -24,11 +24,14 @@ applicable source checks and disclose their results, remaining criteria and
 verification/build limits. Keep the PR draft when required checks are missing or
 not green; these readiness and completion gates do not by themselves block PR creation.
 
-Before pushing or creating/updating a PR, check whether the operation will trigger
-approval-required builds, including workflows that run on draft PRs. If so, wait
-for explicit build authorization for the operation and source revision, or use an
-already authorized route that avoids those builds. Draft status alone does not
-prevent a build. Never disable checks or bypass host controls to publish the PR.
+Before pushing or creating/updating a PR, resolve the established host/user
+scope for publication and automatically triggered associated CI. When that scope
+covers them, proceed without another approval question. Preserve contrary project
+constraints unless the user explicitly overrides them within the host's instruction
+hierarchy. If the operation triggers builds still requiring approval, including
+workflows on draft PRs, wait for that authorization for the operation and source
+revision, or use an already authorized route avoiding those builds. Draft status
+alone does not prevent a build. Never disable checks or bypass host controls.
 
 Confirm destinations, ownership and actual capabilities before publication.
 An explicitly local-only task does not authorize outward writes; ordinary local
@@ -51,9 +54,10 @@ boundary; prompts do not. Whether a write-scoped token is blocked from merging
 its own PR remains unmeasured. Requirements labeled built are maintainer reports,
 not native capability measurements. Docker supervision, watchdog events and
 notification delivery must retain their own evidence and unverified status.
-Artifact, image and documentation builds, including release snapshots, require
-explicit human approval under the applicable umbrella policy; source checks
-remain routine. A request to push or open a PR is not build authorization.
+Build authorization follows the applicable host/user scope above; CrewBook grants
+no blanket authorization for CI or builds. Preserve separate approval requirements
+for standalone artifact, image or documentation builds and release snapshots;
+source checks remain routine.
 
 <a id="owned-pr-rewrite"></a>
 An author may rewrite the history of its own open PR branch when that is
@@ -102,7 +106,8 @@ Static review scenarios (guidance, not measured native execution):
 | Human requests three issue fixes and a PR | Assigned authors commit/push owned topics and open PRs; coordinator updates issues/cards within scope without routine approval asks; human merges |
 | Human authorizes an issue fix without separately requesting a PR | After exact review, assigned author publishes its own topic and creates/updates its PR with check results disclosed, without another approval question; human merges |
 | Reviewed partial source; native verification or build readiness unmeasured, required check pending, publication triggers no approval-required build | Publish a scoped `Refs` draft PR with results and limits disclosed; readiness and issue completion remain blocked |
-| Push or PR create/update triggers approval-required builds, including Hugo or `make build` on draft PRs | Wait for explicit build authorization for that operation/revision or an already authorized route avoiding the builds; do not disable checks or rely on draft status |
+| Established host/user scope covers reviewed topic publication and automatically triggered associated CI | Publish after exact review and required source checks without another approval question; human merges |
+| Push or PR create/update triggers builds still requiring approval, including Hugo or `make build` on draft PRs | Wait for explicit build authorization for that operation/revision or an already authorized route avoiding the builds; do not disable checks or rely on draft status |
 | Human explicitly limits the issue assignment to local work | Return the checked local result; no topic push or PR |
 | Host denies a topic push otherwise covered by the request | Preserve the reviewed candidate and report the actual denial and next action; do not bypass host approval controls |
 | Review finds a defect in an owned open PR; the fix belongs to an earlier commit | Author folds the fix into that commit, runs the checks and gets the exact-SHA review of the new head, then pushes with the explicit old-head lease; the PR stays Draft with the named blocker until then |
