@@ -448,7 +448,7 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 | Board operation | Explicit destination, field/status mapping, authorized adapter and any required approval |
 | Concurrent editing | Assigned separate checkouts and disjoint file scopes |
 | Independent review | Eligible reviewer in fresh context, exact revision/diff, scope and checks |
-| Topic push / PR | Confirmed target, owned branch, authorized request and required exact review/checks; no repeat approval within scope |
+| Topic push / PR | Confirmed target, owned branch, authorized request and required exact review/checks; no repeat approval within scope, including a workspace or project AGENTS.md that establishes standing authorization |
 | Forge PR merge / tag / release / deploy | Human operation; agents never perform it. Managed agents never merge; generic host-authorized local merge candidates follow the [immutable-candidate procedure](git-history.md#non-linear-target-with-authorized-merges) |
 | External measurement | Explicit authorized setup and evidence destination |
 
@@ -461,7 +461,7 @@ adapter. Sharing role names does not share endpoints or queue ownership.
 | Confirmed generic GitHub remote; read issue | Use that repository's authorized forge tool, never a hardcoded workharbor endpoint |
 | Generic local task without a board | Record session assignment; no board creation or claim required |
 | Configured workharbor board unavailable | Stop board-dependent claims; continue independent authorized work |
-| Generic publication without authorization | Return local diff/handoff; do not publish |
+| Generic publication without authorization (no workspace or project AGENTS.md establishing standing authorization) | Return local diff/handoff; do not publish |
 
 The [distribution contract](distribution.md) describes inventory and external
 runtime pins. Offline package checks do not establish native runtime support.

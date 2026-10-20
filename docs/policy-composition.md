@@ -47,6 +47,7 @@ permission. Omit the conflicting guidance when the controlling instruction is
 clear; if the selected workflow cannot satisfy it, stop that workflow and
 report the conflict before mutation. Do not invent an override hierarchy for
 the host or reinterpret explicit user authorization as package authorization.
+A workspace or project AGENTS.md that grants standing authorization for topic pushes, PRs and their associated CI is an established scope; the local-diff default does not apply to those operations. Where no such policy exists the generic default is unchanged.
 
 Before mutation (files, Git state, external writes or infrastructure), verify
 the package, applicable instructions, relevant workflow definitions and

@@ -50,10 +50,14 @@ Actual host controls and the user's authorized scope still apply.
 This repository uses linear, fast-forward-only integration into main. No merge
 commits, non-fast-forward integration, cherry-picks into main or rewriting
 existing main history. A diverged author rebases only their own commits onto
-current main, reruns checks and obtains independent review of the rewritten
-SHA **before** fast-forward integration, narrowed or full per the
-[rebase re-review rule](docs/git-history.md#rebase-re-review). Stop on conflicts outside the assigned
-scope. This is this repository's current policy, not a universal target policy.
+current main, reruns checks and obtains independent review of the
+rewritten SHA **before** fast-forward integration, narrowed or full per the
+[rebase re-review rule](docs/git-history.md#rebase-re-review), specification and
+documentation included. Stop on conflicts outside the assigned
+scope. An agent's own PR topic branch that changes only specification or documentation
+may be rewritten and pushed with an explicit lease after green checks (and
+`git range-diff` equality for a pure rebase) without a prior review; the review
+still belongs to Ready. This is this repository's current policy, not a universal target policy.
 
 Use focused Conventional Commits with the actual WI, atomic per
 [commit hygiene](docs/git-history.md#commit-hygiene). A commit written by an

@@ -85,6 +85,7 @@ Reuse established user/host authorization for its unchanged scope instead of
 asking again; follow the target's actual checks, review order and integration
 procedure. Permission for local integration does not imply permission to push
 or publish. Generic work retains its local-diff default when authorization is absent.
+A workspace or project AGENTS.md that grants standing authorization for topic pushes, PRs and their associated CI is an established scope; the local-diff default does not apply to those operations. Where no such policy exists the generic default is unchanged.
 Use [crewbook-generic](docs/profile-generic.md) by default for any repository in the
 current native session, including the CrewBook repository itself. No workharbor container,
 board or separate project-policy file is required. Select

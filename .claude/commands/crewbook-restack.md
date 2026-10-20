@@ -16,5 +16,5 @@ Read [crewbook-restack.md](../../.agents/crewbook-restack.md) and follow it. Ass
 This command is a coordinator procedure run in the invoking context. Without
 arguments it restacks all local branches with an open PR or an unmerged reviewed
 head; branch names limit it to those branches. It pushes only authorized owned topics with an explicit old-head lease after
-new exact-SHA review; it never merges or resolves
+new exact-SHA review for code; it never merges or resolves
 conflicts.

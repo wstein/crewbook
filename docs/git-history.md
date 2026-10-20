@@ -68,6 +68,16 @@ it does not prevent opening the authorized source PR for review.
 <a id="rebase-re-review"></a>
 ### Rebase re-review rule
 
+Owner decision (2026-10-20), scoped to the `--force-with-lease` push of an agent's
+own PR topic branch that changes only specification or documentation (no code,
+tests, scripts or generated files): its rewrite (rebase, restack, fold, reword)
+needs only green local checks and, for a pure rebase, `git range-diff` equality
+before the push; no review precedes the push, and the independent review of the
+exact head (CLEAR, with green checks) still belongs to Ready. A branch that also
+changes code follows the code rule. The review before local fast-forward integration
+is unchanged for everyone, specification and documentation included, because no PR or
+Ready step follows there.
+
 After a rebase the old review does not carry over silently. A rebase that is
 conflict-free, shows identical commits in `git range-diff` (all `=`) and touches
 no file the rebase base change touched needs, unless the [landing pointer rule](#landing-pointer) applies, one narrowed Opus review of the new
@@ -84,7 +94,7 @@ patches are unchanged; a changed patch needs a new review. The owner-decided [wo
 Design source: workharbor `docs/content/docs/design/pr-flow-landing.md` (workharbor #407, #414). Unverified here: the workharbor files were read, not run against this repository, and the issue references #407, #414 and #421 were not checked.
 
 - One pull request per branch, merged by rebase and merge only, so the atomic conventional commits survive. The human merging is the consent; agents never merge. The PR body carries `Closes #N` only when all issue criteria are fulfilled; partial work uses `Refs #N`. Commits carry `Refs:` only.
-- The assigned author opens a draft PR and marks it ready after the review is CLEAR, the required checks are green and no other named blocker remains such as `rebaseable != true` or a pending build authorization (the PR author marks ready; **Ready means the human can merge it**, so a PR stays Draft only with a named blocker in its body; the human merges). The desk posts the commit status `review/sonnet` or `review/opus` on the PR head plus an evidence comment naming the head SHA and the tier. The status creator must be the human account.
+- The assigned author opens a draft PR and marks it ready after the review is CLEAR, the required checks are green and no other named blocker remains such as `rebaseable != true` (the PR author marks ready; **Ready means the human can merge it**, so a PR stays Draft only with a named blocker in its body; the human merges). The desk posts the commit status `review/sonnet` or `review/opus` on the PR head plus an evidence comment naming the head SHA and the tier. The status creator must be the human account.
 - A `gate` check derives the path class from the changed files with the base branch's path script (ordinary or carve-out) and requires `review/opus` for carve-out paths. CrewBook has no `gate` workflow yet; its `main` ruleset requires a PR, rebase merge and the checks `package (ubuntu-latest)`, `package (macos-15)` and `secrets`.
 - PR size budget: at most 10 commits and about 500 changed lines per PR and review; the fast lane (documentation that policy classifies as Sonnet-eligible, see [crewbook-review](../.agents/crewbook-review.md); proposal, Werner to confirm) stays at 3 commits. Split larger work into a stack. The budget applies per PR, also to every PR of a stack; the batch PR of [batch integration](team.md#batch-integration) is exempt from the size budget; each original branch keeps its own budget (proposal, Werner to confirm).
 - Auto-delete after merge covers finished work branches only (`fix/`, `feat/`, `docs/`, `chore/`, `ci/`, `refactor/`, `test/`); `spike/*` is never deleted automatically, which holds only while spike PRs are not merged by the human (GitHub deletes the head of any merged PR). This is the authorization the [dispatch rule](../.agents/crewbook-dispatch.md) on branch cleanup asks for, only for branches merged through a PR (proposal, Werner to confirm). GitHub deletes the remote head branch (enabled); local cleanup uses `git branch -d`, and `-D` only with `git cherry` or patch-id proof.
@@ -127,7 +137,7 @@ push, PR merge, build, release or settings authority.
 Never push the protected integration branch or tags, merge, release, deploy or
 change forge protections. Restacking an owned topic uses only the reviewed
 explicit-lease procedure in [restack](../.agents/crewbook-restack.md); ordinary
-shipping never forces a push. Human merge remains the PR review point.
+shipping never forces a push; a rewrite uses restack with a lease. Human merge remains the PR review point.
 
 <a id="landing-pointer"></a>
 ### Landing pointer branch (retiring)

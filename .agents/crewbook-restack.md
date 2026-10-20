@@ -18,7 +18,7 @@ Never: merge, release, deploy, push without an explicit lease, touch `main`, `la
 resolve a conflict, edit file content, close or comment on an issue, mark a card Done, or
 change settings. Local topic branches and their free worktrees are the only things it
 changes, with an authorized owned-topic lease push after new exact-SHA review
-(step 6). Follow the [human-request contract](../docs/team.md#human-request-contract).
+for code (step 6). Follow the [human-request contract](../docs/team.md#human-request-contract).
 
 Run git one command at a time with `set -e` semantics: check the exit code of every
 command, never chain a later command after a rebase or fetch, never pipe a git command
@@ -78,7 +78,9 @@ Steps:
    `git diff --name-only B O`.
    A CLEAR or status on `O` does not carry over.
 6. Reviewed lease push. Before pushing, obtain the independent exact-`N` review
-   required by step 5; all `=` alone is insufficient. The wording-only verification
+   required by step 5; all `=` alone is insufficient. For a branch that changes only
+   specification or documentation (owner decision 2026-10-20) no review precedes the
+   push: all `=` and green checks on `N` suffice, and the review belongs to Ready. The wording-only verification
    of the [owner exception](../docs/team.md#wording-only-exception) never applies to a
    restack. Push only an owned topic
    within the authorized request. Observe its remote with
