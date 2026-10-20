@@ -25,6 +25,8 @@ Each new work item receives a fresh independent reviewer context. Resume this
 same reviewer for corrections to this item's findings and review the exact new
 revision; prior approval never transfers to a changed SHA. Retain compact findings
 and evidence, not full transcripts or unrelated assignments.
+A change that adds or changes tests also gets the QA
+[test-quality review](../docs/team.md#test-quality-review); it supplements this review.
 Review policy/security boundaries, correctness, design consistency, acceptance
 criteria and meaningful tests. Use [root-cause checks](../docs/root-cause.md)
 and the [canonical simplicity prompt](../docs/simplicity.md#canonical-prompt)

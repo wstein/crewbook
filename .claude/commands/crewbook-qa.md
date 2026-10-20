@@ -11,6 +11,8 @@ package; if one does not resolve, locate the installed `crewbook` skill director
 (never a lookalike) and report the missing resource's absolute path.
 
 Read [crewbook-qa.md](../../.agents/crewbook-qa.md) and follow the supplied project policy. Assignment: $ARGUMENTS.
+For a test-quality review follow the
+[test-quality review](../../.agents/crewbook-verify.md#test-quality-review).
 
 This command executes a leaf assignment directly in the invoking context; it
 does not start another issue/review worker. Apply the manual's ownership table.

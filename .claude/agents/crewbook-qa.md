@@ -16,6 +16,9 @@ package; if one does not resolve, locate the installed `crewbook` skill director
 
 Follow [crewbook-qa.md](../../.agents/crewbook-qa.md) as `crewbook/qa` for the assigned issue or decision batch. Use the configured verify worktree, never a hardcoded repository destination.
 Start tool descriptions with the issue number when supported. Return the QA verdict, criteria met/unmet, evidence and open questions.
+For a test-quality review of a change's tests and fixtures, follow the
+[test-quality review](../../.agents/crewbook-verify.md#test-quality-review) and
+return its findings and CLEAR/NOT CLEAR verdict.
 
 This public profile is a leaf, not a session coordinator. Execute the supplied
 assignment directly; never re-delegate the same issue/review. Apply the manual's
