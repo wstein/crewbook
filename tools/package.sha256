@@ -20,7 +20,7 @@ a00fe7236ca9cf017b18315e1aa4b64db1179222a6dca7412ff0ba1f060436eb  .agents/crewbo
 55de8fcccc732aa4c35cbd6459255f5d1cff7329589c0542a082daa919612458  .agents/skills/crewbook-desk/agents/openai.yaml
 1e4fee28c2340803220547b102b68800481ba1e4c7a2adcda01fec8e2e87ab7c  .agents/skills/crewbook-qa/SKILL.md
 d0b788d39b9cf6ba36d43d17fc3aba292d2b5c348790b9d33a7f09ef58aba21c  .agents/skills/crewbook-qa/agents/openai.yaml
-34becc97631e405fcb43af72c1fec63dcd6c6e418a925937b0ec01f899143303  .agents/skills/new-repo-setup/SKILL.md
+21c3577c1537c99c6ea9c3636108200befda725fbb6a935b21e6230d2382b56a  .agents/skills/new-repo-setup/SKILL.md
 552ab2e7304c8ea7caf354ee46786fa72a2c32aa5315fee85aeb3a66b57f5c68  .agents/skills/new-repo-setup/agents/openai.yaml
 1ef66c102c1621d5ae43c650da80b047ff27f5f69a8ef3fc5f13ed2afeb805d3  .agents/skills/pr-watch/SKILL.md
 ca3fce258a8aabf243b3706d46f7936b671be59ea7fa0067ef53590c709cef4c  .agents/skills/pr-watch/agents/openai.yaml
