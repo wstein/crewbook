@@ -30,14 +30,16 @@ Name both SHAs in every command; never rely on a branch name or `origin/main`.
 - [ ] Work in your own worktree, never in the owner's checkout. Use
       `git worktree add` on the child branch; the worktree must be clean.
 - [ ] The local branch pointer must equal the SHA that was reviewed or pushed.
-      A detached `HEAD` can differ from the branch name: compare
-      `git rev-parse <branch>` with `O`, and later push by full hash.
+      A detached `HEAD` can differ from the branch name, so always rebase the
+      named branch (the ref must move, not only a detached `HEAD`), compare
+      `git rev-parse <branch>` with `O` before and `N` after, and push the
+      exact reviewed SHA by full hash.
 - [ ] Stop on commits you did not author, an occupied worktree or a moved remote.
 
 ## 2. Rebase
 
 ```sh
-git -c rebase.updateRefs=false -c rerere.enabled=false rebase --onto <M or new parent> <P> <O or branch>
+git -c rebase.updateRefs=false -c rerere.enabled=false rebase --onto <M or new parent> <P> <branch>
 ```
 
 - [ ] Commits already on the base drop out. Confirm with `git cherry <M> <P>`:
@@ -49,9 +51,15 @@ git -c rebase.updateRefs=false -c rerere.enabled=false rebase --onto <M or new p
       one's old head as `<old parent>`.
 - [ ] Branched stacks: each branch rebases onto its own parent's new head.
       Finish a parent before its children; a blocked parent blocks them.
-- [ ] On a conflict outside your files, `git rebase --abort` and stop. Inside
-      your own files resolve it, keeping both sides of shared ledger or index
-      files, and note it for step 3.
+- [ ] A conflict is outside the desk restack, which resolves nothing: run
+      `git rebase --abort`, leave the branch at `O` and report
+      `blocked: rebase conflict` with the files (see
+      [crewbook-restack](../../crewbook-restack.md)). Only when the author-tier
+      agent restacks its own branch is resolution a middle-tier authoring task:
+      keep both sides of a shared ledger or index file, validate the result
+      (parse it, compare id sets before and after for lost or duplicated
+      entries), note it for step 3, and expect the stronger-tier review of
+      step 5. Stop on a conflict in files you do not own.
 
 ## 3. Evidence
 
@@ -75,7 +83,9 @@ changed a signature, contract, schema or shared file the child relies on.
 
 - [ ] Run vet or compile for every platform the project targets, and the tests the
       change affects, on `N` before any push.
-- [ ] Fix an adaptation inside the commit that needs it:
+- [ ] An adaptation is authoring work by the author-tier agent on its own branch,
+      never part of the desk restack, and gets the stronger-tier review of
+      step 5. Fix it inside the commit that needs it:
       `git commit --fixup=<commit>`, then
       `GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash <base>`.
       Rerun the range-diff and say that an adaptation exists and why.
@@ -83,13 +93,15 @@ changed a signature, contract, schema or shared file the child relies on.
 
 ## 5. Review before the push
 
-Apply the workspace's pull request and delegation rules. The usual shape:
+Apply the target's pull request and delegation rules and the
+[rebase re-review rule](../../../docs/git-history.md#rebase-re-review); they
+set the tiers and win over this table, which only gives the shape:
 
 | Rewritten head | Before the push |
 | --- | --- |
 | Docs or specification only (no code, tests, scripts, generated files) | Green local checks and, for a pure rebase, range-diff equality; no review. The review of the exact head still belongs to Ready. |
-| Code, pure rebase with equal range-diff | Middle-tier exact-SHA check: ranges, affected tests, one mutation probe per PR, author identity. |
-| Code, conflict resolved in CI configuration, or a semantic adaptation | Strongest-tier review of that delta on the exact new SHA. |
+| Code, conflict-free pure rebase with equal range-diff | The narrowed exact-SHA review the rule names: range-diff equality plus tests at `N`, one mutation probe per PR, author identity. |
+| Code, conflict resolved (for example in CI configuration), file overlap, or a semantic adaptation | The full review the rule names, on the exact new SHA, by the strongest tier. |
 
 The old review never carries over to `N`.
 
@@ -124,7 +136,7 @@ git push --force-with-lease=<ref>:<O> origin <N>:refs/heads/<ref>
 - [ ] A closed duplicate is not restacked. Close it with the evidence:
       `git cherry <M> <branch>` shows only `-` lines.
 - [ ] Update the pull request description and base if they changed. Flip Draft or
-      Ready per the workspace rule: Ready only with a CLEAR review of the exact
+      Ready per the target's rule: Ready only with a CLEAR review of the exact
       head, green required checks and no named blocker.
 
 ## 8. Report
