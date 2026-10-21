@@ -87,7 +87,10 @@
     "scripts/runs_report.py",
     "scripts/stray_processes.py",
     "scripts/usage_prices.example.json",
-    "scripts/usage_report.py"
+    "scripts/usage_report.py",
+    ".agents/skills/pr-watch/SKILL.md",
+    ".agents/skills/pr-watch/agents/openai.yaml",
+    "scripts/pr-watch/pr-watch.sh"
   ],
   "maintenance": [
     ".git/",

@@ -1,0 +1,6 @@
+2026-10-21T10:00:00.0000000Z [36;1mgo test ./...[0m
+2026-10-21T10:00:01.0000000Z === RUN   TestX
+2026-10-21T10:00:01.1000000Z     x_test.go:42: got 3, want 4
+2026-10-21T10:00:01.2000000Z --- FAIL: TestX (0.00s)
+2026-10-21T10:00:01.3000000Z FAIL	example.com/pkg	0.01s
+2026-10-21T10:00:02.0000000Z ##[error]Process completed with exit code 1.

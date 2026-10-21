@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR watch"
+  short_description: "Watch pull requests without polling"
+  default_prompt: "Use $pr-watch to watch these repositories and react to the next actionable event."
