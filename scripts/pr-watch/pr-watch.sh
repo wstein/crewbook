@@ -18,8 +18,14 @@
 #      WATCH_MAX_IDLE_HOURS (default 8),
 #      WATCH_STATE_DIR (default ${XDG_STATE_HOME:-$HOME/.local/state}/pr-watch, outside any checkout),
 #      WATCH_REPORT (default <state dir>/watch-report.jsonl)
-# Single instance: a second run on the same state dir exits 3 naming the running pid; a stale lock (pid gone or not a
-#   pr-watch process) is taken over. --snapshot and WATCH_ONCE=1 never take the lock.
+# Single instance: the lock is a symlink <state>/lock whose target is the pid (created atomically). A second run on the same
+#   state dir exits 3 naming the running pid; a stale lock (pid gone or not a pr-watch process) is taken over under a
+#   second atomic mutex (<state>/lock.takeover), so exactly one taker wins. --snapshot and WATCH_ONCE=1 never take the lock.
+# WATCH_STACK_SIGNATURES: extended regex (alternatives with |) matched against runner ##[error] annotation lines of a red
+#   check; a match (and no real test failure) classifies it stack-merge-shape, which is not actionable. Default empty: off.
+# READY-CANDIDATE marks a draft PR based on the repository's default branch (gh repo view, cached per repo).
+# A repository whose gh poll failed 3 times in a row yields one `watch error` event (actionable); `watch recovered` follows
+#   when it works again. Event text is sanitised: control characters and terminal escape sequences are removed.
 # WATCH_QUIET_NEW: space separated head-branch prefixes and/or author:<login>; a matching new-pr is logged but not actionable.
 # WATCH_QUIET_CONFLICT_DRAFT=1: a conflict on a draft PR is not actionable.
 # Actionable (ends --until-event): checks-green with READY-CANDIDATE/READY; checks-red unless stack-merge-shape;
@@ -28,13 +34,14 @@
 # Read-only gh calls only. Per poll: one `gh pr list` per repo (+ extra calls only on a transition to red / a vanished PR).
 export GH_PROMPT_DISABLED=1
 REPOS=${WATCH_REPOS:-}
+case $REPOS in *[![:space:]]*) ;; *) REPOS= ;; esac
 if [ -z "$REPOS" ]; then
   REPOS=$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null) || REPOS=
-  if [ -z "$REPOS" ]; then
-    echo "pr-watch: set WATCH_REPOS (space separated owner/name) or run inside a GitHub repository checkout" >&2
-    exit 2
-  fi
 fi
+case $REPOS in *[![:space:]]*) ;; *)
+  echo "pr-watch: set WATCH_REPOS (space separated owner/name) or run inside a GitHub repository checkout" >&2
+  exit 2 ;;
+esac
 STATE=${WATCH_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/pr-watch}
 REPORT=${WATCH_REPORT:-$STATE/watch-report.jsonl}
 INTERVAL=${WATCH_INTERVAL:-60}
@@ -58,9 +65,11 @@ mkdir -p "$STATE/cache" "$(dirname "$REPORT")" || exit 1
 TMP=$(mktemp -d "$STATE/tmp.XXXXXX") || exit 1
 LOCK=$STATE/lock
 HAVE_LOCK=0
+HAVE_TAKEOVER=0
 cleanup() {
   rm -rf "$TMP"
-  if [ "$HAVE_LOCK" = 1 ]; then rm -rf "$LOCK"; fi
+  if [ "$HAVE_TAKEOVER" = 1 ] && [ "$(readlink "$LOCK.takeover" 2>/dev/null)" = "$$" ]; then rm -f "$LOCK.takeover"; fi
+  if [ "$HAVE_LOCK" = 1 ] && [ "$(readlink "$LOCK" 2>/dev/null)" = "$$" ]; then rm -f "$LOCK"; fi
 }
 trap cleanup EXIT
 trap 'report_note stopped "signal received"; exit 0' TERM INT
@@ -70,6 +79,15 @@ touch "$IDS"
 [ -f "$SEQF" ] || echo 0 > "$SEQF"
 touch "$REPORT"
 
+# Remove OSC and CSI sequences, then every C0/C1 control and DEL (so no field separator can occur in free text).
+SAN_DEF='def san: (. // "" | tostring)
+  | gsub("\u001b\\][^\u0007\u001b]*(\u0007|\u001b\\\\)"; "")
+  | gsub("\u001b\\][^\u0007\u001b]*"; "")
+  | gsub("\u001b\\[[0-9:;<=>?]*[ -/]*[@-~]"; "")
+  | explode | map(if . < 32 or (. >= 127 and . <= 159) then 32 else . end) | implode;
+'
+san() { printf '%s' "$1" | jq -Rrs "$SAN_DEF"'san | sub(" +$"; "")'; }
+
 JQ_DEFS='
 def cls:
   (. // []) as $c
@@ -78,13 +96,13 @@ def cls:
   | if $f > 0 then "red" elif $p > 0 then "pending" elif ($c | length) > 0 then "green" else "none" end;
 '
 
-JQ_POLL=$JQ_DEFS'
+JQ_POLL=$SAN_DEF$JQ_DEFS'
 def norm($p; $prev): {
-  title: (($p.title // "") | gsub("[\n\r\t]"; " ")),
+  title: ($p.title | san),
   draft: $p.isDraft,
   conflict: (if $p.mergeable == "CONFLICTING" then true elif $p.mergeable == "MERGEABLE" then false
              elif $prev != null then $prev.conflict else false end),
-  sha: ($p.headRefOid[0:8]), full: $p.headRefOid, head: ($p.headRefName // ""), author: (($p.author.login) // ""), base: $p.baseRefName, checks: ($p.statusCheckRollup | cls) };
+  sha: ($p.headRefOid | san | .[0:8]), full: ($p.headRefOid | san), head: ($p.headRefName | san), author: ($p.author.login | san), base: ($p.baseRefName | san), checks: ($p.statusCheckRollup | cls) };
 def cmpk: del(.title, .full, .head, .author);
 def trans($c; $n; $k): ($n + {n: ($k | tonumber)}) as $b | [
   (if $c.draft != $n.draft then $b + {kind: "ready-changed", to: (if $n.draft then "draft" else "ready" end)} else empty end),
@@ -143,13 +161,16 @@ rlog() { # rlog seq repo pr sha kind class detail id
 
 report_note() { # report_note kind detail: report only (no stdout)
   next_seq
+  set -- "$1" "$(san "$2")"
   rlog "$NSEQ" "" 0 "" "$1" "" "$2" ":0:$1:"
 }
 
-meta() { # meta kind detail: printed + reported watch line with the next seq
+meta() { # meta kind detail [act]: printed + reported watch line with the next seq; act=1 makes it actionable
   next_seq
+  set -- "$1" "$(san "$2")" "${3:-0}"
   printf 'EVT %s watch %s | %s\n' "$NSEQ" "$1" "$2"
   rlog "$NSEQ" "" 0 "" "$1" "" "$2" ":0:$1:"
+  if [ "$3" = 1 ]; then ACTIONABLE=1; fi
 }
 
 quiet_new() { # quiet_new <head branch> <author>: matches WATCH_QUIET_NEW (head-branch prefixes and/or author:<login>)
@@ -175,7 +196,8 @@ is_actionable() { # is_actionable kind cls detail
 }
 
 emit() { # emit repo n sha kind class detail
-  local repo=$1 n=$2 sha=$3 kind=$4 cls=$5 detail=$6 id pre act
+  local repo=$1 n=$2 sha=$3 kind=$4 cls=$5 detail id pre act
+  detail=$(san "$6")
   id="$repo#$n:$sha:$kind:$cls"; pre="$repo#$n:$sha:"
   case $kind in
     conflict) drop_ids "${pre}conflict-cleared:" ;;
@@ -199,21 +221,22 @@ rank() { case $1 in real-failure) echo 4;; unknown) echo 3;; flake-infra) echo 2
 classify_file() { # classify_file <cleaned log> -> "class<TAB>detail"
   # Cleaned log: ANSI and the leading timestamp removed; a genuine runner annotation starts the line with @@ANNOT@@
   # (it had "<timestamp> ##[error]"); echoed log lines (a second timestamp) are dropped, see clean_log.
+  # Real test failures win; stack-merge-shape needs WATCH_STACK_SIGNATURES inside a runner annotation line.
   local f=$1 name err
-  local real='--- FAIL: |^FAIL[[:space:]]|^FAIL: |^ERROR: test|^not ok |make: \*\*\*|Traceback \(most recent call last\)|AssertionError'
-  if grep -Eq 'Unexpected synthetic merge parents|PR must target repository main' "$f"; then
-    printf 'stack-merge-shape\t%s\n' "$(grep -Em1 'Unexpected synthetic merge parents|PR must target repository main' "$f" | cut -c1-200)"
-    return
-  fi
+  local real='^[[:space:]]*--- FAIL: |^FAIL[[:space:]]+[A-Za-z0-9_./]|^FAIL: |^ERROR: test|^not ok |^make(\[[0-9]+\])?: \*\*\*|^Traceback \(most recent call last\)|^[A-Za-z_.]*AssertionError'
   if grep -Eq -- "$real" "$f"; then
-    name=$(grep -Eom1 -- '--- FAIL: [^ ]+' "$f" | sed 's/--- FAIL: //')
+    name=$(grep -Eom1 -- '^[[:space:]]*--- FAIL: [^ ]+' "$f" | sed 's/^[[:space:]]*--- FAIL: //')
     [ -n "$name" ] || name=$(grep -Em1 -- '^(FAIL|ERROR): [^ ]+' "$f" | awk '{print $2}')
     [ -n "$name" ] || name=$(grep -Em1 -- '^not ok [0-9]+' "$f" | sed 's/^not ok [0-9]*[ -]*//')
-    [ -n "$name" ] || name=$(grep -Em1 -- 'make: \*\*\* ' "$f" | sed 's/^.*make: \*\*\* //')
+    [ -n "$name" ] || name=$(grep -Em1 -- '^make(\[[0-9]+\])?: \*\*\* ' "$f" | sed 's/^.*make\(\[[0-9]*\]\)\{0,1\}: \*\*\* //')
     [ -n "$name" ] || name=$(grep -Em1 '^FAIL[[:space:]]' "$f" | awk '{print $2}')
     err=$(grep -Em1 -- '_test\.go:[0-9]+|Error:|AssertionError|panic:' "$f")
     [ -n "$err" ] || err=$(grep -Em1 -- "$real" "$f")
     printf 'real-failure\t%s\n' "$(printf 'first=%s err=%s' "$name" "$(printf '%s' "$err" | sed 's/^[[:space:]]*//')" | cut -c1-200)"
+    return
+  fi
+  if [ -n "${WATCH_STACK_SIGNATURES:-}" ] && grep -Eq -- "^@@ANNOT@@.*(${WATCH_STACK_SIGNATURES})" "$f"; then
+    printf 'stack-merge-shape\t%s\n' "$(grep -Em1 -- "^@@ANNOT@@.*(${WATCH_STACK_SIGNATURES})" "$f" | sed 's/^@@ANNOT@@/##[error]/' | cut -c1-200)"
     return
   fi
   if grep -Eq 'The runner has received a shutdown signal|The operation was canceled|No space left on device|HTTP/[0-9.]+ 5[0-9][0-9]|returned error: 5[0-9][0-9]|HTTP (error )?5[0-9][0-9]|status code:? 5[0-9][0-9]' "$f"; then
@@ -265,14 +288,34 @@ classify_red() { # classify_red repo sha -> "class: detail"
   printf '%s: %s' "${best%%$'\t'*}" "${best#*$'\t'}"
 }
 
+default_branch() { # default_branch repo: the repository's default branch (cached per repo; main if gh cannot say)
+  local f b
+  f=$STATE/cache/${1//\//_}.defbranch
+  if [ -s "$f" ]; then cat "$f"; return; fi
+  b=$(gh repo view "$1" --json defaultBranchRef --jq .defaultBranchRef.name 2>/dev/null)
+  b=$(san "$b")
+  if [ -n "$b" ]; then printf '%s\n' "$b" > "$f"; printf '%s\n' "$b"; else echo main; fi
+}
+
 # ---- polling --------------------------------------------------------------
 poll_repo() {
-  local repo=$1 sf base=0 list res open
+  local repo=$1 sf base=0 list res open ff fails=0 msg
   sf=$STATE/${repo//\//_}.json
   list=$TMP/list.json
-  gh pr list -R "$repo" --state open --limit 60 \
-    --json number,title,isDraft,mergeable,mergeStateStatus,headRefOid,headRefName,author,baseRefName,statusCheckRollup > "$list" 2>/dev/null || return 0
-  jq -e 'type == "array"' "$list" > /dev/null 2>&1 || return 0
+  ff=$STATE/cache/${repo//\//_}.fails
+  [ -s "$ff" ] && fails=$(cat "$ff")
+  if ! gh pr list -R "$repo" --state open --limit 60 \
+    --json number,title,isDraft,mergeable,mergeStateStatus,headRefOid,headRefName,author,baseRefName,statusCheckRollup > "$list" 2> "$TMP/err" \
+    || ! jq -e 'type == "array"' "$list" > /dev/null 2>&1; then
+    fails=$((fails + 1)); echo "$fails" > "$ff"
+    if [ "$fails" = 3 ]; then
+      msg=$(head -n1 "$TMP/err" 2>/dev/null); [ -n "$msg" ] || msg="no array in gh output"
+      meta error "$repo: gh failed 3 times: $msg" 1
+    fi
+    return 0
+  fi
+  if [ "$fails" -ge 3 ]; then meta recovered "$repo: gh works again after $fails failed polls"; fi
+  rm -f "$ff"
   if [ -f "$sf" ]; then cp "$sf" "$TMP/old.json"; else echo '{}' > "$TMP/old.json"; base=1; fi
   res=$TMP/res.json
   jq -c -n --argjson base "$base" --slurpfile old "$TMP/old.json" --slurpfile new "$list" "$JQ_POLL" > "$res" || return 0
@@ -291,7 +334,7 @@ poll_repo() {
       head-changed) emit "$repo" "$n" "$sha" head-changed "" "$old->$sha" ;;
       checks-green)
         detail="all checks green"
-        if [ "$draft" = true ] && [ "$pbase" = main ]; then detail="$detail READY-CANDIDATE"; fi
+        if [ "$draft" = true ] && [ "$pbase" = "$(default_branch "$repo")" ]; then detail="$detail READY-CANDIDATE"; fi
         if [ "$draft" = false ]; then detail="$detail READY"; fi
         emit "$repo" "$n" "$sha" checks-green "" "$detail" ;;
       checks-red)
@@ -333,27 +376,54 @@ snapshot() {
 
 if [ "$SNAPSHOT" = 1 ]; then snapshot; exit 0; fi
 
-# Single instance per state dir (not for --snapshot or WATCH_ONCE runs): lock directory with a pid file.
+# Single instance per state dir (not for --snapshot or WATCH_ONCE runs). The lock is a symlink whose target is the pid:
+# ln -s is atomic and the pid is visible the moment the lock exists. A stale lock is replaced under a second symlink
+# mutex (lock.takeover), re-checked after taking it, so only one taker proceeds.
+lock_alive() { # lock_alive pid: a live pr-watch process
+  [ -n "$1" ] && kill -0 "$1" 2>/dev/null && ps -p "$1" -o command= 2>/dev/null | grep -q 'pr-watch'
+}
 take_lock() {
-  local pid
+  local pid cur tp tries=0
   if [ "${WATCH_ONCE:-0}" = 1 ]; then return 0; fi
-  if ! mkdir "$LOCK" 2>/dev/null; then
-    pid=$(cat "$LOCK/pid" 2>/dev/null)
-    if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null && ps -p "$pid" -o command= 2>/dev/null | grep -q 'pr-watch'; then
+  while [ "$tries" -lt 20 ]; do
+    tries=$((tries + 1))
+    if ln -s "$$" "$LOCK" 2>/dev/null; then HAVE_LOCK=1; return 0; fi
+    pid=$(readlink "$LOCK" 2>/dev/null)
+    [ -n "$pid" ] || continue                     # vanished meanwhile: retry
+    if lock_alive "$pid"; then
       echo "pr-watch: already running for $STATE (pid $pid)" >&2
       exit 3
     fi
-    rm -rf "$LOCK"
-    if ! mkdir "$LOCK" 2>/dev/null; then
-      echo "pr-watch: could not take the lock $LOCK" >&2
-      exit 3
+    if ln -s "$$" "$LOCK.takeover" 2>/dev/null; then
+      HAVE_TAKEOVER=1
+      cur=$(readlink "$LOCK" 2>/dev/null)
+      if [ "$cur" = "$pid" ]; then               # still the stale lock we judged
+        rm -f "$LOCK"
+        if ln -s "$$" "$LOCK" 2>/dev/null; then
+          HAVE_LOCK=1
+          rm -f "$LOCK.takeover"; HAVE_TAKEOVER=0
+          report_note lock-takeover "stale lock of pid $pid taken over"
+          return 0
+        fi
+      fi
+      rm -f "$LOCK.takeover"; HAVE_TAKEOVER=0
+    else
+      tp=$(readlink "$LOCK.takeover" 2>/dev/null)
+      if [ -n "$tp" ] && ! kill -0 "$tp" 2>/dev/null; then rm -f "$LOCK.takeover"; else sleep 0.1; fi
     fi
-    report_note lock-takeover "stale lock of pid ${pid:-unknown} taken over"
-  fi
-  echo "$$" > "$LOCK/pid"
-  HAVE_LOCK=1
+  done
+  echo "pr-watch: could not take the lock $LOCK" >&2
+  exit 3
 }
 take_lock
+if [ -n "${WATCH_TEST_MARKER:-}" ] && [ "${WATCH_ONCE:-0}" != 1 ]; then echo "$$" >> "$WATCH_TEST_MARKER"; fi # test hook
+
+restart_line() { # the last line of an --until-event run: how to start it again
+  local pre=""
+  [ -n "${WATCH_REPOS:-}" ] && pre="WATCH_REPOS=$(printf '%q' "$WATCH_REPOS") "
+  [ -n "${WATCH_STATE_DIR:-}" ] && pre="${pre}WATCH_STATE_DIR=$(printf '%q' "$WATCH_STATE_DIR") "
+  printf 'restart: %sbash %s --until-event\n' "$pre" "$(printf '%q' "$0")"
+}
 
 while :; do
   if [ -e "$STATE/STOP" ]; then meta stopped "STOP file"; exit 0; fi
@@ -361,7 +431,7 @@ while :; do
     poll_repo "$r"
     if [ "$MODE" = until ] && [ "$ACTIONABLE" = 1 ]; then
       date -u +%Y-%m-%dT%H:%M:%SZ > "$STATE/alive"
-      echo "restart: bash $0 --until-event"
+      restart_line
       exit 0
     fi
   done

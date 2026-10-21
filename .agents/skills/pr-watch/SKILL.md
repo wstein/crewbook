@@ -46,7 +46,7 @@ WATCH_REPOS="owner/one owner/two" bash <path>/scripts/pr-watch/pr-watch.sh --unt
 
 It exits 0 right after the first actionable event and wakes the coordinator
 only by exiting; its last stdout line is `restart: bash <script> --until-event`.
-The coordinator MUST restart it in the same turn, or events go unseen. A
+Its last line includes `WATCH_REPOS` and `WATCH_STATE_DIR` when they were set. The coordinator MUST restart it in the same turn, or events go unseen. A
 self-restarting wrapper loop is useless: a background command wakes the
 coordinator only when it exits. Trade-off: works anywhere, but every event costs
 a restart and "forgot to restart" is the failure mode.
@@ -58,12 +58,13 @@ per open PR, then exit).
 
 | Kind | Actionable (ends `--until-event`) | Notes |
 | --- | --- | --- |
-| `checks-green` | yes, if the detail has `READY-CANDIDATE` (draft PR based on `main`) or `READY` (non-draft) | review or merge decision point |
-| `checks-red` | yes, unless class `stack-merge-shape` | classes: `real-failure` (a test failed), `flake-infra` (runner or network trouble; usually rerun), `unknown` (needs a look), `stack-merge-shape` (expected for stacked PRs; resolves when the parent merges) |
+| `checks-green` | yes, if the detail has `READY-CANDIDATE` (draft PR based on the repository's default branch, looked up once per repository) or `READY` (non-draft) | review or merge decision point |
+| `checks-red` | yes, unless class `stack-merge-shape` | classes: `real-failure` (a test failed), `flake-infra` (runner or network trouble; usually rerun), `unknown` (needs a look), `stack-merge-shape` (only if `WATCH_STACK_SIGNATURES` is set: expected for stacked PRs, resolves when the parent merges) |
 | `conflict` | yes, for draft and ready PRs (`READY-PR` in the detail marks a ready one) | `WATCH_QUIET_CONFLICT_DRAFT=1` makes a draft conflict non-actionable |
 | `merged` | yes | the detail lists other open PRs to check for restack |
 | `closed` | yes | closed without merge |
 | `new-pr` | yes, unless quiet | `WATCH_QUIET_NEW` (space-separated head-branch prefixes and/or `author:<login>`, default empty) marks matching new PRs `class: quiet`: logged, not actionable |
+| `watch error` | yes | a repository's `gh` poll failed 3 times in a row (first line of its stderr in the detail); `watch recovered` follows when it works again (not actionable) |
 | `conflict-cleared`, `ready-changed`, `head-changed`, other `checks-*` | no | reported only |
 
 `watch idle-timeout` and `watch stopped` end the run and mean the watcher is
@@ -72,6 +73,21 @@ no longer running.
 Check transitions are debounced: a state must hold for two consecutive polls,
 so brief flaps produce nothing. Each event id (repo, PR, sha, kind, class) is
 emitted once, across restarts.
+
+## Stack signatures
+
+A red check is classified `real-failure` whenever the log shows a test failure
+(Go, Python unittest, TAP, make), whatever else it says. `stack-merge-shape` is
+off by default. Set `WATCH_STACK_SIGNATURES` to an extended regular expression
+(alternatives with `|`) matched only against runner `##[error]` annotation
+lines, for example (a workspace whose merge-shape check prints these phrases):
+
+```sh
+WATCH_STACK_SIGNATURES='Unexpected synthetic merge parents|PR must target repository main'
+```
+
+Event text is sanitised: control characters and terminal escape sequences from
+logs, titles and branch names never reach stdout or the report.
 
 ## Read events, restart
 

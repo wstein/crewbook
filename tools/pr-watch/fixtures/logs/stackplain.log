@@ -1,0 +1,3 @@
+2026-10-21T10:00:00.0000000Z checking
+2026-10-21T10:00:01.0000000Z PR must target repository main (plain line, not an annotation)
+2026-10-21T10:00:02.0000000Z ##[error]Process completed with exit code 1.

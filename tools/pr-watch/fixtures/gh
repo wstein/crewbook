@@ -5,8 +5,11 @@ repo=""; args=("$@")
 for ((i=0;i<${#args[@]};i++)); do [ "${args[i]}" = "-R" ] && repo=${args[i+1]}; done
 r=${repo//\//_}
 case "$1 $2" in
-  "repo view") [ -e "$WORLD/norepo" ] && exit 1; echo "${FAKE_CWD_REPO:-acme/widgets}" ;;
-  "pr list") [ -e "$WORLD/$r.fail" ] && exit 1; cat "$WORLD/$r.prs.json" ;;
+  "repo view") case "$*" in
+      *defaultBranchRef*) [ -e "$WORLD/nodefbranch" ] && exit 1; echo "${FAKE_DEFAULT_BRANCH:-main}" ;;
+      *) [ -e "$WORLD/norepo" ] && exit 1; echo "${FAKE_CWD_REPO:-acme/widgets}" ;;
+    esac ;;
+  "pr list") if [ -e "$WORLD/$r.fail" ]; then cat "$WORLD/$r.fail" >&2; exit 1; fi; cat "$WORLD/$r.prs.json" ;;
   "run list") sha=""; for ((i=0;i<${#args[@]};i++)); do [ "${args[i]}" = "--commit" ] && sha=${args[i+1]}; done
               f="$WORLD/runs/$sha.json"; [ -f "$f" ] && cat "$f" || echo '[]' ;;
   "run view") cat "$WORLD/runview/$3.json" ;;
