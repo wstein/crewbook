@@ -97,7 +97,10 @@
     ".agents/skills/crewbook-qa/SKILL.md",
     ".agents/skills/crewbook-qa/agents/openai.yaml",
     ".agents/skills/restack-after-merge/SKILL.md",
-    ".agents/skills/restack-after-merge/agents/openai.yaml"
+    ".agents/skills/restack-after-merge/agents/openai.yaml",
+    ".agents/skills/pr-watch/SKILL.md",
+    ".agents/skills/pr-watch/agents/openai.yaml",
+    "scripts/pr-watch/pr-watch.sh"
   ],
   "host_dependencies": [
     {

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Fake gh for test_pr_watch.sh. Answers from $WORLD (advanced by the test between polls).
+echo "$*" >> "$WORLD/calls.log"
+repo=""; args=("$@")
+for ((i=0;i<${#args[@]};i++)); do [ "${args[i]}" = "-R" ] && repo=${args[i+1]}; done
+r=${repo//\//_}
+case "$1 $2" in
+  "repo view") [ -e "$WORLD/norepo" ] && exit 1; echo "${FAKE_CWD_REPO:-acme/widgets}" ;;
+  "pr list") [ -e "$WORLD/$r.fail" ] && exit 1; cat "$WORLD/$r.prs.json" ;;
+  "run list") sha=""; for ((i=0;i<${#args[@]};i++)); do [ "${args[i]}" = "--commit" ] && sha=${args[i+1]}; done
+              f="$WORLD/runs/$sha.json"; [ -f "$f" ] && cat "$f" || echo '[]' ;;
+  "run view") cat "$WORLD/runview/$3.json" ;;
+  "pr view") cat "$WORLD/view/${r}_$3.json" ;;
+  "api --allow-escape-sequences") id=$(echo "$3" | sed 's#.*/jobs/\([0-9]*\)/logs#\1#'); cat "$WORLD/logs/$id.log" ;;
+  *) echo "fake gh: unsupported: $*" >&2; exit 2 ;;
+esac
