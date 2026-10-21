@@ -8,7 +8,8 @@ description: Checklist for preparing a new repository so CI and the pull request
 Use this when a repository is created from a template or from scratch, or when
 a repository's CI starts to feel slow, doubled or stuck. Reference
 implementation: the owner's template `wstein/flix-template` (workflows,
-`dependabot.yml`, `AGENTS.md`, `CLAUDE.md`). Host authority and the user's scope
+`dependabot.yml`, `AGENTS.md`; it also carries vendor-specific agent files,
+which new repositories do not copy). Host authority and the user's scope
 outrank this checklist. Never change repository settings, rulesets, tags or git
 identity; list them for the owner instead.
 
@@ -47,8 +48,10 @@ that always report.
 
 ## 4. Repository files
 
-- [ ] `AGENTS.md`: test and check commands, layout, Conventional Commits.
-      `CLAUDE.md` and `.github/copilot-instructions.md` only point to it.
+- [ ] `AGENTS.md`: test and check commands, layout, Conventional Commits. It is
+      the single, vendor-neutral instruction file; do not create `CLAUDE.md` or
+      other vendor-specific agent files (`.claude/`, `copilot-instructions.md`,
+      `GEMINI.md`).
 - [ ] `LICENSE`, `.editorconfig`, SPDX headers if the family uses them.
 - [ ] A smoke test, and one local command (`make check` or equivalent) that
       runs the same things CI runs, so authors push green.
