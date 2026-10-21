@@ -56,7 +56,7 @@ new_world
 once; assert_empty "baseline is silent"
 [ -f "$ROOT/s/$RF.json" ] && ok "baseline state persisted" || bad "baseline state persisted" "no state file"
 assert_eq "baseline: exactly one gh call per repo" "$(calls 'pr list')" 1
-assert_eq "baseline: no other gh calls" "$(wc -l < "$WORLD/calls.log")" 1
+assert_eq "baseline: no other gh calls" "$(($(wc -l < "$WORLD/calls.log")))" 1
 once; assert_empty "restart with unchanged data is silent"
 once; assert_empty "second restart silent"
 once --snapshot
@@ -68,7 +68,7 @@ new_world
 mkpr 1 true MERGEABLE aaaa1111 main p5 | setprs; once
 for spec in p3 p2 p1 p4; do mkpr 1 true MERGEABLE aaaa1111 main $spec | setprs; once; assert_empty "pending count $spec is no event"; done
 for m in UNKNOWN MERGEABLE UNKNOWN UNKNOWN MERGEABLE; do mkpr 1 true $m aaaa1111 main p4 | setprs; once; assert_empty "mergeable $m ignored"; done
-assert_eq "only pr list calls were made" "$(wc -l < "$WORLD/calls.log")" "$(calls 'pr list')"
+assert_eq "only pr list calls were made" "$(($(wc -l < "$WORLD/calls.log")))" "$(calls 'pr list')"
 
 echo "== debounce =="
 new_world
@@ -110,7 +110,7 @@ assert_has "head-changed" "#1 cccc3333 head-changed | aaaa1111->cccc3333"
 assert_has "new-pr" "#7 dddd4444 new-pr | title=\"PR 7\" draft=true base=main"
 
 echo "== checks-red classification =="
-for case in "real real-failure" "stack stack-merge-shape" "infra flake-infra" "unknown unknown"; do
+for case in "real real-failure" "stack stack-merge-shape" "infra flake-infra" "unknown unknown" "pyunit real-failure" "tap real-failure" "make real-failure" "nested real-failure" "noprefix unknown"; do
   set -- $case; log=$1; want=$2
   new_world
   mkpr 1 true MERGEABLE aaaa1111 main p2 | setprs; once
@@ -123,11 +123,16 @@ for case in "real real-failure" "stack stack-merge-shape" "infra flake-infra" "u
   assert_eq "$want: one log fetch" "$(calls 'api')" 1
   once; assert_empty "$want: no repeat"
   OUT=$EV
-  case $want in
-    real-failure) assert_has "real-failure quotes test name and error line" "first=TestX err=x_test.go:42: got 3, want 4" ;;
+  case $log in
+    real) assert_has "real-failure quotes test name and error line" "first=TestX err=x_test.go:42: got 3, want 4" ;;
+    pyunit) assert_has "python unittest: test name and error line" "first=test_shell_suite err=AssertionError: 1 != 0" ;;
+    tap) assert_has "TAP: failing test name" "first=widget renders err=not ok 3 - widget renders" ;;
+    make) assert_has "make: target and error line" "first=[Makefile:12: test] Error 1 err=make: *** [Makefile:12: test] Error 1" ;;
+    nested) assert_has "echoed signature lines ignored, real failure quoted" "first=test_real err=AssertionError: boom" ;;
+    noprefix) assert_has "##[error] without timestamp prefix is not an annotation" "unknown: no ##[error] line in log" ;;
     unknown) assert_has "unknown quotes ##[error] line" "##[error]Something odd happened in step 4" ;;
-    flake-infra) assert_has "infra quotes signature" "The runner has received a shutdown signal" ;;
-    stack-merge-shape) assert_has "stack quotes signature" "Unexpected synthetic merge parents" ;;
+    infra) assert_has "infra quotes signature" "The runner has received a shutdown signal" ;;
+    stack) assert_has "stack quotes signature" "Unexpected synthetic merge parents" ;;
   esac
 done
 echo "-- red with pending checks is red at once; ANSI stripped"
@@ -226,8 +231,8 @@ printf '{"seq":99,"t":"2026' >> "$WATCH_REPORT"
 once; once; assert_empty "truncated last lines: no failure, no repeat"
 { mkpr 1 true MERGEABLE aaaa1111 main g1; mkpr 2 false MERGEABLE bbbb2222 main g1; } | setprs
 once; once; assert_has "event after truncated line still works" "#1 aaaa1111 checks-green"
-valid=$(while IFS= read -r l; do jq -e . <<< "$l" > /dev/null 2>&1 && echo y; done < "$WATCH_REPORT" | wc -l)
-total=$(wc -l < "$WATCH_REPORT")
+valid=$(while IFS= read -r l; do jq -e . <<< "$l" > /dev/null 2>&1 && echo y; done < "$WATCH_REPORT" | wc -l | tr -d " ")
+total=$(($(wc -l < "$WATCH_REPORT")))
 assert_eq "truncated fragment healed onto its own line (only it is invalid)" "$((total - valid))" 1
 assert_eq "meta events: repo empty, pr 0" "$(WATCH_MAX_IDLE_SECONDS=0 WATCH_ONCE=1 bash "$SCRIPT" > /dev/null; tail -1 "$WATCH_REPORT" | jq -c '[.repo,.pr,.kind]')" '["",0,"idle-timeout"]'
 

@@ -163,16 +163,22 @@ emit() { # emit repo n sha kind class detail
 rank() { case $1 in real-failure) echo 4;; unknown) echo 3;; flake-infra) echo 2;; *) echo 1;; esac; }
 
 classify_file() { # classify_file <cleaned log> -> "class<TAB>detail"
+  # Cleaned log: ANSI and the leading timestamp removed; a genuine runner annotation starts the line with @@ANNOT@@
+  # (it had "<timestamp> ##[error]"); echoed log lines (a second timestamp) are dropped, see clean_log.
   local f=$1 name err
+  local real='--- FAIL: |^FAIL[[:space:]]|^FAIL: |^ERROR: test|^not ok |make: \*\*\*|Traceback \(most recent call last\)|AssertionError'
   if grep -Eq 'Unexpected synthetic merge parents|PR must target repository main' "$f"; then
     printf 'stack-merge-shape\t%s\n' "$(grep -Em1 'Unexpected synthetic merge parents|PR must target repository main' "$f" | cut -c1-200)"
     return
   fi
-  if grep -Eq -- '--- FAIL: |^FAIL[[:space:]]' "$f"; then
+  if grep -Eq -- "$real" "$f"; then
     name=$(grep -Eom1 -- '--- FAIL: [^ ]+' "$f" | sed 's/--- FAIL: //')
+    [ -n "$name" ] || name=$(grep -Em1 -- '^(FAIL|ERROR): [^ ]+' "$f" | awk '{print $2}')
+    [ -n "$name" ] || name=$(grep -Em1 -- '^not ok [0-9]+' "$f" | sed 's/^not ok [0-9]*[ -]*//')
+    [ -n "$name" ] || name=$(grep -Em1 -- 'make: \*\*\* ' "$f" | sed 's/^.*make: \*\*\* //')
     [ -n "$name" ] || name=$(grep -Em1 '^FAIL[[:space:]]' "$f" | awk '{print $2}')
-    err=$(grep -Em1 -- '_test\.go:[0-9]+|Error:|panic:' "$f")
-    [ -n "$err" ] || err=$(grep -Em1 -- '--- FAIL: |^FAIL[[:space:]]' "$f")
+    err=$(grep -Em1 -- '_test\.go:[0-9]+|Error:|AssertionError|panic:' "$f")
+    [ -n "$err" ] || err=$(grep -Em1 -- "$real" "$f")
     printf 'real-failure\t%s\n' "$(printf 'first=%s err=%s' "$name" "$(printf '%s' "$err" | sed 's/^[[:space:]]*//')" | cut -c1-200)"
     return
   fi
@@ -180,8 +186,17 @@ classify_file() { # classify_file <cleaned log> -> "class<TAB>detail"
     printf 'flake-infra\t%s\n' "$(grep -Em1 'The runner has received a shutdown signal|The operation was canceled|No space left on device|5[0-9][0-9]' "$f" | cut -c1-200)"
     return
   fi
-  err=$(grep -Fm1 '##[error]' "$f")
+  err=$(grep -m1 '^@@ANNOT@@' "$f" | sed 's/^@@ANNOT@@/##[error]/')
   printf 'unknown\t%s\n' "$(printf '%s' "${err:-no ##[error] line in log}" | cut -c1-200)"
+}
+
+clean_log() { # stdin: raw job log -> stdout: portable (BSD and GNU sed) clean-up
+  local esc
+  esc=$(printf '\033')
+  sed -e "s/${esc}\\[[0-9;]*m//g" \
+      -e 's/^[0-9]\{4\}-[0-9-]*T[0-9:.]*Z ##\[error\]/@@ANNOT@@/' \
+      -e '/^[0-9]\{4\}-[0-9-]*T[0-9:.]*Z [0-9]\{4\}-[0-9-]*T[0-9:.]*Z /d' \
+      -e 's/^[0-9]\{4\}-[0-9-]*T[0-9:.]*Z //'
 }
 
 classify_run() { # classify_run repo sha runid -> best "class<TAB>detail" for the run (cached)
@@ -192,7 +207,7 @@ classify_run() { # classify_run repo sha runid -> best "class<TAB>detail" for th
       jq -r '.jobs[]? | select((.conclusion // "") | ascii_downcase | IN("failure","cancelled","timed_out","startup_failure","action_required")) | .databaseId'); do
     log=$TMP/job.log
     if gh api --allow-escape-sequences "repos/$repo/actions/jobs/$jid/logs" 2>/dev/null |
-        sed 's/\x1b\[[0-9;]*m//g; s/^[0-9]\{4\}-[0-9-]*T[0-9:.]*Z //' > "$log" && [ -s "$log" ]; then
+        clean_log > "$log" && [ -s "$log" ]; then
       cur=$(classify_file "$log")
     else
       cur=$(printf 'unknown\tlog unavailable for job %s' "$jid")

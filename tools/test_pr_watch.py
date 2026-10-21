@@ -12,7 +12,7 @@ class PrWatchTests(unittest.TestCase):
         r = subprocess.run(['bash', str(ROOT / 'tools/pr-watch/test_pr_watch.sh')],
                            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT, universal_newlines=True, timeout=600)
-        self.assertEqual(r.returncode, 0, r.stdout[-3000:])
+        self.assertEqual(r.returncode, 0, r.stdout)
         self.assertNotIn('FAIL - ', r.stdout)
 
 
