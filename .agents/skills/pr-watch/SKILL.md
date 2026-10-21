@@ -110,7 +110,8 @@ on the same `id` or `seq`.
 - One instance per state directory: a second start exits 3 and names the
   running pid. A stale lock (pid gone, or not a pr-watch process) is taken over
   and logged as `lock-takeover`. `--snapshot` and `WATCH_ONCE=1` runs take no
-  lock.
+  lock. A plain directory at `<state>/lock` (left by an early version) is refused with
+  exit 3; remove it.
 - Liveness: the file `alive` in the state directory holds the time of the last
   poll; a stale timestamp (several `WATCH_INTERVAL`s old, default 60 s) means the
   process is gone, so restart it.

@@ -21,6 +21,7 @@
 # Single instance: the lock is a symlink <state>/lock whose target is the pid (created atomically). A second run on the same
 #   state dir exits 3 naming the running pid; a stale lock (pid gone or not a pr-watch process) is taken over under a
 #   second atomic mutex (<state>/lock.takeover), so exactly one taker wins. --snapshot and WATCH_ONCE=1 never take the lock.
+#   A plain directory at <state>/lock (an early version left one) is refused with exit 3: remove it.
 # WATCH_STACK_SIGNATURES: extended regex (alternatives with |) matched against runner ##[error] annotation lines of a red
 #   check; a match (and no real test failure) classifies it stack-merge-shape, which is not actionable. Default empty: off.
 # READY-CANDIDATE marks a draft PR based on the repository's default branch (gh repo view, cached per repo).
@@ -387,6 +388,10 @@ take_lock() {
   if [ "${WATCH_ONCE:-0}" = 1 ]; then return 0; fi
   while [ "$tries" -lt 20 ]; do
     tries=$((tries + 1))
+    if [ -d "$LOCK" ] && [ ! -L "$LOCK" ]; then   # ln -s would create the link inside a directory and every instance would win
+      echo "pr-watch: $LOCK is a directory (left by an early version); remove it and start again" >&2
+      exit 3
+    fi
     if ln -s "$$" "$LOCK" 2>/dev/null; then HAVE_LOCK=1; return 0; fi
     pid=$(readlink "$LOCK" 2>/dev/null)
     [ -n "$pid" ] || continue                     # vanished meanwhile: retry

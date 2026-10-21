@@ -371,6 +371,16 @@ for trial in $(seq 1 10); do
 done
 assert_eq "10 trials of 10 simultaneous takers of a stale lock: exactly one wins (at most one takeover logged)" "$fail_trials" 0
 
+echo "-- a plain directory at the lock path (left by an early version) is refused, never entered"
+new_world; mkpr 1 true MERGEABLE aaaa1111 main p1 | setprs
+mkdir "$ROOT/s/lock"
+race 10
+assert_eq "directory at lock path: no instance reaches the poll loop" "$MARKS" 0
+assert_eq "directory at lock path: all 10 refuse" "$LOSERS" 10
+OUT=$(cat "$ROOT"/race.0.out); assert_has "directory refusal names the path" "is a directory"
+[ -z "$(ls -A "$ROOT/s/lock")" ] && ok "nothing created inside the directory" || bad "nothing created inside the directory" "$(ls -A "$ROOT/s/lock")"
+rmdir "$ROOT/s/lock"
+
 echo "== free-text sanitising =="
 new_world
 PRTITLE=$'x\x1ffalse\x1fmain' mkpr 1 true MERGEABLE aaaa1111 feat p1 | setprs; once
