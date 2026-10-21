@@ -557,6 +557,8 @@ failure excerpt, and never judge, rerun or comment. The coordinator handles a
 failure under the target's authorization and check requirements. Red CI not
 caused by the PR is recorded as a defect issue rather than a "known failure";
 the desk reruns failed jobs when authorized.
+Log reading and failure classification follow
+[log triage and watchers](#delegation-and-context).
 
 Use a bounded helper only when its substantive work saves coordinator context
 or keeps a long check from blocking coordination; perform trivial lookups
@@ -1029,6 +1031,25 @@ Report meaningful milestones, changed findings or blockers, and the next action;
 avoid routine progress pings that add no evidence. Honor the host's required
 reporting cadence even when no milestone has changed. Use the shared
 [watcher owner](#dispatch-supervision-and-recovery) for CI observation.
+
+**Log triage and watchers.** The coordinator does not read raw CI logs,
+workflow dry-run logs or watcher output. A helper at the lowest model tier runs
+the watcher or script, reads the logs, classifies each failure (wrong stack or
+merge shape; real test failure with the first failing test and its error line;
+infrastructure flake; unknown) and reports only what is actionable. The
+coordinator decides on those reports (ready, restack, review, escalate) and reads
+a raw log only when the helper cannot classify it.
+
+- Watchers deliver changes only: persistent state, transitions instead of
+  counters, debounced states, event ids with a monotonic sequence, no initial
+  dump on restart and no cumulative history in reports. A helper reports "new
+  since N" and never repeats earlier events. Run one watcher per scope at a time.
+- A watcher runs as a background process that ends on the first actionable event
+  (restart it afterwards) and writes a heartbeat file instead of printing pings.
+  It has an idle timeout measured in hours and an explicit stop marker, and costs
+  no tokens while nothing happens.
+- Start helpers on demand for deeper evaluation after an event (summaries, log
+  triage, status tables); do not keep a permanent relay.
 
 Batch independent authorized reads and tests when the host supports it;
 prerequisites, edits and approvals stay sequential. Target about 2,000 tool
