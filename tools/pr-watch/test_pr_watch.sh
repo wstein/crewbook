@@ -281,6 +281,38 @@ assert_eq "STOP run exits 0" "$RC" 0
 [ ! -e "$ROOT/s/lock" ] && ok "lock released after STOP" || bad "lock released after STOP" "still there"
 rm -f "${ROOT:?}/s/STOP"
 
+echo "== --stream --actionable-only =="
+new_world
+{ mkpr 1 true MERGEABLE aaaa1111 main p1; mkpr 2 false MERGEABLE bbbb2222 main p1; } | setprs; once
+# non-actionable: head-changed (PR 1), ready-changed (PR 2 to draft), quiet new-pr (feat/ PR 3), green without READY (draft on feat base)
+{ mkpr 1 true MERGEABLE cccc3333 main p1; mkpr 2 true MERGEABLE bbbb2222 main p1; PRHEAD=feat/q mkpr 3 true MERGEABLE dddd4444 feat p1; } | setprs
+WATCH_QUIET_NEW="feat/" once --stream --actionable-only; assert_empty "first poll: nothing printed (candidates)"
+WATCH_QUIET_NEW="feat/" once --stream --actionable-only
+assert_empty "non-actionable events are not printed"
+assert_eq "head-changed, ready-changed, quiet new-pr are in the jsonl" "$(jq -r '.kind' "$WATCH_REPORT" | sort | tr '\n' ' ')" "head-changed new-pr ready-changed "
+{ mkpr 1 true MERGEABLE cccc3333 main g1; mkpr 2 true MERGEABLE bbbb2222 main g1; mkpr 3 true MERGEABLE dddd4444 feat g1; } | setprs
+WATCH_QUIET_NEW="feat/" once --stream --actionable-only; once --stream --actionable-only
+assert_lines "only the actionable greens are printed (PR 3, draft on non-main, is not)" 2
+assert_lacks "non-READY green not printed" "#3 dddd4444 checks-green"
+assert_has "READY-CANDIDATE printed" "#1 cccc3333 checks-green | all checks green READY-CANDIDATE"
+assert_eq "non-READY green (draft on non-main) is in the jsonl" "$(jq -c 'select(.kind=="checks-green") | .pr' "$WATCH_REPORT" | sort | tr '\n' ' ')" "1 2 3 "
+once --stream --actionable-only; assert_empty "not repeated across restarts"
+{ mkpr 1 true MERGEABLE cccc3333 main g1; mkpr 2 true CONFLICTING bbbb2222 main g1; mkpr 3 true MERGEABLE dddd4444 feat g1; } | setprs
+once --stream --actionable-only; once --stream --actionable-only
+assert_has "draft conflict printed in actionable-only mode" "#2 bbbb2222 conflict |"
+mkpr 2 true MERGEABLE bbbb2222 main g1 | setprs; once --stream --actionable-only; once --stream --actionable-only
+assert_lacks "conflict-cleared not printed" "conflict-cleared"
+assert_eq "conflict-cleared logged" "$(jq -c 'select(.kind=="conflict-cleared") | .pr' "$WATCH_REPORT")" 2
+touch "$ROOT/s/STOP"; WATCH_INTERVAL=1 run --stream --actionable-only
+assert_has "watch lines still printed in actionable-only mode" "watch stopped | STOP file"
+rm -f "${ROOT:?}/s/STOP"
+echo "-- until-event restart reminder"
+new_world
+mkpr 1 true MERGEABLE aaaa1111 main p1 | setprs; once
+mkpr 1 true MERGEABLE aaaa1111 main g1 | setprs; once
+WATCH_MAX_IDLE_SECONDS=100 WATCH_INTERVAL=1 run --until-event
+assert_eq "last stdout line is the restart reminder" "$(tail -1 <<< "$OUT")" "restart: bash $SCRIPT --until-event"
+
 echo "== jsonl formats =="
 new_world
 { mkpr 1 true MERGEABLE aaaa1111 main p1; mkpr 2 false MERGEABLE bbbb2222 main p1; } | setprs; once
