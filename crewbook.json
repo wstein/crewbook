@@ -95,7 +95,9 @@
     "scripts/stray_processes.py",
     "scripts/usage_prices.example.json",
     ".agents/skills/crewbook-qa/SKILL.md",
-    ".agents/skills/crewbook-qa/agents/openai.yaml"
+    ".agents/skills/crewbook-qa/agents/openai.yaml",
+    ".agents/skills/restack-after-merge/SKILL.md",
+    ".agents/skills/restack-after-merge/agents/openai.yaml"
   ],
   "host_dependencies": [
     {
