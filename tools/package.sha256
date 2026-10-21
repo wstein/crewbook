@@ -20,7 +20,7 @@ a00fe7236ca9cf017b18315e1aa4b64db1179222a6dca7412ff0ba1f060436eb  .agents/crewbo
 55de8fcccc732aa4c35cbd6459255f5d1cff7329589c0542a082daa919612458  .agents/skills/crewbook-desk/agents/openai.yaml
 1e4fee28c2340803220547b102b68800481ba1e4c7a2adcda01fec8e2e87ab7c  .agents/skills/crewbook-qa/SKILL.md
 d0b788d39b9cf6ba36d43d17fc3aba292d2b5c348790b9d33a7f09ef58aba21c  .agents/skills/crewbook-qa/agents/openai.yaml
-56e64204f0d6f0c1373fef0c255fc3ec8c6daa4214c43c2ebcc9c09b32a39ded  .agents/skills/restack-after-merge/SKILL.md
+85c8ca18c10fcacdab3524a9fbc0d14f4425026857d2310d1416d987102b5a5b  .agents/skills/restack-after-merge/SKILL.md
 2615d4af6fae5ad9add6357e613075f5c0428d06199b397083e6a78c5583f4d3  .agents/skills/restack-after-merge/agents/openai.yaml
 214ed1c522c91f455fc6eecee4a27a0128225226d1985d67dd86cc74cf4fd4b0  .claude/agents/crewbook-design.md
 85046cb132a8f5791681c516230fb70d3cad5777d6cae309ef0f5f614f73a859  .claude/agents/crewbook-dispatch.md
