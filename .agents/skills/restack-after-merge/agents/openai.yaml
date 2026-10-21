@@ -1,0 +1,4 @@
+interface:
+  display_name: "Restack After Merge"
+  short_description: "Restack child branches after a rebase-merge with range-diff evidence"
+  default_prompt: "Use $restack-after-merge to restack my open child branches onto the new default branch."
