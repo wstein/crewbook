@@ -15,6 +15,13 @@
 #      WATCH_MAX_IDLE_HOURS (default 8),
 #      WATCH_STATE_DIR (default ${XDG_STATE_HOME:-$HOME/.local/state}/pr-watch, outside any checkout),
 #      WATCH_REPORT (default <state dir>/watch-report.jsonl)
+# Single instance: a second run on the same state dir exits 3 naming the running pid; a stale lock (pid gone or not a
+#   pr-watch process) is taken over. --snapshot and WATCH_ONCE=1 never take the lock.
+# WATCH_QUIET_NEW: space separated head-branch prefixes and/or author:<login>; a matching new-pr is logged but not actionable.
+# WATCH_QUIET_CONFLICT_DRAFT=1: a conflict on a draft PR is not actionable.
+# Actionable (ends --until-event): checks-green with READY-CANDIDATE/READY; checks-red unless stack-merge-shape;
+#   conflict (draft or ready); merged; closed; new-pr unless quiet. Never: conflict-cleared, ready-changed, head-changed,
+#   other checks transitions.
 # Read-only gh calls only. Per poll: one `gh pr list` per repo (+ extra calls only on a transition to red / a vanished PR).
 export GH_PROMPT_DISABLED=1
 REPOS=${WATCH_REPOS:-}
@@ -42,7 +49,12 @@ LAST_ACTION=$(date +%s)
 
 mkdir -p "$STATE/cache" "$(dirname "$REPORT")" || exit 1
 TMP=$(mktemp -d "$STATE/tmp.XXXXXX") || exit 1
-cleanup() { rm -rf "$TMP"; }
+LOCK=$STATE/lock
+HAVE_LOCK=0
+cleanup() {
+  rm -rf "$TMP"
+  if [ "$HAVE_LOCK" = 1 ]; then rm -rf "$LOCK"; fi
+}
 trap cleanup EXIT
 trap 'report_note stopped "signal received"; exit 0' TERM INT
 IDS=$STATE/emitted.jsonl
@@ -65,8 +77,8 @@ def norm($p; $prev): {
   draft: $p.isDraft,
   conflict: (if $p.mergeable == "CONFLICTING" then true elif $p.mergeable == "MERGEABLE" then false
              elif $prev != null then $prev.conflict else false end),
-  sha: ($p.headRefOid[0:8]), full: $p.headRefOid, base: $p.baseRefName, checks: ($p.statusCheckRollup | cls) };
-def cmpk: del(.title, .full);
+  sha: ($p.headRefOid[0:8]), full: $p.headRefOid, head: ($p.headRefName // ""), author: (($p.author.login) // ""), base: $p.baseRefName, checks: ($p.statusCheckRollup | cls) };
+def cmpk: del(.title, .full, .head, .author);
 def trans($c; $n; $k): ($n + {n: ($k | tonumber)}) as $b | [
   (if $c.draft != $n.draft then $b + {kind: "ready-changed", to: (if $n.draft then "draft" else "ready" end)} else empty end),
   (if $c.conflict != $n.conflict then $b + {kind: (if $n.conflict then "conflict" else "conflict-cleared" end)} else empty end),
@@ -133,12 +145,24 @@ meta() { # meta kind detail: printed + reported watch line with the next seq
   rlog "$NSEQ" "" 0 "" "$1" "" "$2" ":0:$1:"
 }
 
+quiet_new() { # quiet_new <head branch> <author>: matches WATCH_QUIET_NEW (head-branch prefixes and/or author:<login>)
+  local t
+  for t in ${WATCH_QUIET_NEW:-}; do
+    case $t in
+      author:*) [ "$2" = "${t#author:}" ] && return 0 ;;
+      *) case $1 in "$t"*) return 0;; esac ;;
+    esac
+  done
+  return 1
+}
+
 is_actionable() { # is_actionable kind cls detail
   case $1 in
     checks-green) case $3 in *READY-CANDIDATE*|*READY) return 0;; esac; return 1 ;;
     checks-red) [ "$2" != stack-merge-shape ] ;;
-    conflict) case $3 in *READY-PR*) return 0;; esac; return 1 ;;
-    merged|new-pr|closed) return 0 ;;
+    conflict) case $3 in *READY-PR*) return 0;; esac; [ "${WATCH_QUIET_CONFLICT_DRAFT:-0}" != 1 ] ;;
+    new-pr) [ "$2" != quiet ] ;;
+    merged|closed) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -237,19 +261,20 @@ poll_repo() {
   sf=$STATE/${repo//\//_}.json
   list=$TMP/list.json
   gh pr list -R "$repo" --state open --limit 60 \
-    --json number,title,isDraft,mergeable,mergeStateStatus,headRefOid,baseRefName,statusCheckRollup > "$list" 2>/dev/null || return 0
+    --json number,title,isDraft,mergeable,mergeStateStatus,headRefOid,headRefName,author,baseRefName,statusCheckRollup > "$list" 2>/dev/null || return 0
   jq -e 'type == "array"' "$list" > /dev/null 2>&1 || return 0
   if [ -f "$sf" ]; then cp "$sf" "$TMP/old.json"; else echo '{}' > "$TMP/old.json"; base=1; fi
   res=$TMP/res.json
   jq -c -n --argjson base "$base" --slurpfile old "$TMP/old.json" --slurpfile new "$list" "$JQ_POLL" > "$res" || return 0
   open=$(jq -r '.open | map("#\(.)") | join(" ")' "$res")
 
-  local kind n sha title draft pbase to old what full detail cls
-  while IFS=$'\x1f' read -r kind n sha title draft pbase to old what full; do
+  local kind n sha title draft pbase to old what full head author detail cls
+  while IFS=$'\x1f' read -r kind n sha title draft pbase to old what full head author; do
     [ -n "$kind" ] || continue
     case $kind in
       _leave) drop_ids "$repo#$n:$sha:checks-$what:" ;;
-      new-pr) emit "$repo" "$n" "$sha" new-pr "" "title=\"$title\" draft=$draft base=$pbase" ;;
+      new-pr) cls=""; quiet_new "$head" "$author" && cls=quiet
+        emit "$repo" "$n" "$sha" new-pr "$cls" "title=\"$title\" draft=$draft base=$pbase" ;;
       ready-changed) emit "$repo" "$n" "$sha" ready-changed "$to" "$([ "$to" = ready ] && echo draft'->'ready || echo ready'->'draft)" ;;
       conflict) detail="CONFLICTING base=$pbase"; [ "$draft" = false ] && detail="$detail READY-PR"; emit "$repo" "$n" "$sha" conflict "" "$detail" ;;
       conflict-cleared) detail="mergeable again"; [ "$draft" = false ] && detail="$detail READY-PR"; emit "$repo" "$n" "$sha" conflict-cleared "" "$detail" ;;
@@ -263,7 +288,7 @@ poll_repo() {
         detail=$(classify_red "$repo" "${full:-$sha}"); cls=${detail%%:*}
         emit "$repo" "$n" "$sha" checks-red "$cls" "$detail" ;;
     esac
-  done < <(jq -r '.events[] | [.kind, .n, .sha, .title, .draft, .base, (.to // ""), (.old // ""), (.what // ""), .full] | map(tostring) | join("\u001f")' "$res")
+  done < <(jq -r '.events[] | [.kind, .n, .sha, .title, .draft, .base, (.to // ""), (.old // ""), (.what // ""), .full, (.head // ""), (.author // "")] | map(tostring) | join("\u001f")' "$res")
 
   # PRs no longer in the open list: merged or closed (immediate, no debounce)
   local gn gsha view st mc others
@@ -290,13 +315,35 @@ snapshot() {
   for repo in $REPOS; do
     list=$TMP/list.json
     gh pr list -R "$repo" --state open --limit 60 \
-      --json number,title,isDraft,mergeable,mergeStateStatus,headRefOid,baseRefName,statusCheckRollup > "$list" 2>/dev/null || { echo "$repo: gh failed"; continue; }
+      --json number,title,isDraft,mergeable,mergeStateStatus,headRefOid,headRefName,author,baseRefName,statusCheckRollup > "$list" 2>/dev/null || { echo "$repo: gh failed"; continue; }
     jq -r --arg r "$repo" "$JQ_DEFS"'
       .[] | "\($r)#\(.number) \(if .isDraft then "draft" else "ready" end) \(.mergeable) \(.headRefOid[0:8]) \(.statusCheckRollup | cls) \(.baseRefName)"' "$list"
   done
 }
 
 if [ "$SNAPSHOT" = 1 ]; then snapshot; exit 0; fi
+
+# Single instance per state dir (not for --snapshot or WATCH_ONCE runs): lock directory with a pid file.
+take_lock() {
+  local pid
+  if [ "${WATCH_ONCE:-0}" = 1 ]; then return 0; fi
+  if ! mkdir "$LOCK" 2>/dev/null; then
+    pid=$(cat "$LOCK/pid" 2>/dev/null)
+    if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null && ps -p "$pid" -o command= 2>/dev/null | grep -q 'pr-watch'; then
+      echo "pr-watch: already running for $STATE (pid $pid)" >&2
+      exit 3
+    fi
+    rm -rf "$LOCK"
+    if ! mkdir "$LOCK" 2>/dev/null; then
+      echo "pr-watch: could not take the lock $LOCK" >&2
+      exit 3
+    fi
+    report_note lock-takeover "stale lock of pid ${pid:-unknown} taken over"
+  fi
+  echo "$$" > "$LOCK/pid"
+  HAVE_LOCK=1
+}
+take_lock
 
 while :; do
   if [ -e "$STATE/STOP" ]; then meta stopped "STOP file"; exit 0; fi
