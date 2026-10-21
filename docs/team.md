@@ -964,12 +964,12 @@ edit ([helper](../.agents/crewbook-helper.md); optional
 unverified). Agents never edit the live or
 user checkout. Read-only work and reviewers may use an export or a worktree. The
 user's own implicit local session keeps using the current checkout and starts no
-lane worktrees. One editor per worktree still applies. Start every new branch,
-worktree, review and comparison from `origin/<default branch>` after a fresh
-`git fetch`, never from the local default branch: that branch belongs to the
-human and lags the remote, because a rebase merge rewrites SHAs and only the
-human updates that checkout, so a base taken from it carries stale or
-already-merged commits.
+lane worktrees. One editor per worktree still applies. A new branch off the default branch, and any worktree, review or comparison against
+it, uses `origin/<default branch>` after a fresh `git fetch`, never the local default
+branch: that branch belongs to the human and lags the remote, because a rebase merge
+rewrites SHAs and only the human updates that checkout, so a base taken from it carries
+stale or already-merged commits. Stacked children keep their parent topic branch as
+base.
 
 ### Branch naming
 
