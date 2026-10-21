@@ -112,6 +112,8 @@ on the same `id` or `seq`.
   and logged as `lock-takeover`. `--snapshot` and `WATCH_ONCE=1` runs take no
   lock. A plain directory at `<state>/lock` (left by an early version) is refused with
   exit 3; remove it.
+  Known limit: after a crash during a takeover, two instances started at the same
+  moment may both proceed; check `<state>/lock` names one pid and stop the other.
 - Liveness: the file `alive` in the state directory holds the time of the last
   poll; a stale timestamp (several `WATCH_INTERVAL`s old, default 60 s) means the
   process is gone, so restart it.
