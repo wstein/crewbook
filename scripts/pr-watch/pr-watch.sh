@@ -21,6 +21,8 @@
 # Single instance: the lock is a symlink <state>/lock whose target is the pid (created atomically). A second run on the same
 #   state dir exits 3 naming the running pid; a stale lock (pid gone or not a pr-watch process) is taken over under a
 #   second atomic mutex (<state>/lock.takeover), so exactly one taker wins. --snapshot and WATCH_ONCE=1 never take the lock.
+#   Known limit: if a taker crashed while holding lock.takeover and two new instances start at the same moment, both may clear
+#   that stale takeover file and proceed (needs a crash during takeover plus a simultaneous start); stop the extra one by hand.
 #   A plain directory at <state>/lock (an early version left one) is refused with exit 3: remove it.
 # WATCH_STACK_SIGNATURES: extended regex (alternatives with |) matched against runner ##[error] annotation lines of a red
 #   check; a match (and no real test failure) classifies it stack-merge-shape, which is not actionable. Default empty: off.
