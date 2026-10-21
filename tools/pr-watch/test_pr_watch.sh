@@ -35,8 +35,8 @@ mkpr() {
       esac
     done
   done
-  jq -c -n --argjson n "$1" --argjson d "$2" --arg m "$3" --arg s "$(sha "$4")" --arg b "$5" --argjson c "$checks" \
-    '{number:$n,title:"PR \($n)",isDraft:$d,mergeable:$m,mergeStateStatus:"CLEAN",headRefOid:$s,baseRefName:$b,statusCheckRollup:$c}'
+  jq -c -n --argjson n "$1" --argjson d "$2" --arg m "$3" --arg s "$(sha "$4")" --arg b "$5" --argjson c "$checks" --arg h "${PRHEAD:-topic}" --arg au "${PRAUTHOR:-someone}" \
+    '{number:$n,title:"PR \($n)",isDraft:$d,mergeable:$m,mergeStateStatus:"CLEAN",headRefOid:$s,headRefName:$h,author:{login:$au},baseRefName:$b,statusCheckRollup:$c}'
 }
 setprs() { jq -s -c '.' > "$WORLD/$RF.prs.json"; } # reads PR objects on stdin
 run() { OUT=$(bash "$SCRIPT" "$@" 2>&1 < /dev/null); RC=$?; }
@@ -206,6 +206,80 @@ WATCH_INTERVAL=30 bash "$SCRIPT" > "$ROOT/sig.out" 2>&1 &
 pid=$!; sleep 1; kill -TERM $pid; wait $pid 2>/dev/null
 if jq -e 'select(.kind=="stopped" and .repo=="" and .pr==0 and .detail=="signal received")' "$WATCH_REPORT" > /dev/null; then ok "SIGTERM writes stopped line to report"; else bad "SIGTERM" "$(cat "$WATCH_REPORT")"; fi
 assert_eq "stdout silent on SIGTERM" "$(cat "$ROOT/sig.out")" ""
+
+echo "== conflict on draft PRs, quiet new-pr =="
+new_world
+mkpr 1 true MERGEABLE aaaa1111 main p1 | setprs; once
+mkpr 1 true CONFLICTING aaaa1111 main p1 | setprs; once
+WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_has "draft conflict is actionable" "#1 aaaa1111 conflict | CONFLICTING base=main"
+assert_lacks "draft conflict ends the run (no idle)" "idle-timeout"
+new_world
+mkpr 1 true MERGEABLE aaaa1111 main p1 | setprs; once
+mkpr 1 true CONFLICTING aaaa1111 main p1 | setprs; once
+WATCH_QUIET_CONFLICT_DRAFT=1 WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_has "WATCH_QUIET_CONFLICT_DRAFT=1: draft conflict still reported" "#1 aaaa1111 conflict |"
+assert_has "WATCH_QUIET_CONFLICT_DRAFT=1: draft conflict not actionable" "idle-timeout"
+new_world
+mkpr 1 false MERGEABLE aaaa1111 main p1 | setprs; once
+mkpr 1 false CONFLICTING aaaa1111 main p1 | setprs; once
+WATCH_QUIET_CONFLICT_DRAFT=1 WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_lacks "WATCH_QUIET_CONFLICT_DRAFT=1: ready conflict stays actionable" "idle-timeout"
+new_world
+mkpr 1 true CONFLICTING aaaa1111 main p1 | setprs; once
+mkpr 1 true MERGEABLE aaaa1111 main p1 | setprs; once
+WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_has "conflict-cleared is reported" "conflict-cleared"
+assert_has "conflict-cleared is not actionable" "idle-timeout"
+echo "-- WATCH_QUIET_NEW"
+newpr() { # newpr head author: baseline PR 1, then PR 2 appears
+  new_world
+  mkpr 1 true MERGEABLE aaaa1111 main p1 | setprs; once
+  { mkpr 1 true MERGEABLE aaaa1111 main p1; PRHEAD=$1 PRAUTHOR=$2 mkpr 2 true MERGEABLE bbbb2222 main p1; } | setprs
+}
+newpr feat/x alice; WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_has "default (empty) quiet list: new-pr actionable" "#2 bbbb2222 new-pr |"
+assert_lacks "default: run ended at new-pr" "idle-timeout"
+newpr feat/x alice; WATCH_QUIET_NEW="docs/ feat/" WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_has "quiet branch prefix: new-pr still printed" "#2 bbbb2222 new-pr |"
+assert_has "quiet branch prefix: not actionable" "idle-timeout"
+assert_eq "quiet new-pr logged to jsonl" "$(jq -c 'select(.kind=="new-pr") | [.pr,.class]' "$WATCH_REPORT")" '[2,"quiet"]'
+newpr fix/x alice; WATCH_QUIET_NEW="docs/ feat/" WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_lacks "non-matching prefix stays actionable" "idle-timeout"
+newpr other/x alice; WATCH_QUIET_NEW="author:alice" WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_has "quiet author: not actionable" "idle-timeout"
+newpr other/x bob; WATCH_QUIET_NEW="author:alice" WATCH_MAX_IDLE_SECONDS=4 WATCH_INTERVAL=1 run --until-event
+assert_lacks "other author stays actionable" "idle-timeout"
+
+echo "== single-instance lock =="
+new_world
+mkpr 1 true MERGEABLE aaaa1111 main p1 | setprs
+WATCH_INTERVAL=30 bash "$SCRIPT" --stream > "$ROOT/a.out" 2>&1 &
+apid=$!
+for _ in 1 2 3 4 5 6 7 8 9 10; do [ -s "$ROOT/s/lock/pid" ] && break; sleep 1; done
+assert_eq "lock pid file names the running instance" "$(cat "$ROOT/s/lock/pid")" "$apid"
+run --stream; assert_eq "second instance refused: exit 3" "$RC" 3
+assert_has "refusal names the pid" "pid $apid"
+WATCH_ONCE=1 run --stream; assert_eq "WATCH_ONCE run does not take or check the lock" "$RC" 0
+run --snapshot; assert_eq "snapshot does not take the lock" "$RC" 0
+assert_eq "lock still held by the first instance" "$(cat "$ROOT/s/lock/pid")" "$apid"
+kill -TERM $apid; wait $apid 2>/dev/null
+[ ! -e "$ROOT/s/lock" ] && ok "lock released on SIGTERM" || bad "lock released on SIGTERM" "still there"
+echo "-- stale locks"
+mkdir "$ROOT/s/lock"; sleep 0 & dead=$!; wait $dead; echo "$dead" > "$ROOT/s/lock/pid"
+WATCH_MAX_IDLE_SECONDS=0 WATCH_INTERVAL=1 run --stream
+assert_eq "dead-pid lock taken over" "$RC" 0
+assert_eq "takeover logged" "$(jq -c 'select(.kind=="lock-takeover") | .kind' "$WATCH_REPORT")" '"lock-takeover"'
+[ ! -e "$ROOT/s/lock" ] && ok "lock released after normal exit" || bad "lock released after exit" "still there"
+sleep 30 & other=$!
+mkdir "$ROOT/s/lock"; echo "$other" > "$ROOT/s/lock/pid"
+WATCH_MAX_IDLE_SECONDS=0 WATCH_INTERVAL=1 run --stream
+assert_eq "live non-pr-watch pid lock taken over" "$RC" 0
+kill $other 2>/dev/null; wait $other 2>/dev/null
+touch "$ROOT/s/STOP"; run --stream
+assert_eq "STOP run exits 0" "$RC" 0
+[ ! -e "$ROOT/s/lock" ] && ok "lock released after STOP" || bad "lock released after STOP" "still there"
+rm -f "${ROOT:?}/s/STOP"
 
 echo "== jsonl formats =="
 new_world

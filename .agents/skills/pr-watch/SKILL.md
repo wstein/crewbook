@@ -37,21 +37,18 @@ exit).
 
 ## Event kinds
 
-Actionable (they end an `--until-event` run):
+| Kind | Actionable (ends `--until-event`) | Notes |
+| --- | --- | --- |
+| `checks-green` | yes, if the detail has `READY-CANDIDATE` (draft PR based on `main`) or `READY` (non-draft) | review or merge decision point |
+| `checks-red` | yes, unless class `stack-merge-shape` | classes: `real-failure` (a test failed), `flake-infra` (runner or network trouble; usually rerun), `unknown` (needs a look), `stack-merge-shape` (expected for stacked PRs; resolves when the parent merges) |
+| `conflict` | yes, for draft and ready PRs (`READY-PR` in the detail marks a ready one) | `WATCH_QUIET_CONFLICT_DRAFT=1` makes a draft conflict non-actionable |
+| `merged` | yes | the detail lists other open PRs to check for restack |
+| `closed` | yes | closed without merge |
+| `new-pr` | yes, unless quiet | `WATCH_QUIET_NEW` (space-separated head-branch prefixes and/or `author:<login>`, default empty) marks matching new PRs `class: quiet`: logged, not actionable |
+| `conflict-cleared`, `ready-changed`, `head-changed`, other `checks-*` | no | reported only |
 
-- `checks-green` with `READY-CANDIDATE` (draft PR based on `main`) or `READY` (non-draft) in the detail: review or merge decision point.
-- `checks-red` unless the class is `stack-merge-shape`. Classes: `real-failure`
-  (a test failed), `flake-infra` (runner or network trouble; usually rerun),
-  `unknown` (needs a look).
-- `conflict` with `READY-PR` (a non-draft PR has a merge conflict).
-- `merged` (the detail lists other open PRs to check for restack), `new-pr`,
-  `closed`.
-
-Reported but not ending the run: `ready-changed`, `head-changed`,
-`conflict-cleared`, other `checks-*` transitions, a `checks-red` classed
-`stack-merge-shape` (expected for stacked PRs; resolves when the parent
-merges). `watch idle-timeout` and `watch stopped` end the run and mean the
-watcher is no longer running.
+`watch idle-timeout` and `watch stopped` end the run and mean the watcher is
+no longer running.
 
 Check transitions are debounced: a state must hold for two consecutive polls,
 so brief flaps produce nothing. Each event id (repo, PR, sha, kind, class) is
@@ -75,6 +72,10 @@ on the same `id` or `seq`.
 
 ## Liveness, stop, idle
 
+- One instance per state directory: a second start exits 3 and names the
+  running pid. A stale lock (pid gone, or not a pr-watch process) is taken over
+  and logged as `lock-takeover`. `--snapshot` and `WATCH_ONCE=1` runs take no
+  lock.
 - Liveness: the file `alive` in the state directory holds the time of the last
   poll; a stale timestamp (several `WATCH_INTERVAL`s old, default 60 s) means the
   process is gone, so restart it.
@@ -85,6 +86,14 @@ on the same `id` or `seq`.
   it reports `idle-timeout` and exits; restart if the watch is still wanted.
 - Other knobs: `WATCH_INTERVAL` (seconds between polls, default 60),
   `WATCH_ONCE=1` (one poll, then exit).
+
+## Waiting for a run
+
+A cheap helper agent returns when its turn ends and cannot be woken by its own
+background monitor. Never ask a helper to wait for a CI run or workflow to
+finish. Start a background shell command that waits (an until-loop with `sleep`)
+and prints one result line per job, and hand the finished run to the helper for
+log triage.
 
 ## Helper rule
 
