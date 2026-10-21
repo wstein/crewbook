@@ -25,6 +25,8 @@
     ".agents/skills/crewbook-qa/agents/openai.yaml",
     ".agents/skills/restack-after-merge/SKILL.md",
     ".agents/skills/restack-after-merge/agents/openai.yaml",
+    ".agents/skills/new-repo-setup/SKILL.md",
+    ".agents/skills/new-repo-setup/agents/openai.yaml",
     ".claude/agents/crewbook-design.md",
     ".claude/agents/crewbook-dispatch.md",
     ".claude/agents/crewbook-docs-reviewer.md",
