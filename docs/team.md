@@ -1400,6 +1400,15 @@ Author before handback answers with evidence:
   a blocked required check and its next step instead of claiming completion.
   Retain commands, exit codes and failed/skipped checks; never hide status with
   `| tail`.
+- Before proposing exact wording or syntax to another party (requirement text,
+  option spellings, suffixes, schema keys), re-read it character by character
+  against the target spec or grammar; for syntax or schema proposals, run a small
+  probe table (a few edge inputs with expected results) before sending. A mistake
+  in one's own recommended wording is a finding against the author.
+
+Reviewer: every Medium-or-higher finding carries an Evidence block, and an
+unverified premise is a Question, not a finding
+([canonical text](../.agents/crewbook-review.md)).
 
 Author and reviewer also check these recurring classes:
 
