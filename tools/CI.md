@@ -1,5 +1,10 @@
 # Maintenance CI
 
+Package checks run on pull requests and on pushes to main only, so a topic-branch push
+and its pull request do not run the same SHA twice; superseded runs of a ref are cancelled.
+No `paths` filter or job `if:` gates the required checks (`analyze`, `package (macos-15)`,
+`package (ubuntu-latest)`, `secrets`): a required job that never starts blocks the PR,
+and nearly every change touches hashed package files anyway.
 Ordinary push/PR validation runs the standard-library Python suite and
 `tools/crewbook-package.py check` on Ubuntu and macOS. macOS checks explicitly
 use `/usr/bin/python3`, with no Python installer, pip or Go step. The suite
