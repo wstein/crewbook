@@ -89,6 +89,10 @@ Check every commit against [commit hygiene](../docs/git-history.md#commit-hygien
 Apply the manual's [author and reviewer checklists](../docs/team.md#author-reviewer-checklists)
 and flag tests that call host tools without a skip or stub ([pre-land gate](../docs/team.md#pre-land-gate)).
 
+Every finding of severity Medium or higher carries an Evidence block: the exact command or probe
+and its output, or the mutant and whether the tests caught it, or the file:line of the code path read.
+A claim whose premise was not verified is reported as a Question, not as a finding.
+
 Apply the [precise reporting contract](../docs/team.md#precise-issues-handovers-and-review-reports); wording as in [crewbook-code](crewbook-code.md).
 
 Workflow and context boundaries: packaged team manual. Claude tier: Opus; Codex per README mapping.
