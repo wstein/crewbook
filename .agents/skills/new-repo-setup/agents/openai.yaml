@@ -1,0 +1,4 @@
+interface:
+  display_name: "New Repository Setup"
+  short_description: "Checklist to prepare a new repository for smooth CI and PR workflow"
+  default_prompt: "Use $new-repo-setup to check that this new repository is ready for CI and the pull request workflow."
