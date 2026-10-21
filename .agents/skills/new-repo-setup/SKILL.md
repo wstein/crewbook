@@ -27,13 +27,15 @@ that always report.
 
 - [ ] One aggregate job (`suite` or `check`) with `if: always()` that fails on
       failed, cancelled or unexpectedly skipped `needs`. Require that job only.
+      The template has no example (its matrix has no aggregate job); see the
+      `suite` job of sourcesteward.
 - [ ] Never require per-shard or per-matrix-leg checks: a job skipped inside a
       matrix reports under the unexpanded name and stays pending.
 - [ ] No workflow-level `paths-ignore` for a required workflow: the check is
       never started and the pull request waits forever.
 - [ ] Docs-only gating: a `changes` job and `if:` on the heavy jobs only, only
-      for `pull_request`, failing closed (unknown means run). Example:
-      sourcesteward PR #117.
+      for `pull_request`, failing closed (unknown means run). See the
+      `changes` job of sourcesteward.
 
 ## 3. Workflow hygiene
 
@@ -46,7 +48,7 @@ that always report.
 ## 4. Repository files
 
 - [ ] `AGENTS.md`: test and check commands, layout, Conventional Commits.
-      `CLAUDE.md` (and Copilot instructions) only point to it.
+      `CLAUDE.md` and `.github/copilot-instructions.md` only point to it.
 - [ ] `LICENSE`, `.editorconfig`, SPDX headers if the family uses them.
 - [ ] A smoke test, and one local command (`make check` or equivalent) that
       runs the same things CI runs, so authors push green.
@@ -54,9 +56,10 @@ that always report.
 ## 5. Bots and automation
 
 - [ ] A lock-only updater must not build.
-- [ ] A pull request created with `GITHUB_TOKEN` does not trigger CI. Dispatch
-      the workflow with the expected head SHA, or use an App token (owner
-      decision). Say so in the PR body.
+- [ ] A pull request created with `GITHUB_TOKEN` gets no CI automatically.
+      Either dispatch CI for the exact head SHA, or the owner reopens the pull
+      request or pushes (as `update-flix.yaml` tells the owner); an App token is
+      an owner decision. Say so in the PR body.
 - [ ] Bundle all changes of one automation run into one pull request. With a
       `strict` up-to-date rule every merge turns the other open pull requests
       BEHIND.
