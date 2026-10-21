@@ -242,6 +242,9 @@ WATCH_MAX_IDLE_SECONDS=100 WATCH_INTERVAL=1 run --until-event
 assert_eq "until-event rc 0 after first actionable" "$RC" 0
 assert_has "actionable EVT printed" "#1 aaaa1111 checks-green | all checks green READY-CANDIDATE"
 assert_lacks "stopped after the actionable line (no idle line)" "idle-timeout"
+assert_eq "restart line is the last line" "$(printf '%s\n' "$OUT" | tail -n1 | cut -c1-8)" "restart:"
+assert_has "restart line carries WATCH_REPOS and WATCH_STATE_DIR" "restart: WATCH_REPOS=acme/widgets WATCH_STATE_DIR=$ROOT/s bash "
+assert_has "restart line ends with --until-event" "--until-event"
 WATCH_ONCE=1 run --until-event; assert_empty "restart after actionable event repeats nothing"
 echo "-- alive per poll, silence, STOP, idle"
 new_world
@@ -332,6 +335,12 @@ ln -s "$other" "$ROOT/s/lock"
 WATCH_MAX_IDLE_SECONDS=0 WATCH_INTERVAL=1 run --stream
 assert_eq "live non-pr-watch pid lock taken over" "$RC" 0
 kill $other 2>/dev/null; wait $other 2>/dev/null
+sleep 0 & dead=$!; wait $dead; ln -s "$dead" "$ROOT/s/lock"; ln -s "$dead" "$ROOT/s/lock.takeover"
+tk0=$(jq -c 'select(.kind=="lock-takeover")' "$WATCH_REPORT" | wc -l | tr -d ' ')
+WATCH_MAX_IDLE_SECONDS=0 WATCH_INTERVAL=1 run --stream
+assert_eq "stale takeover file of a dead pid does not block a takeover" "$RC" 0
+assert_eq "takeover completed past the stale takeover file" "$(jq -c 'select(.kind=="lock-takeover")' "$WATCH_REPORT" | wc -l | tr -d ' ')" $((tk0 + 1))
+[ ! -L "$ROOT/s/lock.takeover" ] && [ ! -L "$ROOT/s/lock" ] && ok "stale takeover file cleared, lock released" || bad "stale takeover file cleared" "still there"
 touch "$ROOT/s/STOP"; run --stream
 assert_eq "STOP run exits 0" "$RC" 0
 [ ! -L "$ROOT/s/lock" ] && ok "lock released after STOP" || bad "lock released after STOP" "still there"
@@ -505,6 +514,9 @@ assert_eq "no WATCH_REPOS: current-directory repo is polled" "$(grep -c '^pr lis
 [ -f "$FAKE_HOME/.local/state/pr-watch/watch-report.jsonl" ] && ok "default report inside the state dir" || bad "default report" "missing"
 OUT=$(cd "$ROOT" && HOME=$FAKE_HOME XDG_STATE_HOME=$ROOT/xdg WATCH_ONCE=1 bash "$SCRIPT" 2>&1 < /dev/null)
 [ -f "$ROOT/xdg/pr-watch/acme_widgets.json" ] && ok "XDG_STATE_HOME honoured" || bad "XDG_STATE_HOME" "missing"
+rm -f "$WORLD/calls.log"
+OUT=$(cd "$ROOT" && WATCH_REPOS="   " HOME=$FAKE_HOME XDG_STATE_HOME=$ROOT/xdg WATCH_ONCE=1 bash "$SCRIPT" 2>&1 < /dev/null); RC=$?
+assert_eq "blank WATCH_REPOS falls back to the current-directory repo" "$(grep -c '^pr list -R acme/widgets' "$WORLD/calls.log")" 1
 touch "$WORLD/norepo"
 OUT=$(cd "$ROOT" && HOME=$FAKE_HOME WATCH_ONCE=1 bash "$SCRIPT" 2>&1 < /dev/null); RC=$?
 assert_eq "no repo and no WATCH_REPOS: exit 2" "$RC" 2
