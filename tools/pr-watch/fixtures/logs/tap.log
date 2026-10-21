@@ -1,0 +1,4 @@
+2026-10-21T10:00:00.0000000Z prove
+2026-10-21T10:00:01.0000000Z ok 1 - starts
+2026-10-21T10:00:01.1000000Z not ok 3 - widget renders
+2026-10-21T10:00:02.0000000Z ##[error]Process completed with exit code 1.

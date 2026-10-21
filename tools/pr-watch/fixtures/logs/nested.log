@@ -1,0 +1,5 @@
+2026-10-21T10:00:00.0000000Z suite output follows
+2026-10-21T10:00:01.0000000Z 2026-10-21T10:00:01.0000000Z Unexpected synthetic merge parents: echoed
+2026-10-21T10:00:01.1000000Z 2026-10-21T10:00:01.1000000Z ##[error]echoed annotation
+2026-10-21T10:00:02.0000000Z FAIL: test_real (m.T)
+2026-10-21T10:00:02.1000000Z AssertionError: boom
