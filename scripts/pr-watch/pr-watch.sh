@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # pr-watch.sh - PR watcher that does the thinking; a relay only forwards its EVT lines.
-# Usage: bash pr-watch.sh [--snapshot | --stream | --until-event]
+# Usage: bash pr-watch.sh [--snapshot | --stream | --until-event] [--actionable-only]
 #   --stream (default): print every EVT, never exit (Monitor use).
 #   --until-event: exit 0 right after the first actionable EVT (checks-green READY-CANDIDATE/READY, checks-red
 #     except stack-merge-shape, conflict READY-PR, merged, new-pr, closed); other transitions
 #     are printed and reported but do not end the run. Restart repeats nothing (persistent state).
+#   --actionable-only (with --stream): print only actionable events (all events still go to the report); the process keeps
+#     running, so a persistent Monitor sees one line per actionable event.
+#   --until-event ends with the last stdout line `restart: bash <script> --until-event` as a reminder.
 #   --snapshot: print one line per open PR and exit.
 #   Event log: <report> (JSON Lines, append-only); dedupe: <state>/emitted.jsonl.
 #   Each poll writes an ISO time to <state>/alive. File <state>/STOP ends the loop. WATCH_MAX_IDLE_HOURS (default 8)
@@ -37,12 +40,16 @@ REPORT=${WATCH_REPORT:-$STATE/watch-report.jsonl}
 INTERVAL=${WATCH_INTERVAL:-60}
 SNAPSHOT=0
 MODE=stream
-case "${1:-}" in
-  --snapshot) SNAPSHOT=1 ;;
-  --until-event) MODE=until ;;
-  --stream|"") ;;
-  *) echo "usage: pr-watch.sh [--snapshot|--stream|--until-event]" >&2; exit 2 ;;
-esac
+ACTIONABLE_ONLY=0
+for arg in "$@"; do
+  case $arg in
+    --snapshot) SNAPSHOT=1 ;;
+    --until-event) MODE=until ;;
+    --stream) ;;
+    --actionable-only) ACTIONABLE_ONLY=1 ;;
+    *) echo "usage: pr-watch.sh [--snapshot|--stream|--until-event] [--actionable-only]" >&2; exit 2 ;;
+  esac
+done
 MAX_IDLE=${WATCH_MAX_IDLE_SECONDS:-$(awk -v h="${WATCH_MAX_IDLE_HOURS:-8}" 'BEGIN{printf "%d", h*3600}')}
 ACTIONABLE=0
 LAST_ACTION=$(date +%s)
@@ -168,7 +175,7 @@ is_actionable() { # is_actionable kind cls detail
 }
 
 emit() { # emit repo n sha kind class detail
-  local repo=$1 n=$2 sha=$3 kind=$4 cls=$5 detail=$6 id pre
+  local repo=$1 n=$2 sha=$3 kind=$4 cls=$5 detail=$6 id pre act
   id="$repo#$n:$sha:$kind:$cls"; pre="$repo#$n:$sha:"
   case $kind in
     conflict) drop_ids "${pre}conflict-cleared:" ;;
@@ -178,9 +185,12 @@ emit() { # emit repo n sha kind class detail
   if id_seen "$id"; then return; fi
   next_seq
   jappend "$IDS" "$(jq -cn --arg id "$id" --argjson s "$NSEQ" '{id: $id, seq: $s}')"
-  printf 'EVT %s %s#%s %s %s | %s\n' "$NSEQ" "$repo" "$n" "$sha" "$kind" "$detail"
+  if is_actionable "$kind" "$cls" "$detail"; then act=1; else act=0; fi
+  if [ "$act" = 1 ] || [ "$ACTIONABLE_ONLY" = 0 ]; then
+    printf 'EVT %s %s#%s %s %s | %s\n' "$NSEQ" "$repo" "$n" "$sha" "$kind" "$detail"
+  fi
   rlog "$NSEQ" "$repo" "$n" "$sha" "$kind" "$cls" "$detail" "$id"
-  if is_actionable "$kind" "$cls" "$detail"; then ACTIONABLE=1; LAST_ACTION=$(date +%s); fi
+  if [ "$act" = 1 ]; then ACTIONABLE=1; LAST_ACTION=$(date +%s); fi
 }
 
 # ---- red-check classification --------------------------------------------
@@ -349,7 +359,11 @@ while :; do
   if [ -e "$STATE/STOP" ]; then meta stopped "STOP file"; exit 0; fi
   for r in $REPOS; do
     poll_repo "$r"
-    if [ "$MODE" = until ] && [ "$ACTIONABLE" = 1 ]; then date -u +%Y-%m-%dT%H:%M:%SZ > "$STATE/alive"; exit 0; fi
+    if [ "$MODE" = until ] && [ "$ACTIONABLE" = 1 ]; then
+      date -u +%Y-%m-%dT%H:%M:%SZ > "$STATE/alive"
+      echo "restart: bash $0 --until-event"
+      exit 0
+    fi
   done
   date -u +%Y-%m-%dT%H:%M:%SZ > "$STATE/alive"
   if [ $(( $(date +%s) - LAST_ACTION )) -ge "$MAX_IDLE" ]; then

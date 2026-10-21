@@ -16,24 +16,43 @@ Script: [pr-watch.sh](../../../scripts/pr-watch/pr-watch.sh). It needs `bash`,
 
 ## Start
 
-Run it as a background shell command (for example Bash with
-`run_in_background`), not in the foreground:
-
-```sh
-WATCH_REPOS="owner/one owner/two" bash <path>/scripts/pr-watch/pr-watch.sh --until-event
-```
-
-`WATCH_REPOS` is space-separated `owner/name`; unset, it watches the repository
-of the current directory. The first poll records a silent baseline. The command
-exits 0 right after the first actionable event and prints one line per event:
+Two supported run patterns. Both print one line per event:
 
 ```text
 EVT <seq> <repo>#<n> <sha8> <kind> | <detail>
 ```
 
-Modes: `--until-event` (this skill's default), `--stream` (print every event,
-never exit; for a monitor or relay), `--snapshot` (one line per open PR, then
-exit).
+`WATCH_REPOS` is space-separated `owner/name`; unset, it watches the repository
+of the current directory. The first poll records a silent baseline.
+
+**(a) Recommended: `--stream --actionable-only` under a persistent Monitor.**
+
+```sh
+WATCH_REPOS="owner/one owner/two" bash <path>/scripts/pr-watch/pr-watch.sh --stream --actionable-only
+```
+
+Only actionable events reach stdout (every event still goes to the report), and
+the process keeps running, so each stdout line wakes the coordinator without
+ending the watcher. The Monitor tool has its own maximum lifetime: re-arm it
+when it expires (one expiry notice per period). Trade-off: depends on the host
+having a persistent monitor.
+
+**(b) `--until-event` as a background command** (for example Bash with
+`run_in_background`):
+
+```sh
+WATCH_REPOS="owner/one owner/two" bash <path>/scripts/pr-watch/pr-watch.sh --until-event
+```
+
+It exits 0 right after the first actionable event and wakes the coordinator
+only by exiting; its last stdout line is `restart: bash <script> --until-event`.
+The coordinator MUST restart it in the same turn, or events go unseen. A
+self-restarting wrapper loop is useless: a background command wakes the
+coordinator only when it exits. Trade-off: works anywhere, but every event costs
+a restart and "forgot to restart" is the failure mode.
+
+Other modes: `--stream` (every event, never exits) and `--snapshot` (one line
+per open PR, then exit).
 
 ## Event kinds
 
@@ -66,7 +85,7 @@ object per line with `seq,t,repo,pr,sha,kind,detail,class,id`. Remember the last
 jq -c 'select(.seq > N)' "$STATE/watch-report.jsonl"
 ```
 
-Restart rule: after handling an event, start the same `--until-event` command
+Restart rule (pattern b): after handling an event, start the same `--until-event` command
 again. State persists, so nothing already reported is repeated. Never act twice
 on the same `id` or `seq`.
 
