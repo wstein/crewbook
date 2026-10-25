@@ -79,7 +79,7 @@ refreshed lease; the default branch and tags are never rewritten.
 
 <a id="wording-only-exception"></a>
 Owner-decided exception (2026-10-17, "Script ist ok"): a later-round fix that only
-changes wording (no rule, behaviour or contract) and follows an exact-SHA CLEAR may be
+changes wording (no rule, behavior or contract) and follows an exact-SHA CLEAR may be
 verified by the project's own documented docs or lint check (none documented, no
 exception) plus `git diff --check` instead of another model
 review. It narrows only the later-round re-review: it never applies to a rebase onto a
@@ -1369,7 +1369,7 @@ the project policy requires for the exact SHA carries a `model=` value
 and any other unparsable line naming that SHA is a gap. A stamp read from a reviewer's [review note](project-config.md#review-note) counts only after the desk has matched it to the handback. A line "names" a SHA when it contains
 it (case-insensitive). A malformed NOT CLEAR blocks unless it contains a different full
 40-hex SHA. Stamps count by (SHA, canonical model): `opus` and
-`claude-opus-5-5` are one stamp, and reviewer identity is not modelled, so two reviewers who both
+`claude-opus-5-5` are one stamp, and reviewer identity is not modeled, so two reviewers who both
 record `model=opus` count once. A policy requiring more than one CLEAR therefore needs distinct
 models; no reviewer-key field exists. Fail-closed: any lower-tier CLEAR on the SHA is a gap,
 whether or not it is needed for the count. The required CLEAR count is the project policy's,
@@ -1450,9 +1450,9 @@ Author and reviewer also check these recurring classes:
 ([#57](https://github.com/wstein/crewbook/issues/57)); it is off by default and
 only warns, never changing the exit status. The shared preamble is the two
 lines after the title of `.agents/crewbook-*.md` that most files have in
-common (whitespace-normalised); a file that differs is reported with its path
+common (whitespace-normalized); a file that differs is reported with its path
 and line 3. A duplicate is a paragraph of at least 20 words (`MIN_WORDS` in
-`tools/packagelint.py`) whose whitespace-normalised text appears in more than
+`tools/packagelint.py`) whose whitespace-normalized text appears in more than
 one of `docs/team.md` and those agent files; both locations are reported and
 the repeat should become a link. The lint is exact-text only, not semantic.
 

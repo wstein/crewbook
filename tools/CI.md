@@ -1,7 +1,7 @@
 # Maintenance CI
 
 Package checks run on pull requests and on pushes to main only, so a topic-branch push
-and its pull request do not run the same SHA twice; superseded runs of a ref are cancelled.
+and its pull request do not run the same SHA twice; superseded runs of a ref are canceled.
 No `paths` filter or job `if:` gates the required checks (`analyze`, `package (macos-15)`,
 `package (ubuntu-latest)`, `secrets`): a required job that never starts blocks the PR,
 and nearly every change touches hashed package files anyway.

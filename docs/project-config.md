@@ -109,12 +109,12 @@ copy is replaced. Review lines are
 (lowercase 40-hex `<sha>`).
 `model=<model>[/<effort>]` is required and is derived from the model actually reported for the
 run, not the one requested. The value is printable ASCII without spaces or `;`, must not
-start with `model=`, and a line without it is invalid (modelled in `tools/review_lines.py`).
+start with `model=`, and a line without it is invalid (modeled in `tools/review_lines.py`).
 Canonical tokens: `opus`, `sonnet`, `gpt-6.1-sol/medium`, `gpt-6.1-sol/low` (role mapping
-in the [README](../README.md)). A reported concrete Claude id normalises to its family
+in the [README](../README.md)). A reported concrete Claude id normalizes to its family
 (`claude-<family>-<digits>[-<digits>...][-<yyyymmdd>]`, for example `claude-opus-5-5` becomes
 `opus`; other shapes stay unnormalised); a Codex id keeps its `/<effort>`. A tier rule matches the
-normalised token exactly, as one whole token. Client handles are marked valid only in the session
+normalized token exactly, as one whole token. Client handles are marked valid only in the session
 that created them. A one-line `Resume:` summary closes the file.
 
 <a id="review-note"></a>
@@ -171,9 +171,9 @@ and stays read-only when the answer does not say the previous session ended.
 No daemon, timer or cleanup job exists.
 
 Limits of this procedure: the grammar and the single strict parser
-(`registry_parse`) are modelled and tested in
+(`registry_parse`) are modeled and tested in
 `tools/test_dispatch_recovery.py`, as are the second-desk and takeover
-decisions and the split-mode writer rule, but only as a model: the behaviour
+decisions and the split-mode writer rule, but only as a model: the behavior
 itself is model-run procedure. Also model-run, unverified and unenforced: the regular non-symlink file and non-symlink parent checks,
 owner-only permissions, no secrets, never posting, the split-mode sole writer,
 the read-only second desk and takeover only after the human confirms. A hostile
@@ -385,7 +385,7 @@ the command is unverified ([#41](https://github.com/wstein/crewbook/issues/41)).
 **`show`** (the default, read-only) works in any session. It reports: profile
 and mode, coordinator and model, the role to tier mapping, the caps, `review_rounds_max`, the
 registry and decision-log paths, the policy sources, and host fit for Claude,
-Codex and Antigravity. Each value names its source and is labelled
+Codex and Antigravity. Each value names its source and is labeled
 **measured** (read or observed this session), **configured** (supplied by
 policy or the user) or **unverified**. Environment variables appear as set or
 unset only, never with a value. Caps are reported with a link to

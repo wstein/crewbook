@@ -58,11 +58,11 @@ was `689df4a1aa4aed86532548a5549ec6fba1507c40f7b55301cab1074f83c5544f`.
 Environment dumps, private staging paths, raw diagnostic logs and credentials
 are deliberately not distributed as provenance.
 
-## Licence, omissions and removal boundary
+## License, omissions and removal boundary
 
 [LICENSE](LICENSE) is unchanged EUPL-1.2, with its existing notices. Original
 authorship remains in the retained Git history; imported text is not represented
-as newly authored. Subsequent package documentation uses the same licence.
+as newly authored. Subsequent package documentation uses the same license.
 
 Root AGENTS.md, `.claude/settings.json`, supervisor/product code, design and
 threat-model policy, tools/scripts, board/landing/build infrastructure, hooks
@@ -122,7 +122,7 @@ resources. It is neither an upstream sync list nor a workharbor deletion list.
 ## Current verification and remaining runtime boundary
 
 The original extraction revisions, selected blobs, filtering allowlist, commit
-map, licence and removal boundary remain unchanged by these transformations.
+map, license and removal boundary remain unchanged by these transformations.
 The current [distribution contract](docs/distribution.md) separately describes
 Python maintenance checks and the deterministic inventory/export format.
 Updating that inventory accepts reviewed current bytes; it does not synchronize

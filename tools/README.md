@@ -61,7 +61,7 @@ The unittest command runs every `tools/test_*.py` file: `test_package.py`
 (confirmation record v1 codec against shared fixtures), `test_preflight.py`,
 `test_scanner.py`, `test_workflows.py` (CI trigger and required-check-name guards), `test_dispatch_recovery.py`, `test_dispatch_snapshot.py`,
 `test_board.py` (`board.py` move/sync with a fake `gh`; rules in
-[team.md](../docs/team.md#board-sync)), `test_review_lines.py` (review-line grammar and model gate, modelled in
+[team.md](../docs/team.md#board-sync)), `test_review_lines.py` (review-line grammar and model gate, modeled in
 `review_lines.py`) `test_parser_properties.py` (seeded, bounded property tests for the review-line, confirmation-record and recovery-state parsers),
 `test_stray_processes.py` (canned `ps` output for `scripts/stray_processes.py`),
 `test_pr_watch.py` (runs `tools/pr-watch/test_pr_watch.sh`: `scripts/pr-watch/pr-watch.sh` against a fake `gh`, needs `bash` and `jq`),
@@ -122,7 +122,7 @@ The registry is parsed with the strict grammar of
 [project-config.md](../docs/project-config.md#coordinator-mode-and-registry);
 a damaged or foreign file (including a header without `session`) prints
 `unavailable: damaged or foreign` and nothing else from it. The reader has no
-session marker, so a valid registry from any session is summarised. It is
+session marker, so a valid registry from any session is summarized. It is
 read-only (Git plumbing only, no writes, no network, no GraphQL) and prints no
 file contents, note bodies or prompt text; unsafe tokens print as `?`. Each
 section degrades alone to `unavailable: <reason>`.
@@ -135,7 +135,7 @@ python3 -B tools/dispatch_snapshot.py --root "$(pwd -P)" [--main main] \
 This repository has no `scripts/board-snapshot.sh`; the caller supplies board
 and CI data as JSON (shapes in the script docstring; `-` reads stdin for at
 most one input; a card counts only with `"own": true`), otherwise those sections read `unavailable`. The only
-time line is the optional caller-labelled `--stamp`. Shipping it is the human's
+time line is the optional caller-labeled `--stamp`. Shipping it is the human's
 decision.
 
 ## Optional source main guard

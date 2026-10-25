@@ -2,7 +2,7 @@
 
 One rule for every asset, so the logo, the icons, the README banner and the
 social preview look like one product (#88). The rule is derived from
-workharbor's `assets/BRAND.md`: the same tile, colours, type and lockup
+workharbor's `assets/BRAND.md`: the same tile, colors, type and lockup
 geometry, with a different mark.
 
 Name: the product is named **CrewBook**, one word, in prose, titles and the
@@ -21,9 +21,9 @@ parts are never redrawn in the other style.
 - **App icon** (square places only: `logo.svg`/`logo.png`, `favicon.svg`,
   `favicon.ico`, `apple-touch-icon.png`): the teal mark on a rounded navy tile.
   Tile corner radius 13.28 units in the 64-unit box (workharbor's tile); the
-  mark's drawn height 70 % of the side (47 units scaled by 0.95319), centred,
+  mark's drawn height 70 % of the side (47 units scaled by 0.95319), centered,
   so it stays legible at 16 px. Every rounded tile has a visible outline: 1.6
-  units in the 64-unit box (2.5 % of the side), colour `#2a4a7a`, drawn inside
+  units in the 64-unit box (2.5 % of the side), color `#2a4a7a`, drawn inside
   the tile's edge.
 - **Horizontal lockup** (any wide place): the bare teal mark, no tile, then
   the wordmark. A lockup never appears in a square place, and a tile never
@@ -49,9 +49,9 @@ parts are never redrawn in the other style.
 
 | Element | Rule |
 | --- | --- |
-| Wordmark | "CrewBook", one word, in Bricolage Grotesque Bold (wght 700, no added letter spacing), outlined: "Crew" in the text colour, "Book" in teal; cap height 0.66 × font size |
+| Wordmark | "CrewBook", one word, in Bricolage Grotesque Bold (wght 700, no added letter spacing), outlined: "Crew" in the text color, "Book" in teal; cap height 0.66 × font size |
 | Mark, tile lockup | tile 2.14 × C in the banner, 4.36 × C in the social preview; the wordmark's ink starts about 0.8 × C to the right of the tile |
-| Mark, bare lockup | drawn height 2.4 × C, vertically centred on the wordmark's cap height; book stroke 5.5 in the 64-unit drawing; gap to the wordmark 0.6 × C |
+| Mark, bare lockup | drawn height 2.4 × C, vertically centered on the wordmark's cap height; book stroke 5.5 in the 64-unit drawing; gap to the wordmark 0.6 × C |
 | Tagline | "Guidance and workflow for coding agents.", IBM Plex Sans Regular, outlined, teal, left-aligned with the wordmark (its origin 3.5 px right of the wordmark's origin in the banner, 4 px in the social preview) |
 | Clear space | at least 0.45 × C above and below the whole block (tile and text); in the README banner the tile leaves 27 px, 0.6 × C, at top and bottom |
 
@@ -63,22 +63,22 @@ The banner and social preview reuse workharbor's exact positions and sizes, so
 | Asset | Size | Wordmark | Tagline |
 | --- | --- | --- | --- |
 | README banner | 1000 × 150, rounded 18 px; tile at (56, 27) | 68 px (optical size 72), C = 44.9 px, baseline 80, ink from x 187.08 | 30 px, baseline 118 (0.85 × C below) |
-| Social preview | 1280 × 640; tile at (132.7, 184), the whole block (tile to the end of the tagline, its widest line) centred horizontally | 100 px (optical size 96), C = 66 px, baseline 318 | 36 px, baseline 388 (1.06 × C below) |
+| Social preview | 1280 × 640; tile at (132.7, 184), the whole block (tile to the end of the tagline, its widest line) centered horizontally | 100 px (optical size 96), C = 66 px, baseline 318 | 36 px, baseline 388 (1.06 × C below) |
 | `logo.png` | 512 × 512, from `logo.svg` | none | none |
 | `favicon.ico` | 16, 32 and 48 px, from `favicon.svg` | none | none |
 | `apple-touch-icon.png` | 180 × 180, full bleed | none | none |
 
-## Colours
+## Colors
 
 Navy `#0b2545` background with white text and teal `#5eead4`; on a light
 background, navy `#0b2545` text and deep teal `#0f766e`. Tile outline
-`#2a4a7a`. No other colours, except the gradient stop in Exception 2.
+`#2a4a7a`. No other colors, except the gradient stop in Exception 2.
 
 ## Fonts
 
 Bricolage Grotesque and IBM Plex Sans are licensed under the SIL Open Font
 License 1.1. Every asset carries them only as outlines, so no font file ships
-in this repository. The font files and their licence texts are those of
+in this repository. The font files and their license texts are those of
 workharbor: `assets/fonts/bricolage-grotesque/` (variable TTF and `OFL.txt`)
 and `docs/static/fonts/ibm-plex-sans/` (`OFL.txt`).
 

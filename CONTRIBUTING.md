@@ -49,8 +49,8 @@ Include the problem, change, verification and remaining limitations in a pull
 request. Use minimal sanitized examples in public issues and reviews: omit
 credentials, private machine paths and raw sensitive transcripts.
 
-## Licence and attribution
+## License and attribution
 
-Contributions use the existing [EUPL-1.2 licence](LICENSE). Preserve its terms,
+Contributions use the existing [EUPL-1.2 license](LICENSE). Preserve its terms,
 notices and the attribution recorded in [PROVENANCE.md](PROVENANCE.md); do not
 relabel imported material as newly authored.

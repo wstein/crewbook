@@ -127,7 +127,7 @@ alias. See [official skill discovery](https://learn.chatgpt.com/docs/build-skill
 
 A symlink follows local edits; use a reviewed text export in the skill directory
 when you need a fixed copy. Run the package check before export and preserve all
-declared resources, licence and provenance. Both source and exported packages
+declared resources, license and provenance. Both source and exported packages
 include the Codex discovery metadata. This installation does not register Claude
 commands or establish workharbor runtime compatibility. Workharbor's production
 pin/adapter checks remain a separate integration contract.

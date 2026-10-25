@@ -1,4 +1,4 @@
-"""Review-line grammar and pre-land model gate (modelled; the procedure itself is model-run)."""
+"""Review-line grammar and pre-land model gate (modeled; the procedure itself is model-run)."""
 import unittest
 
 import review_lines as rl
