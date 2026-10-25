@@ -13,6 +13,14 @@ Prose, titles, display names and docs say **CrewBook**. Code, paths, URLs,
 packages, file names, config keys and the skill id stay `crewbook` (`$crewbook`).
 Never write "Crew Book" or "Crewbook".
 
+## Language
+
+Write all English text in US spelling: documentation, comments, commit messages, pull
+request text and identifiers (color, behavior, license, canceled, catalog, labeled,
+analyzed, organization). This applies to new and changed text. Do not convert existing
+British spellings inside an unrelated change; a separate sweep does that. Keep exact
+quotations, testdata, goldens and external names unchanged.
+
 ## Practical test-first changes
 
 For a reproducible executable bug, add a meaningful regression and demonstrate
