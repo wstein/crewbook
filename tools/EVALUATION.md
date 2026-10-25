@@ -11,7 +11,7 @@ Python 3.9 or newer:
 This maintenance artifact is excluded from the declarative exported package.
 It does not execute prompts, clients, target code, or model runs. The fixture
 contains invented outcomes and zero-filled placeholder hashes, explicitly
-labelled synthetic; its report is not evidence of guidance effectiveness.
+labeled synthetic; its report is not evidence of guidance effectiveness.
 
 The v1 JSON format is a bounded implementation assumption for this partial
 work item, not a prescribed issue-wide or workharbor runtime contract. Use the

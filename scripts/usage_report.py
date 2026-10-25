@@ -442,7 +442,7 @@ def median(xs):
     return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2.0
 
 
-def analyse_times(recs):
+def analyze_times(recs):
     """Return (loop dict or None, burst count) from request timestamps of one agent."""
     ts = sorted(r["ts"] for r in recs if r["ts"] is not None)
     starts = [ts[0]] if ts else []
@@ -479,7 +479,7 @@ def build(col, table, top, resume_gap):
         for a, b in zip(ordered, ordered[1:]):
             if b["ts"] - a["ts"] > resume_gap:
                 resume_models[b["model"]] = resume_models.get(b["model"], 0) + 1
-        loop, bursts = analyse_times(recs)
+        loop, bursts = analyze_times(recs)
         # Attribute the agent loop once, to the model at its first request.
         loop_model = ordered[0]["model"] if ordered else None
         agent_cost = 0.0 if isinstance(table, dict) else None

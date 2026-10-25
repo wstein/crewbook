@@ -310,7 +310,7 @@ class UsageTests(Fixture):
         for needle in ('<script', 'http://', 'https://', '<link', 'src=', '@import', 'url('):
             self.assertNotIn(needle, text)
 
-    def test_read_only_and_example_prices_labelled(self):
+    def test_read_only_and_example_prices_labeled(self):
         self.write('s/main.jsonl', [asst('m1', 'r1')])
         before = sorted((str(p), p.stat().st_mtime_ns) for p in self.dir.rglob('*'))
         self.run_cli()
@@ -440,7 +440,7 @@ class UsageTests(Fixture):
             self.assertIn('price table', err)
 
     def run_rc_env(self):
-        # The --prices default is read when main() builds its parser, so env is honoured.
+        # The --prices default is read when main() builds its parser, so env is honored.
         return self.run_rc('--json')
 
     def test_json_and_html_mutually_exclusive(self):

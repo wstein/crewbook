@@ -21,9 +21,9 @@ start the coordinated workflow (desk, with authors and independent reviewers
 for larger tasks), invoke it explicitly. A bare invocation starts desk; it is
 not a load-only command ([SKILL.md](SKILL.md)).
 
-Client behaviour below is **unverified** unless stated: native loading has not
+Client behavior below is **unverified** unless stated: native loading has not
 been measured (issue #41 is postponed). Static package checks do not establish
-native runtime behaviour.
+native runtime behavior.
 
 Follow the [human-request contract](docs/team.md#human-request-contract) for
 operation scope, agent topic pushes and issue/card updates, human merge and
@@ -120,7 +120,7 @@ What the repo files show:
 
 | Need | Read |
 | --- | --- |
-| Skill behaviour and role selection | [SKILL.md](SKILL.md) |
+| Skill behavior and role selection | [SKILL.md](SKILL.md) |
 | Installation, updates, client support | [docs/installation.md](docs/installation.md) |
 | Team roles, review and handoffs | [docs/team.md](docs/team.md) |
 | Project setup | [docs/project-config.md](docs/project-config.md) |
@@ -128,6 +128,6 @@ What the repo files show:
 | Maintenance commands and tests | [tools/README.md](https://github.com/wstein/crewbook/blob/main/tools/README.md) |
 | Antigravity (`agy`): no approved entrypoint | [docs/antigravity.md](docs/antigravity.md) |
 
-Contributing: [CONTRIBUTING.md](https://github.com/wstein/crewbook/blob/main/CONTRIBUTING.md), [code of conduct](https://github.com/wstein/crewbook/blob/main/.github/CODE_OF_CONDUCT.md). Licence: EUPL-1.2
+Contributing: [CONTRIBUTING.md](https://github.com/wstein/crewbook/blob/main/CONTRIBUTING.md), [code of conduct](https://github.com/wstein/crewbook/blob/main/.github/CODE_OF_CONDUCT.md). License: EUPL-1.2
 ([LICENSE](LICENSE)); imported from historical WorkHarbor source, see
 [PROVENANCE.md](PROVENANCE.md).

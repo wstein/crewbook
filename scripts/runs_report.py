@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record and summarise delegated runs (stdlib only, Python 3.9+).
+"""Record and summarize delegated runs (stdlib only, Python 3.9+).
 
 One tab-separated record per delegated run in a local, git-ignored file
 (default .work/RUNS.tsv). The desk records each run at hand-back from the run's
@@ -85,7 +85,7 @@ def load(path):
     return rows, bad
 
 
-def summarise(rows):
+def summarize(rows):
     groups = defaultdict(list)
     for r in rows:
         groups[(r["role"], r["model"], r["effort"])].append(r)
@@ -178,7 +178,7 @@ def main(argv=None):
     except (OSError, ValueError) as e:
         print("error: %s" % e, file=sys.stderr)
         return 1
-    s = summarise(rows)
+    s = summarize(rows)
     print(json.dumps({"schema": SCHEMA, "groups": s, "skipped": bad}, indent=1)
           if a.json else render(s, bad))
     return 0

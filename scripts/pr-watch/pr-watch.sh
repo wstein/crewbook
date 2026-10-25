@@ -28,7 +28,7 @@
 #   check; a match (and no real test failure) classifies it stack-merge-shape, which is not actionable. Default empty: off.
 # READY-CANDIDATE marks a draft PR based on the repository's default branch (gh repo view, cached per repo).
 # A repository whose gh poll failed 3 times in a row yields one `watch error` event (actionable); `watch recovered` follows
-#   when it works again. Event text is sanitised: control characters and terminal escape sequences are removed.
+#   when it works again. Event text is sanitized: control characters and terminal escape sequences are removed.
 # WATCH_QUIET_NEW: space separated head-branch prefixes and/or author:<login>; a matching new-pr is logged but not actionable.
 # WATCH_QUIET_CONFLICT_DRAFT=1: a conflict on a draft PR is not actionable.
 # Actionable (ends --until-event): checks-green with READY-CANDIDATE/READY; checks-red unless stack-merge-shape;

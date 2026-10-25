@@ -40,7 +40,7 @@ class RunsReport(unittest.TestCase):
         p = self.write(BASELINE)
         rows, bad = rr.load(p)
         self.assertEqual(bad, 0)
-        g = {(s['role'], s['model']): s for s in rr.summarise(rows)}
+        g = {(s['role'], s['model']): s for s in rr.summarize(rows)}
         a = g[('author', 'sonnet')]
         self.assertEqual((a['prs'], a['clear']), (2, 2))
         self.assertEqual(a['tokens_per_clear'], 97900)
@@ -59,14 +59,14 @@ class RunsReport(unittest.TestCase):
         text = HEAD + ''.join(row('2026-10-09', '#%d' % i, 'author', 'sonnet', 'low', 1000,
                                   1, 1, 0, 0, 0, 'y', 'y') for i in range(100, 110))
         rows, _ = rr.load(self.write(text))
-        s = rr.summarise(rows)[0]
+        s = rr.summarize(rows)[0]
         self.assertTrue(s['enough_data'])
         self.assertEqual(s['ci_first_try_rate'], 1.0)
-        self.assertNotIn('not enough data', rr.render(rr.summarise(rows), 0))
+        self.assertNotIn('not enough data', rr.render(rr.summarize(rows), 0))
 
     def test_not_enough_data_flag_rendered(self):
         rows, _ = rr.load(self.write(BASELINE))
-        self.assertIn('not enough data', rr.render(rr.summarise(rows), 0))
+        self.assertIn('not enough data', rr.render(rr.summarize(rows), 0))
 
     def test_invalid_rows_skipped_and_free_text_rejected(self):
         bad = [
@@ -103,17 +103,17 @@ class RunsReport(unittest.TestCase):
     def test_uncleared_pr_denominator(self):
         text = HEAD + row('2026-10-09', '#1', 'author', 'sonnet', 'low', 1000, 2, 1, 0, 0, 0, 'y', 'y') \
             + row('2026-10-09', '#2', 'author', 'sonnet', 'low', 3000, 4, 0, 0, 0, 0, '-', 'n')
-        s = rr.summarise(rr.load(self.write(text))[0])[0]
+        s = rr.summarize(rr.load(self.write(text))[0])[0]
         self.assertEqual((s['prs'], s['clear'], s['tokens_per_clear']), (2, 1, 4000))
         none = HEAD + row('2026-10-09', '#2', 'author', 'sonnet', 'low', 3000, 4, 0, 0, 0, 0, '-', 'n')
-        s = rr.summarise(rr.load(self.write(none))[0])[0]
+        s = rr.summarize(rr.load(self.write(none))[0])[0]
         self.assertIsNone(s['tokens_per_clear'])
         self.assertIsNone(s['minutes_per_clear'])
 
     def test_zero_rounds_ignored_and_ref_forms_same_pr(self):
         text = HEAD + row('2026-10-09', '510', 'author', 'sonnet', 'low', 1, 1, 4, 0, 0, 0, 'y', 'y') \
             + row('2026-10-09', '#510', 'author', 'sonnet', 'low', 1, 1, 0, 0, 0, 0, '-', 'n')
-        s = rr.summarise(rr.load(self.write(text))[0])[0]
+        s = rr.summarize(rr.load(self.write(text))[0])[0]
         self.assertEqual((s['prs'], s['rounds_per_pr']), (1, 4.0))
 
     def test_field_ranges_flags_and_unicode(self):

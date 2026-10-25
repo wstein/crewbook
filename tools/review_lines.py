@@ -51,7 +51,7 @@ def gate(lines, sha, tiers, required=1):
     NOT and CLEAR; cross-alphabet letter lookalikes remain unresolved (#65). Any other
     unparsable line naming sha is a gap.
     Counting key: (sha, canonical model); `opus` and `claude-opus-5-5` are one stamp. Reviewer
-    identity is not modelled, so two reviewers recording the same model count once. Fail-closed:
+    identity is not modeled, so two reviewers recording the same model count once. Fail-closed:
     any CLEAR on sha whose canonical model is outside tiers is a gap, counted or not."""
     if not isinstance(sha, str) or not re.fullmatch(r'[0-9a-f]{40}', sha):
         raise ValueError('sha must be 40 lowercase hex characters')

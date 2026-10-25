@@ -1,4 +1,4 @@
-"""Offline behaviour and failure fixtures for the stock-Python maintenance CLI."""
+"""Offline behavior and failure fixtures for the stock-Python maintenance CLI."""
 import copy
 import importlib.util
 import io

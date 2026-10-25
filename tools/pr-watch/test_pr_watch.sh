@@ -390,7 +390,7 @@ OUT=$(cat "$ROOT"/race.0.out); assert_has "directory refusal names the path" "is
 [ -z "$(ls -A "$ROOT/s/lock")" ] && ok "nothing created inside the directory" || bad "nothing created inside the directory" "$(ls -A "$ROOT/s/lock")"
 rmdir "$ROOT/s/lock"
 
-echo "== free-text sanitising =="
+echo "== free-text sanitizing =="
 new_world
 PRTITLE=$'x\x1ffalse\x1fmain' mkpr 1 true MERGEABLE aaaa1111 feat p1 | setprs; once
 PRTITLE=$'x\x1ffalse\x1fmain' mkpr 1 true MERGEABLE aaaa1111 feat g1 | setprs; once; once
@@ -513,7 +513,7 @@ assert_eq "no WATCH_REPOS: current-directory repo is polled" "$(grep -c '^pr lis
 [ -f "$FAKE_HOME/.local/state/pr-watch/acme_widgets.json" ] && ok "default state under HOME/.local/state/pr-watch" || bad "default state dir" "missing"
 [ -f "$FAKE_HOME/.local/state/pr-watch/watch-report.jsonl" ] && ok "default report inside the state dir" || bad "default report" "missing"
 OUT=$(cd "$ROOT" && HOME=$FAKE_HOME XDG_STATE_HOME=$ROOT/xdg WATCH_ONCE=1 bash "$SCRIPT" 2>&1 < /dev/null)
-[ -f "$ROOT/xdg/pr-watch/acme_widgets.json" ] && ok "XDG_STATE_HOME honoured" || bad "XDG_STATE_HOME" "missing"
+[ -f "$ROOT/xdg/pr-watch/acme_widgets.json" ] && ok "XDG_STATE_HOME honored" || bad "XDG_STATE_HOME" "missing"
 rm -f "$WORLD/calls.log"
 OUT=$(cd "$ROOT" && WATCH_REPOS="   " HOME=$FAKE_HOME XDG_STATE_HOME=$ROOT/xdg WATCH_ONCE=1 bash "$SCRIPT" 2>&1 < /dev/null); RC=$?
 assert_eq "blank WATCH_REPOS falls back to the current-directory repo" "$(grep -c '^pr list -R acme/widgets' "$WORLD/calls.log")" 1
