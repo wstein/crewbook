@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: EUPL-1.2
+# Private GitHub user project boards require authentication
+^https://github\.com/users/wstein/projects/
