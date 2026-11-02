@@ -59,7 +59,7 @@ repository name or the presence of workharbor files.
 
 ## Requirements v3 environment and runtime boundary
 
-The [WorkHarbor requirements catalog v3](https://github.com/wstein/workharbor/blob/main/docs/content/docs/requirements.md)
+The [WorkHarbor requirements catalog v3](https://github.com/wstein/workharbor/blob/main/docs/archive/workharbor-old/docs/content/docs/requirements.md)
 states direction; it does not establish an installed CLI or native capability.
 D57 remains human initiation/resume with agent-controlled steps inside that
 request, including long runs. There is no scheduler, API-key automation mode

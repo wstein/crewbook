@@ -263,7 +263,7 @@ record exists if and only if the entry carries `answered:`:
 | no `answered:` key (including legacy entries) | none |
 
 Mapping, frozen as **crewbook decision mapping v1**. The neutral schema and its
-encoding are defined in [workharbor #333](https://github.com/wstein/workharbor/issues/333)
+encoding are defined in [workharbor #333](https://github.com/wstein/workharbor-old/issues/333)
 and workharbor `internal/confirm`; this table does not restate them.
 
 | Record field | Value |
