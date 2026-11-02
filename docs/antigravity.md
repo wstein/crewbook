@@ -8,10 +8,10 @@ Codex model identifiers or Claude commands for native Antigravity behavior.
 
 ## Existing evidence
 
-The pinned [historical workharbor #84 spike](https://github.com/wstein/workharbor/tree/2ba00767aa705c6981d21a4aab45c4cc78bcd013/spikes/agy)
+The pinned [historical workharbor #84 spike](https://github.com/wstein/workharbor-old/tree/2ba00767aa705c6981d21a4aab45c4cc78bcd013/spikes/agy)
 used Antigravity 1.2.14 in a Linux ARM64 Fedora guest on an Apple Silicon host
 with Apple Container and proxy/shim isolation. Its
-[recorded results](https://github.com/wstein/workharbor/blob/2ba00767aa705c6981d21a4aab45c4cc78bcd013/spikes/agy/RESULTS.md)
+[recorded results](https://github.com/wstein/workharbor-old/blob/2ba00767aa705c6981d21a4aab45c4cc78bcd013/spikes/agy/RESULTS.md)
 report event streams, process-group cancellation and conversation resume,
 alongside authentication/error and egress observations. These are historical
 measurements against that setup, not measurements of current CrewBook discovery,
